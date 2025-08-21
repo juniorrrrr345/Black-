@@ -15,12 +15,16 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     // Check if user is authenticated
-    const token = localStorage.getItem('auth-token');
-    if (!token) {
-      router.push('/admin');
-    } else {
-      setIsLoading(false);
-    }
+    const checkAuth = async () => {
+      const token = localStorage.getItem('auth-token');
+      if (!token) {
+        router.push('/admin');
+      } else {
+        // Additional client-side check could be added here
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
   }, [router]);
 
   const handleLogout = () => {
