@@ -167,6 +167,21 @@ export default function ModernShop() {
     ? sampleProducts 
     : sampleProducts.filter(product => product.type === selectedCategory);
 
+  const getBackgroundClass = () => {
+    switch (settings.backgroundColor) {
+      case 'gradient-purple':
+        return 'bg-gradient-to-br from-purple-900 via-purple-800 to-black';
+      case 'gradient-blue':
+        return 'bg-gradient-to-br from-blue-900 via-blue-800 to-black';
+      case 'gradient-green':
+        return 'bg-gradient-to-br from-green-900 via-green-800 to-black';
+      case 'dark-gray':
+        return 'bg-gradient-to-br from-gray-900 via-gray-800 to-black';
+      default:
+        return 'bg-black';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Interface Mobile VERSHASH */}
