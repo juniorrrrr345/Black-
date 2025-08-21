@@ -11,6 +11,7 @@ import {
 
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
+import Footer from '@/components/Footer';
 
 export default function ModernShop() {
   const router = useRouter();
@@ -135,80 +136,123 @@ export default function ModernShop() {
 
       <div className="relative z-10">
         {/* Header - Responsive */}
-        <header className="border-b-2 border-white p-4 md:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center">
-              <motion.h1 
-                className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-wider"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
-                {themeSettings.shopName || 'VERSHASH'}
-              </motion.h1>
-              
-              {/* Cart Button */}
-              <motion.button
-                onClick={() => setShowCart(true)}
-                className="relative bg-white text-black border-2 border-white rounded-lg px-4 py-2 md:px-6 md:py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ShoppingBag size={20} />
-                <span className="hidden md:inline text-sm font-bold">PANIER</span>
-                {getTotalItems() > 0 && (
-                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
-                    {getTotalItems()}
-                  </div>
-                )}
-              </motion.button>
+        <header className="border-b-2 border-white">
+          <div className="p-4 md:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex justify-between items-center mb-6">
+                <motion.h1 
+                  className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-wider"
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  {themeSettings.shopName || 'MA BOUTIQUE'}
+                </motion.h1>
+                
+                {/* Cart Button */}
+                <motion.button
+                  onClick={() => setShowCart(true)}
+                  className="relative bg-white text-black border-2 border-white rounded-lg px-4 py-2 md:px-6 md:py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ShoppingBag size={20} />
+                  <span className="hidden md:inline text-sm font-bold">PANIER</span>
+                  {getTotalItems() > 0 && (
+                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                      {getTotalItems()}
+                    </div>
+                  )}
+                </motion.button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Image principale sous le nom de la boutique */}
+          <div className="relative h-64 md:h-80 lg:h-96 w-full overflow-hidden">
+            <img 
+              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&h=600&fit=crop"
+              alt="Boutique"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2">
+                COLLECTION EXCLUSIVE
+              </h2>
+              <p className="text-lg md:text-xl text-gray-200">
+                Découvrez nos produits premium
+              </p>
             </div>
           </div>
         </header>
 
-        {/* Hero Banner - Responsive */}
-        <section className="relative py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
+        {/* Categories - Directement après l'image */}
+        <section className="px-4 md:px-6 lg:px-8 py-8 md:py-10">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-black text-white text-center mb-6">
+              NOS CATÉGORIES
+            </h2>
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+              {categories.length > 0 ? (
+                categories.map((category: any) => (
+                  <motion.button
+                    key={category._id || category.name}
+                    onClick={() => setSelectedCategory(category.name)}
+                    className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
+                      selectedCategory === category.name
+                        ? 'bg-white text-black border-white'
+                        : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {category.name.toUpperCase()}
+                  </motion.button>
+                ))
+              ) : (
+                <>
+                  {['all', 'electronique', 'mode', 'maison'].map((category) => (
+                    <motion.button
+                      key={category}
+                      onClick={() => setSelectedCategory(category as any)}
+                      className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
+                        selectedCategory === category
+                          ? 'bg-white text-black border-white'
+                          : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {category === 'all' ? 'TOUT' : category.toUpperCase()}
+                    </motion.button>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Bannière promotionnelle */}
+        <section className="px-4 md:px-6 lg:px-8 mb-8">
+          <div className="max-w-7xl mx-auto">
             <motion.div
-              className="inline-block bg-black/80 backdrop-blur-sm border-2 border-white rounded-2xl px-6 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-8 text-center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 md:mb-4">
-                {themeSettings.bannerText || 'NOUVEAU DROP'}
-              </h2>
-              <p className="text-sm md:text-base lg:text-lg text-gray-300 font-bold">
-                QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
+              <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2">
+                {themeSettings.bannerText || '🎉 OFFRE SPÉCIALE'}
+              </h3>
+              <p className="text-sm md:text-base lg:text-lg text-white/90 font-bold">
+                LIVRAISON GRATUITE • RETOURS FACILES • GARANTIE SATISFACTION
               </p>
             </motion.div>
           </div>
         </section>
 
-        {/* Categories - Responsive */}
-        <section className="px-4 md:px-6 lg:px-8 mb-8 md:mb-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-              {['all', 'weed', 'hash'].map((category) => (
-                <motion.button
-                  key={category}
-                  onClick={() => setSelectedCategory(category as any)}
-                  className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
-                    selectedCategory === category
-                      ? 'bg-white text-black border-white'
-                      : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {category === 'all' ? 'TOUT' : category.toUpperCase()}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Products Grid - Responsive */}
-        <section className="px-4 md:px-6 lg:px-8 pb-24 md:pb-32">
+        <section className="px-4 md:px-6 lg:px-8 pb-32 mb-64">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {filteredProducts.map((product, index) => (
@@ -295,6 +339,9 @@ export default function ModernShop() {
           </div>
         </section>
 
+        {/* Footer */}
+        <Footer />
+        
         {/* Bottom Navigation - Responsive */}
         <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white z-50">
           <div className="max-w-7xl mx-auto flex justify-around py-3 md:py-4 lg:py-6 px-2">
