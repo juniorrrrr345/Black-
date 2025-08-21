@@ -339,71 +339,126 @@ export default function AdminDashboard() {
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="max-w-2xl">
-            <h2 className="text-xl font-bold mb-6">Paramètres de la boutique</h2>
+          <div className="max-w-4xl">
+            <h2 className="text-3xl font-black text-white mb-8 border-b-2 border-white pb-4">
+              ⚙️ CONFIGURATION DE LA BOUTIQUE
+            </h2>
             
-            <div className="space-y-6 bg-gray-900 rounded-lg p-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">Nom de la boutique</label>
-                <input
-                  type="text"
-                  value={settings.shopName}
-                  onChange={(e) => setSettings({ ...settings, shopName: e.target.value })}
-                  className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Texte de la bannière</label>
-                <input
-                  type="text"
-                  value={settings.bannerText}
-                  onChange={(e) => setSettings({ ...settings, bannerText: e.target.value })}
-                  className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Image de la bannière</label>
-                <div className="flex gap-4">
-                  <input
-                    type="text"
-                    value={settings.bannerImage}
-                    onChange={(e) => setSettings({ ...settings, bannerImage: e.target.value })}
-                    placeholder="URL de l'image"
-                    className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  />
-                  <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors">
-                    <Upload size={20} />
-                  </button>
-                </div>
-                {settings.bannerImage && (
-                  <div className="mt-4">
-                    <img src={settings.bannerImage} alt="Banner preview" className="w-full h-32 object-cover rounded-lg" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Informations générales */}
+              <div className="bg-black border-4 border-white rounded-2xl p-8">
+                <h3 className="text-2xl font-black text-white mb-6">🏪 INFORMATIONS GÉNÉRALES</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-white font-black text-sm mb-3">NOM DE LA BOUTIQUE</label>
+                    <input
+                      type="text"
+                      value={settings.shopName}
+                      onChange={(e) => setSettings({ ...settings, shopName: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                      placeholder="Ex: VERSHASH"
+                    />
                   </div>
-                )}
+
+                  <div>
+                    <label className="block text-white font-black text-sm mb-3">COULEUR D'ARRIÈRE-PLAN</label>
+                    <select
+                      value={settings.backgroundColor || 'black'}
+                      onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    >
+                      <option value="black">⚫ Noir</option>
+                      <option value="gradient-purple">🟣 Dégradé Violet</option>
+                      <option value="gradient-blue">🔵 Dégradé Bleu</option>
+                      <option value="gradient-green">🟢 Dégradé Vert</option>
+                      <option value="dark-gray">⚫ Gris Foncé</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-black text-sm mb-3">🔗 LIEN DE COMMANDE</label>
+                    <input
+                      type="text"
+                      value={settings.orderLink || ''}
+                      onChange={(e) => setSettings({ ...settings, orderLink: e.target.value })}
+                      placeholder="https://t.me/votre_bot?text={message}"
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    />
+                    <p className="text-gray-300 text-xs mt-2 bg-white/10 rounded-lg p-3">
+                      💡 Utilisez <span className="font-bold text-white">{'{message}'}</span> pour insérer automatiquement le message de commande
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">🔗 Lien de commande (Telegram/WhatsApp)</label>
-                <input
-                  type="text"
-                  value={settings.orderLink || ''}
-                  onChange={(e) => setSettings({ ...settings, orderLink: e.target.value })}
-                  placeholder="https://t.me/votre_bot?text={message}"
-                  className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-                <p className="text-xs text-gray-400 mt-1">
-                  Utilisez {'{message}'} pour insérer le message de commande
-                </p>
-              </div>
+              {/* Bannière */}
+              <div className="bg-black border-4 border-white rounded-2xl p-8">
+                <h3 className="text-2xl font-black text-white mb-6">🖼️ BANNIÈRE D'ACCUEIL</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-white font-black text-sm mb-3">TEXTE DE LA BANNIÈRE</label>
+                    <input
+                      type="text"
+                      value={settings.bannerText}
+                      onChange={(e) => setSettings({ ...settings, bannerText: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                      placeholder="Ex: NOUVEAU DROP"
+                    />
+                  </div>
 
+                  <div>
+                    <label className="block text-white font-black text-sm mb-3">IMAGE DE LA BANNIÈRE</label>
+                    <CloudinaryUpload
+                      currentImage={settings.bannerImage}
+                      onUpload={(url) => setSettings({ ...settings, bannerImage: url })}
+                      onRemove={() => setSettings({ ...settings, bannerImage: '' })}
+                    />
+                  </div>
+
+                  {/* Aperçu de la bannière */}
+                  {(settings.bannerText || settings.bannerImage) && (
+                    <div>
+                      <label className="block text-white font-black text-sm mb-3">APERÇU</label>
+                      <div className="relative h-32 bg-white rounded-2xl overflow-hidden border-4 border-black">
+                        {settings.bannerImage && (
+                          <img 
+                            src={settings.bannerImage} 
+                            alt="Banner preview" 
+                            className="w-full h-full object-cover opacity-80"
+                          />
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-black/80 px-6 py-3 rounded-2xl">
+                            <span className="text-white font-black text-xl">
+                              {settings.bannerText || 'NOUVEAU DROP'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-8 flex gap-4">
               <button
                 onClick={handleSaveSettings}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-colors"
+                className="flex-1 bg-white text-black py-4 rounded-lg font-black text-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-3"
               >
-                <Save size={20} />
-                Sauvegarder les paramètres
+                <Save size={28} />
+                SAUVEGARDER LES PARAMÈTRES
+              </button>
+              
+              <button
+                onClick={() => window.open('/', '_blank')}
+                className="bg-blue-600 text-white px-8 py-4 rounded-lg font-black hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <Eye size={24} />
+                PRÉVISUALISER
               </button>
             </div>
           </div>

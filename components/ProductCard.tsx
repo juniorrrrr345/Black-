@@ -61,15 +61,14 @@ export default function ProductCard({ product }: ProductCardProps) {
         <h3 className="text-lg font-bold text-white mb-1">{product.name}</h3>
         <p className="text-sm text-gray-400 mb-3">{product.origin}</p>
         
-        <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-purple-400">{product.price}€</span>
+        <div className="flex items-center justify-center">
           <motion.button
-            onClick={handleAddToCart}
-            className="bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            onClick={handleCardClick}
+            className="w-full bg-white text-black font-black py-3 rounded-lg hover:bg-gray-200 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <ShoppingCart size={18} />
+            VOIR DÉTAILS
           </motion.button>
         </div>
       </div>

@@ -1,158 +1,266 @@
 'use client';
 
-import { useStore } from '@/lib/store';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import BottomNav from '@/components/BottomNav';
+import { 
+  ArrowLeft, 
+  Plus, 
+  Minus, 
+  Trash2, 
+  ShoppingCart,
+  Send,
+  Home,
+  Instagram,
+  MessageCircle
+} from 'lucide-react';
+import { useStore } from '@/lib/store';
 
 export default function CartPage() {
-  const cart = useStore((state) => state.cart);
-  const updateQuantity = useStore((state) => state.updateQuantity);
-  const removeFromCart = useStore((state) => state.removeFromCart);
-  const getTotalPrice = useStore((state) => state.getTotalPrice());
-  const clearCart = useStore((state) => state.clearCart);
+  const router = useRouter();
+  const { cart, updateQuantity, removeFromCart, clearCart, getTotalItems, getTotalPrice } = useStore();
+  const [settings, setSettings] = useState<any>(null);
 
-  if (cart.length === 0) {
-    return (
-      <div className="min-h-screen pb-20">
-        <div className="px-4 md:px-8 py-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8">
-            <ArrowLeft size={20} />
-            Retour
-          </Link>
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
-          <div className="flex flex-col items-center justify-center py-20">
-            <ShoppingBag size={64} className="text-gray-600 mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">Panier vide</h2>
-            <p className="text-gray-400 mb-8">Ajoutez des produits pour commencer</p>
-            <Link href="/">
-              <motion.button
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Continuer les achats
-              </motion.button>
-            </Link>
-          </div>
-        </div>
-        <BottomNav />
-      </div>
-    );
-  }
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+      }
+    } catch (error) {
+      console.error('Erreur chargement settings:', error);
+    }
+  };
+
+  const handleOrder = () => {
+    if (cart.length === 0) {
+      alert('Votre panier est vide');
+      return;
+    }
+
+    if (!settings?.orderLink) {
+      alert('Lien de commande non configuré');
+      return;
+    }
+
+    // Créer le message de commande
+    let message = `🛒 NOUVELLE COMMANDE\\n\\n`;
+    message += `📦 Articles (${getTotalItems()}):\\n`;
+    message += `------------------------\\n`;
+    
+    cart.forEach(item => {
+      message += `• ${item.name}\\n`;
+      message += `  Quantité: ${item.quantity}\\n`;
+      message += `  Prix: ${item.price}€\\n\\n`;
+    });
+    
+    message += `------------------------\\n`;
+    message += `💰 TOTAL: ${getTotalPrice()}€`;
+
+    // Remplacer le placeholder dans le lien
+    const orderUrl = settings.orderLink.replace('{message}', encodeURIComponent(message));
+    window.open(orderUrl, '_blank');
+  };
+
+  const increaseQuantity = (productId: string) => {
+    const item = cart.find(item => item.id === productId);
+    if (item) {
+      updateQuantity(productId, item.quantity + 1);
+    }
+  };
+
+  const decreaseQuantity = (productId: string) => {
+    const item = cart.find(item => item.id === productId);
+    if (item && item.quantity > 1) {
+      updateQuantity(productId, item.quantity - 1);
+    }
+  };
 
   return (
-    <div className="min-h-screen pb-20">
-      <div className="px-4 md:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white">
-            <ArrowLeft size={20} />
-            Retour
-          </Link>
-          <h1 className="text-2xl font-bold text-white">Mon Panier</h1>
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-black border-b-4 border-white p-6">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
+          <button
+            onClick={() => router.back()}
+            className="bg-white text-black p-3 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          
+          <div className="text-center">
+            <h1 className="text-3xl font-black">PANIER</h1>
+            <p className="text-gray-300">({getTotalItems()} articles)</p>
+          </div>
+
           <button
             onClick={clearCart}
-            className="text-red-400 hover:text-red-300 text-sm"
+            className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition-colors"
           >
-            Vider
+            <Trash2 size={24} />
           </button>
         </div>
+      </div>
 
-        {/* Cart Items */}
-        <div className="space-y-4 mb-8">
-          {cart.map((item) => (
-            <motion.div
-              key={item.id}
-              className="glass-effect rounded-xl p-4"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
+      {/* Cart Content */}
+      <div className="max-w-lg mx-auto p-6 pb-32">
+        {cart.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="bg-white/10 rounded-full p-8 w-32 h-32 mx-auto mb-6 flex items-center justify-center">
+              <ShoppingCart size={64} className="text-white/50" />
+            </div>
+            <h2 className="text-2xl font-black text-white mb-4">PANIER VIDE</h2>
+            <p className="text-gray-400 mb-8">Ajoutez des produits pour commencer</p>
+            <button
+              onClick={() => router.push('/')}
+              className="bg-white text-black px-8 py-4 rounded-lg font-black hover:bg-gray-200 transition-colors"
             >
-              <div className="flex gap-4">
-                <div className="w-20 h-20 bg-purple-600/20 rounded-lg flex items-center justify-center">
-                  <span className="text-3xl">🌿</span>
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-white font-medium">{item.name}</h3>
-                      <p className="text-gray-400 text-sm">
-                        {item.countryFlag} {item.origin}
-                      </p>
+              RETOUR À LA BOUTIQUE
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Cart Items */}
+            <div className="space-y-4">
+              {cart.map((item) => (
+                <div key={`${item.id}-${item.name}`} className="bg-black border-4 border-white rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    {/* Product Image */}
+                    <div className="w-20 h-20 bg-white rounded-lg overflow-hidden border-2 border-black flex-shrink-0">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-2xl">🌿</span>
+                        </div>
+                      )}
                     </div>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-red-400 hover:text-red-300 p-1"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center justify-center"
-                      >
-                        <Minus size={16} className="text-white" />
-                      </button>
-                      <span className="text-white font-medium w-8 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center justify-center"
-                      >
-                        <Plus size={16} className="text-white" />
-                      </button>
-                    </div>
-                    <p className="text-purple-400 font-bold">
-                      {(item.price * item.quantity).toFixed(2)}€
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
 
-        {/* Total and Checkout */}
-        <div className="glass-effect rounded-xl p-6">
-          <div className="space-y-3 mb-6">
-            <div className="flex justify-between text-gray-400">
-              <span>Sous-total</span>
-              <span>{getTotalPrice.toFixed(2)}€</span>
+                    {/* Product Info */}
+                    <div className="flex-1">
+                      <h3 className="text-lg font-black text-white mb-1">{item.name}</h3>
+                      <p className="text-gray-300 text-sm mb-3">{item.origin}</p>
+                      
+                      {/* Quantity Controls */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => decreaseQuantity(item.id)}
+                            className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center font-black hover:bg-gray-200 transition-colors"
+                            disabled={item.quantity <= 1}
+                          >
+                            <Minus size={16} />
+                          </button>
+                          
+                          <span className="text-2xl font-black text-white w-12 text-center">
+                            {item.quantity}
+                          </span>
+                          
+                          <button
+                            onClick={() => increaseQuantity(item.id)}
+                            className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center font-black hover:bg-gray-200 transition-colors"
+                          >
+                            <Plus size={16} />
+                          </button>
+                        </div>
+
+                        <div className="text-right">
+                          <div className="text-2xl font-black text-white">
+                            {(item.price * item.quantity).toLocaleString()}€
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-red-400 hover:text-red-300 text-sm mt-1"
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="flex justify-between text-gray-400">
-              <span>Livraison</span>
-              <span>Gratuite</span>
-            </div>
-            <div className="border-t border-gray-700 pt-3">
-              <div className="flex justify-between text-white text-xl font-bold">
-                <span>Total</span>
-                <span className="text-purple-400">{getTotalPrice.toFixed(2)}€</span>
+
+            {/* Total */}
+            <div className="bg-white text-black rounded-2xl p-6 border-4 border-black">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-lg font-black">TOTAL</span>
+                <span className="text-3xl font-black">{getTotalPrice().toLocaleString()}€</span>
               </div>
+              
+              <div className="text-sm text-gray-600 mb-6">
+                {getTotalItems()} article{getTotalItems() > 1 ? 's' : ''} dans votre panier
+              </div>
+
+              {/* Order Button */}
+              <button
+                onClick={handleOrder}
+                className="w-full bg-black text-white py-4 rounded-lg font-black text-xl hover:bg-gray-800 transition-colors flex items-center justify-center gap-3 border-2 border-black"
+              >
+                <Send size={28} />
+                COMMANDER MAINTENANT
+              </button>
             </div>
           </div>
-          
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white">
+        <div className="max-w-lg mx-auto flex justify-around py-6">
           <motion.button
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-lg transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            onClick={() => router.push('/')}
+            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
-            Procéder au paiement
+            <Home size={28} />
+            <span className="text-xs">ACCUEIL</span>
           </motion.button>
-          
-          <p className="text-center text-gray-500 text-sm mt-4">
-            Paiement sécurisé via Telegram
-          </p>
+
+          <motion.button
+            onClick={() => window.open('https://instagram.com/vershash', '_blank')}
+            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Instagram size={28} />
+            <span className="text-xs">INSTAGRAM</span>
+          </motion.button>
+
+          <motion.button
+            onClick={() => window.open('https://t.me/VershashBot', '_blank')}
+            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <MessageCircle size={28} />
+            <span className="text-xs">TELEGRAM</span>
+          </motion.button>
+
+          <div className="flex flex-col items-center gap-2 text-black bg-white rounded-xl p-3 border-2 border-white font-black">
+            <div className="relative">
+              <ShoppingCart size={28} />
+              {getTotalItems() > 0 && (
+                <div className="absolute -top-3 -right-3 bg-black text-white text-sm rounded-full w-7 h-7 flex items-center justify-center font-black border-2 border-white">
+                  {getTotalItems()}
+                </div>
+              )}
+            </div>
+            <span className="text-xs">PANIER ({getTotalItems()})</span>
+          </div>
         </div>
       </div>
-      
-      <BottomNav />
     </div>
   );
 }

@@ -147,16 +147,16 @@ export default function ModernShop() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Interface Mobile VERSHASH */}
-      <div className="max-w-lg mx-auto bg-black min-h-screen relative overflow-hidden">
+      <div className={`max-w-lg mx-auto min-h-screen relative overflow-hidden ${getBackgroundClass()}`}>
         
-        {/* Header VERSHASH */}
+        {/* Header with dynamic shop name */}
         <div className="text-center py-8 relative z-10 border-b-4 border-white">
           <motion.h1 
-            className="text-5xl font-black text-white tracking-wider"
+            className="text-4xl md:text-5xl font-black text-white tracking-wider px-4"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            VERSHASH
+            {settings.shopName || 'VERSHASH'}
           </motion.h1>
         </div>
 
