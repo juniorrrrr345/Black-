@@ -286,9 +286,27 @@ export default function ModernShop() {
                       )}
                     </div>
 
-                    {/* Country Flag */}
+                    {/* Add to Cart Button - Top Right */}
+                    <motion.button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product);
+                        // Animation de feedback
+                        const button = e.currentTarget;
+                        button.classList.add('animate-bounce');
+                        setTimeout(() => button.classList.remove('animate-bounce'), 500);
+                      }}
+                      className="absolute top-2 right-2 bg-white text-black p-3 rounded-full shadow-xl hover:bg-green-500 hover:text-white transition-all group z-10 hover:shadow-green-500/50"
+                      whileHover={{ scale: 1.15, rotate: 5 }}
+                      whileTap={{ scale: 0.9 }}
+                      title="Ajouter au panier"
+                    >
+                      <ShoppingBag size={28} className="group-hover:scale-110 transition-transform" />
+                    </motion.button>
+
+                    {/* Country Flag - Moved to top left */}
                     {product.countryFlag && (
-                      <div className="absolute top-2 right-2 text-lg sm:text-xl bg-white/90 rounded-full p-1 shadow-lg">
+                      <div className="absolute top-2 left-2 text-lg sm:text-xl bg-white/90 rounded-full p-1 shadow-lg">
                         {product.countryFlag}
                       </div>
                     )}
@@ -324,33 +342,19 @@ export default function ModernShop() {
                       </div>
                     )}
 
-                    {/* Actions - Boutons adaptés pour mobile */}
-                    <div className="space-y-2">
-                      <motion.button
-                        onClick={() => {
-                          const productId = product.id || product._id;
-                          router.push(`/products/${productId}`);
-                        }}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg font-semibold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-1"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Eye size={14} className="sm:hidden" />
-                        <span className="hidden sm:inline">VOIR DÉTAILS</span>
-                        <span className="sm:hidden">VOIR</span>
-                      </motion.button>
-                      
-                      <motion.button
-                        onClick={() => addToCart(product)}
-                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 rounded-lg font-semibold text-xs sm:text-sm hover:from-green-700 hover:to-emerald-700 transition-all flex items-center justify-center gap-1"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <ShoppingBag size={14} />
-                        <span className="hidden sm:inline">AJOUTER</span>
-                        <Plus size={14} className="sm:hidden" />
-                      </motion.button>
-                    </div>
+                    {/* Action - Voir détails seulement */}
+                    <motion.button
+                      onClick={() => {
+                        const productId = product.id || product._id;
+                        router.push(`/products/${productId}`);
+                      }}
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Eye size={16} />
+                      <span>VOIR DÉTAILS</span>
+                    </motion.button>
                   </div>
                 </motion.div>
               ))}
