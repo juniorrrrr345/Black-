@@ -19,6 +19,7 @@ import {
   Weight
 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
+import CloudinaryVideoUpload from '@/components/CloudinaryVideoUpload';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -516,6 +517,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
     countryFlag: product?.countryFlag || '',
     description: product?.description || '',
     image: product?.image || '',
+    video: product?.video || '',
   });
 
   const [pricingOptions, setPricingOptions] = useState(
@@ -589,16 +591,36 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
               {/* Image Upload */}
               <div>
                 <label className="block text-white font-black text-lg mb-4">
-                  📸 PHOTO DU PRODUIT
+                  📸 PHOTO DU PRODUIT (Carte)
                 </label>
                 <CloudinaryUpload
                   currentImage={formData.image}
                   onUpload={(url) => setFormData({ ...formData, image: url })}
                   onRemove={() => setFormData({ ...formData, image: '' })}
                 />
+                <p className="text-gray-300 text-sm mt-2">
+                  Cette image sera affichée sur la carte produit de la page d'accueil
+                </p>
               </div>
 
-              {/* Product Info */}
+              {/* Video Upload */}
+              <div>
+                <label className="block text-white font-black text-lg mb-4">
+                  🎬 VIDÉO DU PRODUIT (Détail)
+                </label>
+                <CloudinaryVideoUpload
+                  currentVideo={formData.video}
+                  onUpload={(url) => setFormData({ ...formData, video: url })}
+                  onRemove={() => setFormData({ ...formData, video: '' })}
+                />
+                <p className="text-gray-300 text-sm mt-2">
+                  Cette vidéo sera affichée sur la page détail du produit
+                </p>
+              </div>
+            </div>
+
+            {/* Product Info */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <div>
                   <label className="block text-white font-black text-sm mb-2">

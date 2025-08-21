@@ -9,7 +9,8 @@ export interface IProduct {
   _id: string;
   name: string;
   origin: string;
-  image: string;
+  image: string; // Photo pour la carte produit
+  video?: string; // Vidéo pour la page détail
   price: number; // Base price for compatibility
   pricing?: IPricingOption[]; // Multiple pricing options
   quantity: number;
@@ -48,6 +49,10 @@ const ProductSchema = new mongoose.Schema({
     trim: true,
   },
   image: {
+    type: String,
+    default: '',
+  },
+  video: {
     type: String,
     default: '',
   },
