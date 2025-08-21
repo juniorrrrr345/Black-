@@ -30,36 +30,32 @@ export default function ProductPage() {
     try {
       setLoading(true);
       
-      // Essayer de charger depuis l'API d'abord
-      const response = await fetch(`/api/products/${params.id}`);
-      if (response.ok) {
-        const apiProduct = await response.json();
-        setProduct(apiProduct);
-        if (apiProduct.pricing && apiProduct.pricing.length > 0) {
-          setSelectedPricing(apiProduct.pricing[0]);
-        }
-      } else {
-        // Fallback vers les produits statiques
-        const { products } = await import('@/lib/products');
-        const foundProduct = products.find(p => p.id === params.id);
-        if (foundProduct) {
-          setProduct({ ...foundProduct, _id: foundProduct.id });
-          if (foundProduct.pricing && foundProduct.pricing.length > 0) {
-            setSelectedPricing(foundProduct.pricing[0]);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error loading product:', error);
-      // Fallback vers les produits statiques
+      // Charger d'abord depuis les produits statiques
       const { products } = await import('@/lib/products');
-      const foundProduct = products.find(p => p.id === params.id);
+      const foundProduct = products.find(p => p.id === String(params.id));
+      
       if (foundProduct) {
         setProduct({ ...foundProduct, _id: foundProduct.id });
         if (foundProduct.pricing && foundProduct.pricing.length > 0) {
           setSelectedPricing(foundProduct.pricing[0]);
         }
+      } else {
+        // Si pas trouvé dans les produits statiques, essayer l'API
+        try {
+          const response = await fetch(`/api/products/${params.id}`);
+          if (response.ok) {
+            const apiProduct = await response.json();
+            setProduct(apiProduct);
+            if (apiProduct.pricing && apiProduct.pricing.length > 0) {
+              setSelectedPricing(apiProduct.pricing[0]);
+            }
+          }
+        } catch (apiError) {
+          console.log('Product not found in API:', apiError);
+        }
       }
+    } catch (error) {
+      console.error('Error loading product:', error);
     } finally {
       setLoading(false);
     }

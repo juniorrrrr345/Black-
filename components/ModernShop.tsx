@@ -32,24 +32,33 @@ export default function ModernShop() {
     try {
       setLoading(true);
       
-      // Charger les produits depuis l'API
-      const productsRes = await fetch('/api/products');
-      if (productsRes.ok) {
-        const productsData = await productsRes.json();
-        setProducts(productsData);
-      }
+      // Charger d'abord les produits statiques
+      const { products: staticProducts, categories: staticCategories } = await import('@/lib/products');
+      setProducts(staticProducts.map(p => ({ ...p, _id: p.id, quantity: 50, available: true })));
+      setCategories(staticCategories);
+      
+      // Essayer de charger depuis l'API (optionnel)
+      try {
+        const productsRes = await fetch('/api/products');
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          if (productsData && productsData.length > 0) {
+            setProducts(productsData);
+          }
+        }
 
-      // Charger les catégories depuis l'API
-      const categoriesRes = await fetch('/api/categories');
-      if (categoriesRes.ok) {
-        const categoriesData = await categoriesRes.json();
-        setCategories(categoriesData);
+        const categoriesRes = await fetch('/api/categories');
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          if (categoriesData && categoriesData.length > 0) {
+            setCategories(categoriesData);
+          }
+        }
+      } catch (apiError) {
+        console.log('Using static products data');
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      // Fallback vers les produits statiques si l'API échoue
-      const { products: fallbackProducts } = await import('@/lib/products');
-      setProducts(fallbackProducts.map(p => ({ ...p, _id: p.id, quantity: 50, available: true })));
     } finally {
       setLoading(false);
     }
@@ -77,7 +86,7 @@ export default function ModernShop() {
 
   const filteredProducts = selectedCategory === 'all' 
     ? products 
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter(p => p.category && p.category.toLowerCase() === selectedCategory.toLowerCase());
 
   const addToCart = (product: any) => {
     setCart(prev => {
@@ -192,13 +201,13 @@ export default function ModernShop() {
               NOS CATÉGORIES
             </h2>
             <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-              {categories.length > 0 ? (
+              {categories && categories.length > 0 ? (
                 categories.map((category: any) => (
                   <motion.button
-                    key={category._id || category.name}
-                    onClick={() => setSelectedCategory(category.name)}
+                    key={category.id || category.value}
+                    onClick={() => setSelectedCategory(category.value)}
                     className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
-                      selectedCategory === category.name
+                      selectedCategory === category.value
                         ? 'bg-white text-black border-white'
                         : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
                     }`}
@@ -210,12 +219,12 @@ export default function ModernShop() {
                 ))
               ) : (
                 <>
-                  {['all', 'electronique', 'mode', 'maison'].map((category) => (
+                  {['all', 'Smartphones', 'Audio', 'Gaming'].map((category) => (
                     <motion.button
                       key={category}
-                      onClick={() => setSelectedCategory(category as any)}
+                      onClick={() => setSelectedCategory(category === 'all' ? 'all' : category.toLowerCase())}
                       className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
-                        selectedCategory === category
+                        selectedCategory === (category === 'all' ? 'all' : category.toLowerCase())
                           ? 'bg-white text-black border-white'
                           : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
                       }`}
