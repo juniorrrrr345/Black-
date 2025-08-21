@@ -159,16 +159,16 @@ export default function ModernShop() {
                 {/* Cart Button */}
                 <motion.button
                   onClick={() => setShowCart(true)}
-                  className="relative bg-white text-black border-2 border-white rounded-lg px-4 py-2 md:px-6 md:py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all font-bold shadow-lg"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <ShoppingBag size={20} />
-                  <span className="hidden md:inline text-sm font-bold">PANIER</span>
+                  <span className="text-sm md:text-base font-bold">Voir le panier</span>
                   {getTotalItems() > 0 && (
-                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                    <span className="bg-white text-green-600 text-sm rounded-full min-w-[24px] h-6 px-2 flex items-center justify-center font-bold ml-2">
                       {getTotalItems()}
-                    </div>
+                    </span>
                   )}
                 </motion.button>
               </div>
@@ -284,23 +284,7 @@ export default function ModernShop() {
                       )}
                     </div>
 
-                    {/* Add to Cart Button - Top Right */}
-                    <motion.button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCart(product);
-                        // Animation de feedback
-                        const button = e.currentTarget;
-                        button.classList.add('animate-bounce');
-                        setTimeout(() => button.classList.remove('animate-bounce'), 500);
-                      }}
-                      className="absolute top-2 right-2 bg-white text-black p-3 rounded-full shadow-xl hover:bg-green-500 hover:text-white transition-all group z-10 hover:shadow-green-500/50"
-                      whileHover={{ scale: 1.15, rotate: 5 }}
-                      whileTap={{ scale: 0.9 }}
-                      title="Ajouter au panier"
-                    >
-                      <ShoppingBag size={28} className="group-hover:scale-110 transition-transform" />
-                    </motion.button>
+
 
 
 
@@ -335,19 +319,31 @@ export default function ModernShop() {
                       </div>
                     )}
 
-                    {/* Action - Voir détails seulement */}
-                    <motion.button
-                      onClick={() => {
-                        const productId = product.id || product._id;
-                        router.push(`/products/${productId}`);
-                      }}
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Eye size={16} />
-                      <span>VOIR DÉTAILS</span>
-                    </motion.button>
+                    {/* Actions - Voir détails et Ajouter au panier */}
+                    <div className="space-y-2">
+                      <motion.button
+                        onClick={() => {
+                          const productId = product.id || product._id;
+                          router.push(`/products/${productId}`);
+                        }}
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Eye size={14} />
+                        <span>VOIR DÉTAILS</span>
+                      </motion.button>
+                      
+                      <motion.button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 rounded-lg font-bold text-xs sm:text-sm hover:from-green-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-2"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <ShoppingBag size={14} />
+                        <span>AJOUTER AU PANIER</span>
+                      </motion.button>
+                    </div>
                   </div>
                 </motion.div>
               ))}

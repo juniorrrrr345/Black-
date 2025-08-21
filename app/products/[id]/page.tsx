@@ -185,13 +185,14 @@ export default function ProductPage() {
 
               <motion.button
                 onClick={() => setShowCart(true)}
-                className="relative bg-gradient-to-r from-green-500 to-emerald-600 text-white p-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-xl"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-xl"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <ShoppingCart size={30} className="drop-shadow-lg" />
+                <ShoppingCart size={24} />
+                <span className="font-bold">Voir le panier</span>
                 {getTotalItems() > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-base rounded-full min-w-[28px] h-7 px-2 flex items-center justify-center font-bold shadow-xl animate-pulse">
+                  <span className="bg-white text-green-600 text-sm rounded-full min-w-[24px] h-6 px-2 flex items-center justify-center font-bold">
                     {getTotalItems()}
                   </span>
                 )}
