@@ -47,10 +47,10 @@ export async function DELETE(
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     
     // D'abord essayer de charger depuis les produits statiques
     const { products } = await import('@/lib/products');
