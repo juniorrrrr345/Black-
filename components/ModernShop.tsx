@@ -197,45 +197,92 @@ export default function ModernShop() {
         {/* Categories - Directement après l'image */}
         <section className="px-4 md:px-6 lg:px-8 py-8 md:py-10">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-black text-white text-center mb-6">
+            <h2 className="text-2xl md:text-3xl font-black text-white text-center mb-8">
               NOS CATÉGORIES
             </h2>
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-              {categories && categories.length > 0 ? (
-                categories.map((category: any) => (
+            <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+              {/* Catégories principales WEED et HASH */}
+              <motion.button
+                onClick={() => setSelectedCategory('all')}
+                className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
+                  selectedCategory === 'all'
+                    ? 'text-black'
+                    : 'text-white hover:text-black'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Fond avec bordure arrondie */}
+                <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
+                  selectedCategory === 'all'
+                    ? 'bg-white border-white'
+                    : 'bg-black/50 border-white hover:bg-white'
+                }`}></div>
+                <span className="relative z-10">TOUT</span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => setSelectedCategory('weed')}
+                className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
+                  selectedCategory === 'weed'
+                    ? 'text-black'
+                    : 'text-white hover:text-black'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Fond avec bordure arrondie */}
+                <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
+                  selectedCategory === 'weed'
+                    ? 'bg-green-500 border-green-500'
+                    : 'bg-black/50 border-green-500 hover:bg-green-500'
+                }`}></div>
+                <span className="relative z-10">🌿 WEED</span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => setSelectedCategory('hash')}
+                className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
+                  selectedCategory === 'hash'
+                    ? 'text-black'
+                    : 'text-white hover:text-black'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Fond avec bordure arrondie */}
+                <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
+                  selectedCategory === 'hash'
+                    ? 'bg-amber-600 border-amber-600'
+                    : 'bg-black/50 border-amber-600 hover:bg-amber-600'
+                }`}></div>
+                <span className="relative z-10">🟫 HASH</span>
+              </motion.button>
+
+              {/* Autres catégories si nécessaire */}
+              {categories && categories.length > 0 && categories
+                .filter((cat: any) => !['all', 'weed', 'hash'].includes(cat.value))
+                .map((category: any) => (
                   <motion.button
                     key={category.id || category.value}
                     onClick={() => setSelectedCategory(category.value)}
-                    className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
+                    className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
                       selectedCategory === category.value
-                        ? 'bg-white text-black border-white'
-                        : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
+                        ? 'text-black'
+                        : 'text-white hover:text-black'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {category.name.toUpperCase()}
+                    <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
+                      selectedCategory === category.value
+                        ? 'bg-white border-white'
+                        : 'bg-black/50 border-white hover:bg-white'
+                    }`}></div>
+                    <span className="relative z-10">{category.name.toUpperCase()}</span>
                   </motion.button>
                 ))
-              ) : (
-                <>
-                  {['all', 'Smartphones', 'Audio', 'Gaming'].map((category) => (
-                    <motion.button
-                      key={category}
-                      onClick={() => setSelectedCategory(category === 'all' ? 'all' : category.toLowerCase())}
-                      className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
-                        selectedCategory === (category === 'all' ? 'all' : category.toLowerCase())
-                          ? 'bg-white text-black border-white'
-                          : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {category === 'all' ? 'TOUT' : category.toUpperCase()}
-                    </motion.button>
-                  ))}
-                </>
-              )}
+              }
             </div>
           </div>
         </section>
