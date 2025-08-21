@@ -211,20 +211,22 @@ export default function ModernShop() {
             >
               <div className="relative h-full flex flex-col justify-center items-center text-center p-6">
                 <div className="text-6xl font-black text-white mb-4">NEW</div>
-                <div className="bg-black/80 px-6 py-3 rounded-full flex items-center space-x-2">
-                  <span className="text-2xl">🇨🇦</span>
-                  <span className="text-white font-bold text-lg">RESTOCK CANADIENNE</span>
-                  <span className="text-2xl">🇨🇦</span>
+                <div className="bg-black/80 px-6 py-3 rounded-2xl border-2 border-white">
+                  <span className="text-white font-black text-xl text-center block">
+                    {settings.bannerText || 'NOUVEAU DROP'}
+                  </span>
                 </div>
                 
-                {/* Image de produit au centre */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                  <img 
-                    src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=400" 
-                    alt="Product"
-                    className="w-64 h-64 object-cover rounded-full"
-                  />
-                </div>
+                {/* Image de bannière configurable */}
+                {settings.bannerImage && (
+                  <div className="absolute inset-0 opacity-30">
+                    <img 
+                      src={settings.bannerImage}
+                      alt="Banner"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -333,10 +335,10 @@ export default function ModernShop() {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => addToCart(product)}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 rounded-full text-white font-bold text-sm hover:shadow-lg transition-all"
+                      onClick={() => router.push(`/products/${product._id}`)}
+                      className="bg-white text-black px-6 py-2 rounded-lg font-black text-sm hover:bg-gray-200 transition-all"
                     >
-                      {product.price}€
+                      VOIR DÉTAILS
                     </motion.button>
                   </div>
                 </div>
