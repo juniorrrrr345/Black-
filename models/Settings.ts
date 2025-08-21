@@ -6,6 +6,11 @@ export interface ISettings {
   bannerImage: string;
   bannerText: string;
   orderLink: string;
+  backgroundType: 'color' | 'image' | 'gradient';
+  backgroundColor: string;
+  backgroundImage: string;
+  gradientFrom: string;
+  gradientTo: string;
   socialLinks: {
     instagram?: string;
     facebook?: string;
@@ -32,6 +37,27 @@ const SettingsSchema = new mongoose.Schema({
     type: String,
     default: '',
     description: 'Lien pour envoyer les commandes (Telegram, WhatsApp, etc.)'
+  },
+  backgroundType: {
+    type: String,
+    enum: ['color', 'image', 'gradient'],
+    default: 'color'
+  },
+  backgroundColor: {
+    type: String,
+    default: 'black'
+  },
+  backgroundImage: {
+    type: String,
+    default: ''
+  },
+  gradientFrom: {
+    type: String,
+    default: '#000000'
+  },
+  gradientTo: {
+    type: String,
+    default: '#111111'
   },
   socialLinks: {
     instagram: { type: String, default: '' },

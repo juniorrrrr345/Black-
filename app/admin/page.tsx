@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, User, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
@@ -41,73 +42,136 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-black flex items-center justify-center px-4">
-      <div className="bg-gray-900/80 backdrop-blur rounded-2xl p-8 w-full max-w-md border border-purple-500/20">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-purple-600 rounded-full mb-4">
-            <Lock size={32} className="text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Admin Access</h1>
-          <p className="text-gray-400">Connectez-vous pour gérer la boutique</p>
+    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-white/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-56 md:h-56 lg:w-72 lg:h-72 bg-white/5 rounded-full blur-3xl"></div>
+      </div>
+
+      <motion.div 
+        className="relative bg-black border-4 border-white rounded-2xl p-6 sm:p-8 lg:p-12 w-full max-w-sm sm:max-w-md lg:max-w-lg"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Header */}
+        <div className="text-center mb-8 lg:mb-12">
+          <motion.div 
+            className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-full mb-4 lg:mb-6"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+          >
+            <Lock size={32} className="text-black sm:w-8 sm:h-8 lg:w-10 lg:h-10" />
+          </motion.div>
+          
+          <motion.h1 
+            className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-2 lg:mb-4 tracking-wider"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            VERSHASH ADMIN
+          </motion.h1>
+          
+          <motion.p 
+            className="text-gray-400 text-sm sm:text-base lg:text-lg font-bold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            Connectez-vous pour gérer la boutique
+          </motion.p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <motion.form 
+          onSubmit={handleSubmit} 
+          className="space-y-6 lg:space-y-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {/* Username Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Nom d'utilisateur
+            <label className="block text-sm sm:text-base lg:text-lg font-black text-white mb-2 lg:mb-3">
+              NOM D'UTILISATEUR
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+              <User className="absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-gray-800/50 text-white pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                className="w-full bg-white text-black pl-10 lg:pl-12 pr-4 py-3 lg:py-4 rounded-lg border-2 border-black font-bold text-sm sm:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-white"
                 placeholder="admin"
                 required
               />
             </div>
           </div>
 
+          {/* Password Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Mot de passe
+            <label className="block text-sm sm:text-base lg:text-lg font-black text-white mb-2 lg:mb-3">
+              MOT DE PASSE
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+              <Lock className="absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-800/50 text-white pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                className="w-full bg-white text-black pl-10 lg:pl-12 pr-4 py-3 lg:py-4 rounded-lg border-2 border-black font-bold text-sm sm:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-white"
                 placeholder="••••••••"
                 required
               />
             </div>
           </div>
 
+          {/* Error Message */}
           {error && (
-            <div className="flex items-center gap-2 text-red-400 bg-red-900/20 p-3 rounded-lg">
+            <motion.div 
+              className="flex items-center gap-2 text-white bg-red-600 p-3 lg:p-4 rounded-lg border-2 border-white"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
               <AlertCircle size={20} />
-              <span className="text-sm">{error}</span>
-            </div>
+              <span className="text-sm sm:text-base font-bold">{error}</span>
+            </motion.div>
           )}
 
-          <button
+          {/* Submit Button */}
+          <motion.button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-white text-black font-black py-3 lg:py-4 rounded-lg text-sm sm:text-base lg:text-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white"
+            whileHover={!loading ? { scale: 1.02 } : {}}
+            whileTap={!loading ? { scale: 0.98 } : {}}
           >
-            {loading ? 'Connexion...' : 'Se connecter'}
-          </button>
-        </form>
+            {loading ? 'CONNEXION...' : 'SE CONNECTER'}
+          </motion.button>
+        </motion.form>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-500 text-sm">
-            Username: admin | Password: vershash2024
-          </p>
-        </div>
-      </div>
+        {/* Credentials Info */}
+        <motion.div 
+          className="mt-6 lg:mt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <div className="bg-white/10 rounded-lg p-3 lg:p-4 border-2 border-white/20">
+            <p className="text-gray-300 text-xs sm:text-sm lg:text-base font-bold">
+              🔑 IDENTIFIANTS DE TEST
+            </p>
+            <p className="text-white text-xs sm:text-sm lg:text-base font-black mt-2">
+              Username: <span className="text-gray-300">admin</span>
+            </p>
+            <p className="text-white text-xs sm:text-sm lg:text-base font-black">
+              Password: <span className="text-gray-300">vershash2024</span>
+            </p>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

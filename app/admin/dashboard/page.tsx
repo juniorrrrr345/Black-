@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import CloudinaryVideoUpload from '@/components/CloudinaryVideoUpload';
+import { useStore } from '@/lib/store';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({ shopName: 'VERSHASH', bannerText: 'NOUVEAU DROP', bannerImage: '', orderLink: '' });
   const [isLoading, setIsLoading] = useState(true);
+  const { themeSettings, updateThemeSettings, loadThemeSettings } = useStore();
   
   // Modal states
   const [showProductModal, setShowProductModal] = useState(false);
@@ -38,6 +40,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     checkAuth();
     fetchData();
+    loadThemeSettings();
   }, []);
 
   const checkAuth = () => {
@@ -68,6 +71,18 @@ export default function AdminDashboard() {
       if (settingsRes.ok) {
         const settingsData = await settingsRes.json();
         setSettings(settingsData);
+        // Synchroniser avec le store
+        updateThemeSettings({
+          backgroundType: settingsData.backgroundType || 'color',
+          backgroundColor: settingsData.backgroundColor || 'black',
+          backgroundImage: settingsData.backgroundImage || '',
+          gradientFrom: settingsData.gradientFrom || '#000000',
+          gradientTo: settingsData.gradientTo || '#111111',
+          shopName: settingsData.shopName || 'VERSHASH',
+          bannerText: settingsData.bannerText || 'NOUVEAU DROP',
+          bannerImage: settingsData.bannerImage || '',
+          orderLink: settingsData.orderLink || ''
+        });
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -89,10 +104,22 @@ export default function AdminDashboard() {
         body: JSON.stringify(settings),
       });
       if (res.ok) {
-        alert('Paramètres sauvegardés !');
+        // Synchroniser avec le store
+        await updateThemeSettings({
+          backgroundType: settings.backgroundType || 'color',
+          backgroundColor: settings.backgroundColor || 'black',
+          backgroundImage: settings.backgroundImage || '',
+          gradientFrom: settings.gradientFrom || '#000000',
+          gradientTo: settings.gradientTo || '#111111',
+          shopName: settings.shopName || 'VERSHASH',
+          bannerText: settings.bannerText || 'NOUVEAU DROP',
+          bannerImage: settings.bannerImage || '',
+          orderLink: settings.orderLink || ''
+        });
+        alert('✅ Paramètres sauvegardés avec succès !');
       }
     } catch (error) {
-      alert('Erreur lors de la sauvegarde');
+      alert('❌ Erreur lors de la sauvegarde');
     }
   };
 
@@ -124,83 +151,105 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Header */}
+      {/* Header - Responsive */}
       <header className="bg-gray-900 border-b border-gray-800">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Admin Dashboard
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            VERSHASH ADMIN DASHBOARD
           </h1>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg transition-colors font-black text-sm md:text-base lg:text-lg"
           >
-            <LogOut size={20} />
-            Déconnexion
+            <LogOut size={16} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            DÉCONNEXION
           </button>
         </div>
       </header>
 
-      {/* Tabs */}
-      <div className="bg-gray-900 border-b border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-4">
+      {/* Tabs - Responsive */}
+      <div className="bg-gray-900 border-b border-gray-800 overflow-x-auto">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="flex gap-2 md:gap-4 min-w-max">
             <button
               onClick={() => setActiveTab('products')}
-              className={`py-3 px-6 font-medium transition-colors ${
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
                 activeTab === 'products'
-                  ? 'text-purple-400 border-b-2 border-purple-400'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Package className="inline mr-2" size={20} />
-              Produits
+              <Package className="inline mr-2" size={16} />
+              PRODUITS
             </button>
             <button
               onClick={() => setActiveTab('categories')}
-              className={`py-3 px-6 font-medium transition-colors ${
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
                 activeTab === 'categories'
-                  ? 'text-purple-400 border-b-2 border-purple-400'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Tag className="inline mr-2" size={20} />
-              Catégories
+              <Tag className="inline mr-2" size={16} />
+              CATÉGORIES
             </button>
             <button
               onClick={() => setActiveTab('settings')}
-              className={`py-3 px-6 font-medium transition-colors ${
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
                 activeTab === 'settings'
-                  ? 'text-purple-400 border-b-2 border-purple-400'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Settings className="inline mr-2" size={20} />
-              Paramètres
+              <Settings className="inline mr-2" size={16} />
+              PARAMÈTRES
             </button>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 py-8">
+      {/* Content - Responsive */}
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
         {/* Products Tab */}
         {activeTab === 'products' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Gestion des Produits</h2>
-              <button
-                onClick={() => {
-                  setEditingProduct(null);
-                  setShowProductModal(true);
-                }}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors"
-              >
-                <Plus size={20} />
-                Ajouter un produit
-              </button>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 lg:mb-12 gap-4">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white">📦 GESTION DES PRODUITS</h2>
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/populate', { method: 'POST' });
+                      const result = await response.json();
+                      if (result.success) {
+                        alert(`✅ Base peuplée!\n📦 ${result.results.products.created} produits créés\n📁 ${result.results.categories.created} catégories créées`);
+                        fetchData();
+                      } else {
+                        alert('❌ Erreur: ' + result.error);
+                      }
+                    } catch (error) {
+                      alert('❌ Erreur de connexion');
+                    }
+                  }}
+                  className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 rounded-lg transition-colors font-black text-xs md:text-sm lg:text-base border-2 border-green-400"
+                >
+                  <Package size={14} className="md:w-4 md:h-4 lg:w-5 lg:h-5" />
+                  PEUPLER DB
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setShowProductModal(true);
+                  }}
+                  className="flex items-center gap-2 bg-white text-black hover:bg-gray-200 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg transition-colors font-black text-sm md:text-base lg:text-lg border-2 border-white"
+                >
+                  <Plus size={16} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+                  AJOUTER UN PRODUIT
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {products.map((product) => (
                 <div key={product._id} className="bg-black border-4 border-white rounded-2xl p-6">
                   <div className="aspect-square bg-white rounded-2xl mb-4 overflow-hidden border-2 border-black">
@@ -340,77 +389,136 @@ export default function AdminDashboard() {
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="max-w-4xl">
-            <h2 className="text-3xl font-black text-white mb-8 border-b-2 border-white pb-4">
+          <div className="max-w-7xl">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-6 md:mb-8 lg:mb-12 border-b-2 border-white pb-4">
               ⚙️ CONFIGURATION DE LA BOUTIQUE
             </h2>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
               {/* Informations générales */}
-              <div className="bg-black border-4 border-white rounded-2xl p-8">
-                <h3 className="text-2xl font-black text-white mb-6">🏪 INFORMATIONS GÉNÉRALES</h3>
+              <div className="bg-black border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8">
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4 md:mb-6">🏪 INFORMATIONS GÉNÉRALES</h3>
                 
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   <div>
-                    <label className="block text-white font-black text-sm mb-3">NOM DE LA BOUTIQUE</label>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">NOM DE LA BOUTIQUE</label>
                     <input
                       type="text"
                       value={settings.shopName}
                       onChange={(e) => setSettings({ ...settings, shopName: e.target.value })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                       placeholder="Ex: VERSHASH"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-white font-black text-sm mb-3">COULEUR D'ARRIÈRE-PLAN</label>
-                    <select
-                      value={settings.backgroundColor || 'black'}
-                      onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                    >
-                      <option value="black">⚫ Noir</option>
-                      <option value="gradient-purple">🟣 Dégradé Violet</option>
-                      <option value="gradient-blue">🔵 Dégradé Bleu</option>
-                      <option value="gradient-green">🟢 Dégradé Vert</option>
-                      <option value="dark-gray">⚫ Gris Foncé</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-white font-black text-sm mb-3">🔗 LIEN DE COMMANDE</label>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🔗 LIEN DE COMMANDE</label>
                     <input
                       type="text"
                       value={settings.orderLink || ''}
                       onChange={(e) => setSettings({ ...settings, orderLink: e.target.value })}
                       placeholder="https://t.me/votre_bot?text={message}"
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />
-                    <p className="text-gray-300 text-xs mt-2 bg-white/10 rounded-lg p-3">
+                    <p className="text-gray-300 text-xs md:text-sm mt-2 bg-white/10 rounded-lg p-2 md:p-3">
                       💡 Utilisez <span className="font-bold text-white">{'{message}'}</span> pour insérer automatiquement le message de commande
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Bannière */}
-              <div className="bg-black border-4 border-white rounded-2xl p-8">
-                <h3 className="text-2xl font-black text-white mb-6">🖼️ BANNIÈRE D'ACCUEIL</h3>
+              {/* Gestion du Thème */}
+              <div className="bg-black border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8">
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4 md:mb-6">🎨 THÈME DE LA BOUTIQUE</h3>
                 
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   <div>
-                    <label className="block text-white font-black text-sm mb-3">TEXTE DE LA BANNIÈRE</label>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">TYPE DE FOND</label>
+                    <select
+                      value={settings.backgroundType || 'color'}
+                      onChange={(e) => setSettings({ ...settings, backgroundType: e.target.value })}
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
+                    >
+                      <option value="color">🎨 Couleur Unie</option>
+                      <option value="gradient">🌈 Dégradé</option>
+                      <option value="image">🖼️ Image Personnalisée</option>
+                    </select>
+                  </div>
+
+                  {settings.backgroundType === 'color' && (
+                    <div>
+                      <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">COULEUR D'ARRIÈRE-PLAN</label>
+                      <select
+                        value={settings.backgroundColor || 'black'}
+                        onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                        className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
+                      >
+                        <option value="black">⚫ Noir</option>
+                        <option value="#1a1a1a">⚫ Gris Très Foncé</option>
+                        <option value="#2d1b69">🟣 Violet Foncé</option>
+                        <option value="#1e3a8a">🔵 Bleu Foncé</option>
+                        <option value="#064e3b">🟢 Vert Foncé</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {settings.backgroundType === 'gradient' && (
+                    <div className="grid grid-cols-2 gap-3 md:gap-4">
+                      <div>
+                        <label className="block text-white font-black text-sm md:text-base mb-2">COULEUR 1</label>
+                        <input
+                          type="color"
+                          value={settings.gradientFrom || '#000000'}
+                          onChange={(e) => setSettings({ ...settings, gradientFrom: e.target.value })}
+                          className="w-full h-10 md:h-12 lg:h-14 rounded-lg border-2 border-white cursor-pointer"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-white font-black text-sm md:text-base mb-2">COULEUR 2</label>
+                        <input
+                          type="color"
+                          value={settings.gradientTo || '#111111'}
+                          onChange={(e) => setSettings({ ...settings, gradientTo: e.target.value })}
+                          className="w-full h-10 md:h-12 lg:h-14 rounded-lg border-2 border-white cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {settings.backgroundType === 'image' && (
+                    <div>
+                      <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">IMAGE DE FOND</label>
+                      <CloudinaryUpload
+                        currentImage={settings.backgroundImage}
+                        onUpload={(url) => setSettings({ ...settings, backgroundImage: url })}
+                        onRemove={() => setSettings({ ...settings, backgroundImage: '' })}
+                      />
+                      <p className="text-gray-300 text-xs md:text-sm mt-2 bg-white/10 rounded-lg p-2 md:p-3">
+                        💡 Cette image sera utilisée comme fond de toute la boutique
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bannière */}
+              <div className="bg-black border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8">
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4 md:mb-6">🖼️ BANNIÈRE D'ACCUEIL</h3>
+                
+                <div className="space-y-4 md:space-y-6">
+                  <div>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">TEXTE DE LA BANNIÈRE</label>
                     <input
                       type="text"
                       value={settings.bannerText}
                       onChange={(e) => setSettings({ ...settings, bannerText: e.target.value })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                       placeholder="Ex: NOUVEAU DROP"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-white font-black text-sm mb-3">IMAGE DE LA BANNIÈRE</label>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">IMAGE DE LA BANNIÈRE</label>
                     <CloudinaryUpload
                       currentImage={settings.bannerImage}
                       onUpload={(url) => setSettings({ ...settings, bannerImage: url })}
@@ -421,8 +529,8 @@ export default function AdminDashboard() {
                   {/* Aperçu de la bannière */}
                   {(settings.bannerText || settings.bannerImage) && (
                     <div>
-                      <label className="block text-white font-black text-sm mb-3">APERÇU</label>
-                      <div className="relative h-32 bg-white rounded-2xl overflow-hidden border-4 border-black">
+                      <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">APERÇU</label>
+                      <div className="relative h-24 md:h-32 lg:h-40 bg-white rounded-2xl overflow-hidden border-4 border-black">
                         {settings.bannerImage && (
                           <img 
                             src={settings.bannerImage} 
@@ -431,8 +539,8 @@ export default function AdminDashboard() {
                           />
                         )}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="bg-black/80 px-6 py-3 rounded-2xl">
-                            <span className="text-white font-black text-xl">
+                          <div className="bg-black/80 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-2xl">
+                            <span className="text-white font-black text-sm md:text-base lg:text-xl">
                               {settings.bannerText || 'NOUVEAU DROP'}
                             </span>
                           </div>
@@ -444,21 +552,21 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="mt-8 flex gap-4">
+            {/* Actions - Responsive */}
+            <div className="mt-6 md:mt-8 lg:mt-12 flex flex-col md:flex-row gap-4">
               <button
                 onClick={handleSaveSettings}
-                className="flex-1 bg-white text-black py-4 rounded-lg font-black text-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-3"
+                className="flex-1 bg-white text-black py-3 md:py-4 lg:py-6 rounded-lg font-black text-lg md:text-xl lg:text-2xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 md:gap-3"
               >
-                <Save size={28} />
+                <Save size={24} className="md:w-7 md:h-7 lg:w-8 lg:h-8" />
                 SAUVEGARDER LES PARAMÈTRES
               </button>
               
               <button
                 onClick={() => window.open('/', '_blank')}
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg font-black hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="bg-blue-600 text-white px-6 py-3 md:px-8 md:py-4 lg:px-12 lg:py-6 rounded-lg font-black text-lg md:text-xl lg:text-2xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 md:gap-3"
               >
-                <Eye size={24} />
+                <Eye size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
                 PRÉVISUALISER
               </button>
             </div>

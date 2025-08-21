@@ -11,7 +11,13 @@ export async function GET() {
       settings = await Settings.create({
         shopName: 'VERSHASH',
         bannerText: 'NOUVEAU DROP',
-        bannerImage: ''
+        bannerImage: '',
+        backgroundType: 'color',
+        backgroundColor: 'black',
+        backgroundImage: '',
+        gradientFrom: '#000000',
+        gradientTo: '#111111',
+        orderLink: ''
       });
     }
     

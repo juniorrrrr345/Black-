@@ -121,7 +121,7 @@ export const useStore = create<StoreState>((set, get) => ({
     set({ isAuthenticated: value });
   },
 
-  updateThemeSettings: (newSettings) => {
+  updateThemeSettings: async (newSettings) => {
     set((state) => ({
       themeSettings: { ...state.themeSettings, ...newSettings }
     }));
@@ -129,6 +129,17 @@ export const useStore = create<StoreState>((set, get) => ({
     // Sauvegarder dans localStorage
     const updatedSettings = { ...get().themeSettings, ...newSettings };
     localStorage.setItem('theme-settings', JSON.stringify(updatedSettings));
+    
+    // Sauvegarder aussi via l'API
+    try {
+      await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedSettings)
+      });
+    } catch (error) {
+      console.error('Error saving theme settings to API:', error);
+    }
   },
 
   loadThemeSettings: async () => {

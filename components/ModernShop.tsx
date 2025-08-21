@@ -9,84 +9,8 @@ import {
   ChevronLeft, ChevronDown
 } from 'lucide-react';
 
-import { products } from '@/lib/products';
 import { useRouter } from 'next/navigation';
-
-// Produits d'exemple avec style VERSHASH
-const sampleProducts = [
-  {
-    _id: '1',
-    name: 'Cali Spain',
-    category: 'WEED',
-    type: 'weed',
-    price: 45,
-    image: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=400',
-    badge: 'BON RAPPORT QUALITÉ',
-    badgeColor: 'bg-red-600',
-    flag: '🇪🇸',
-    description: 'Qualité premium d\'Espagne'
-  },
-  {
-    _id: '2',
-    name: 'Lemon Cherry Gelato',
-    category: 'WEED',
-    type: 'weed',
-    price: 55,
-    image: 'https://images.unsplash.com/photo-1598662957563-ee4965d4d72c?w=400',
-    badge: 'DE LA FRAPPE',
-    badgeColor: 'bg-green-500',
-    flag: '🇨🇦',
-    description: 'Saveurs citron-cerise exceptionnelles'
-  },
-  {
-    _id: '3',
-    name: 'Purple Haze',
-    category: 'WEED',
-    type: 'weed',
-    price: 50,
-    image: 'https://images.unsplash.com/photo-1587049352846-4a222e784efd?w=400',
-    badge: 'PREMIUM',
-    badgeColor: 'bg-purple-600',
-    flag: '🇳🇱',
-    description: 'Classique hollandais'
-  },
-  {
-    _id: '4',
-    name: 'Afghan Hash',
-    category: 'HASH',
-    type: 'hash',
-    price: 48,
-    image: 'https://images.unsplash.com/photo-1536819114556-1e10f967fb61?w=400',
-    badge: 'TRADITIONNEL',
-    badgeColor: 'bg-amber-600',
-    flag: '🇦🇫',
-    description: 'Hash traditionnel afghan'
-  },
-  {
-    _id: '5',
-    name: 'Moroccan Gold',
-    category: 'HASH',
-    type: 'hash',
-    price: 60,
-    image: 'https://images.unsplash.com/photo-1520209268518-aec60b8bb5ca?w=400',
-    badge: 'GOLD QUALITY',
-    badgeColor: 'bg-yellow-600',
-    flag: '🇲🇦',
-    description: 'Hash doré du Maroc'
-  },
-  {
-    _id: '6',
-    name: 'Bubble Hash',
-    category: 'HASH',
-    type: 'hash',
-    price: 52,
-    image: 'https://images.unsplash.com/photo-1503262028195-93c528f03218?w=400',
-    badge: 'BUBBLE',
-    badgeColor: 'bg-blue-600',
-    flag: '🇨🇦',
-    description: 'Hash bubble premium'
-  }
-];
+import { useStore } from '@/lib/store';
 
 export default function ModernShop() {
   const router = useRouter();
@@ -94,426 +18,442 @@ export default function ModernShop() {
   const [showCart, setShowCart] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [settings, setSettings] = useState<any>({
-    shopName: 'VERSHASH',
-    bannerText: 'NOUVEAU DROP',
-    bannerImage: '',
-    backgroundColor: 'black'
-  });
+  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { themeSettings, loadThemeSettings } = useStore();
 
-  // Chargement des paramètres
   useEffect(() => {
-    fetchSettings();
+    loadData();
+    loadThemeSettings();
   }, []);
 
-  const fetchSettings = async () => {
+  const loadData = async () => {
     try {
-      const response = await fetch('/api/settings');
-      if (response.ok) {
-        const data = await response.json();
-        setSettings((prev: any) => ({ ...prev, ...data }));
+      setLoading(true);
+      
+      // Charger les produits depuis l'API
+      const productsRes = await fetch('/api/products');
+      if (productsRes.ok) {
+        const productsData = await productsRes.json();
+        setProducts(productsData);
+      }
+
+      // Charger les catégories depuis l'API
+      const categoriesRes = await fetch('/api/categories');
+      if (categoriesRes.ok) {
+        const categoriesData = await categoriesRes.json();
+        setCategories(categoriesData);
       }
     } catch (error) {
-      console.error('Erreur chargement settings:', error);
+      console.error('Error loading data:', error);
+      // Fallback vers les produits statiques si l'API échoue
+      const { products: fallbackProducts } = await import('@/lib/products');
+      setProducts(fallbackProducts.map(p => ({ ...p, _id: p.id, quantity: 50, available: true })));
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Carrousel automatique
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 2);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const addToCart = (product: any) => {
-    const existing = cart.find(item => item._id === product._id);
-    if (existing) {
-      setCart(cart.map(item => 
-        item._id === product._id 
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
+  const getBackgroundStyle = () => {
+    const { backgroundType, backgroundColor, backgroundImage, gradientFrom, gradientTo } = themeSettings;
+    
+    switch (backgroundType) {
+      case 'image':
+        return backgroundImage ? {
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        } : { backgroundColor: 'black' };
+      case 'gradient':
+        return {
+          background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
+        };
+      default:
+        return { backgroundColor };
     }
-    setShowCart(true);
-    setTimeout(() => setShowCart(false), 2000);
-  };
-
-  const updateQuantity = (id: string, delta: number) => {
-    setCart(cart.map(item => {
-      if (item._id === id) {
-        const newQty = item.quantity + delta;
-        return newQty > 0 ? { ...item, quantity: newQty } : null;
-      }
-      return item;
-    }).filter(Boolean));
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart(cart.filter(item => item._id !== id));
-  };
-
-  const getTotalPrice = () => {
-    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  };
-
-  const getTotalItems = () => {
-    return cart.reduce((sum, item) => sum + item.quantity, 0);
   };
 
   const filteredProducts = selectedCategory === 'all' 
-    ? sampleProducts 
-    : sampleProducts.filter(product => product.type === selectedCategory);
+    ? products 
+    : products.filter(p => p.category === selectedCategory);
 
-  const getBackgroundClass = () => {
-    switch (settings.backgroundColor) {
-      case 'gradient-purple':
-        return 'bg-gradient-to-br from-purple-900 via-purple-800 to-black';
-      case 'gradient-blue':
-        return 'bg-gradient-to-br from-blue-900 via-blue-800 to-black';
-      case 'gradient-green':
-        return 'bg-gradient-to-br from-green-900 via-green-800 to-black';
-      case 'dark-gray':
-        return 'bg-gradient-to-br from-gray-900 via-gray-800 to-black';
-      default:
-        return 'bg-black';
-    }
+  const addToCart = (product: any) => {
+    setCart(prev => {
+      const existing = prev.find(item => item._id === product._id);
+      if (existing) {
+        return prev.map(item => 
+          item._id === product._id 
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Interface Mobile VERSHASH */}
-      <div className={`max-w-lg mx-auto min-h-screen relative overflow-hidden ${getBackgroundClass()}`}>
-        
-        {/* Header with dynamic shop name */}
-        <div className="text-center py-8 relative z-10 border-b-4 border-white">
-          <motion.h1 
-            className="text-4xl md:text-5xl font-black text-white tracking-wider px-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            {settings.shopName || 'VERSHASH'}
-          </motion.h1>
-        </div>
+  const removeFromCart = (productId: string) => {
+    setCart(prev => prev.filter(item => item._id !== productId));
+  };
 
-        {/* Carrousel Hero */}
-        <div className="relative h-80 mx-4 mb-6 rounded-3xl overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlide}
-              initial={{ opacity: 0, x: 300 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -300 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-800 rounded-3xl"
-            >
-              <div className="relative h-full flex flex-col justify-center items-center text-center p-6">
-                <div className="text-6xl font-black text-white mb-4">NEW</div>
-                <div className="bg-black/80 px-6 py-3 rounded-2xl border-2 border-white">
-                  <span className="text-white font-black text-xl text-center block">
-                    {settings.bannerText || 'NOUVEAU DROP'}
-                  </span>
-                </div>
-                
-                {/* Image de bannière configurable */}
-                {settings.bannerImage && (
-                  <div className="absolute inset-0 opacity-30">
-                    <img 
-                      src={settings.bannerImage}
-                      alt="Banner"
-                      className="w-full h-full object-cover"
-                    />
+  const updateQuantity = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    setCart(prev => prev.map(item => 
+      item._id === productId ? { ...item, quantity } : item
+    ));
+  };
+
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl font-bold">Chargement...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="min-h-screen text-white relative overflow-hidden"
+      style={getBackgroundStyle()}
+    >
+      {/* Overlay pour assurer la lisibilité */}
+      {themeSettings.backgroundType === 'image' && themeSettings.backgroundImage && (
+        <div className="absolute inset-0 bg-black/50 z-0"></div>
+      )}
+
+      <div className="relative z-10">
+        {/* Header - Responsive */}
+        <header className="border-b-2 border-white p-4 md:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-center">
+              <motion.h1 
+                className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-wider"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                {themeSettings.shopName || 'VERSHASH'}
+              </motion.h1>
+              
+              {/* Cart Button */}
+              <motion.button
+                onClick={() => setShowCart(true)}
+                className="relative bg-white text-black border-2 border-white rounded-lg px-4 py-2 md:px-6 md:py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ShoppingBag size={20} />
+                <span className="hidden md:inline text-sm font-bold">PANIER</span>
+                {getTotalItems() > 0 && (
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                    {getTotalItems()}
                   </div>
                 )}
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navigation du carrousel */}
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
-            {[0, 1].map((index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  currentSlide === index ? 'bg-white' : 'bg-white/50'
-                }`}
-              />
-            ))}
-          </div>
-
-          {/* Flèches de navigation */}
-          <button
-            onClick={() => setCurrentSlide((prev) => (prev - 1 + 2) % 2)}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/30 rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button
-            onClick={() => setCurrentSlide((prev) => (prev + 1) % 2)}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/30 rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        </div>
-
-        {/* Section Catégories */}
-        <div className="mx-4 mb-8">
-          <div className="bg-slate-800/50 backdrop-blur-lg rounded-3xl p-6">
-            <h2 className="text-2xl font-bold text-white text-center mb-6">Catégorie</h2>
-            <div className="flex justify-center space-x-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory('weed')}
-                className={`px-8 py-3 rounded-full border-2 transition-all font-bold ${
-                  selectedCategory === 'weed' || selectedCategory === 'all'
-                    ? 'border-green-500 bg-green-500/20 text-green-400'
-                    : 'border-purple-500 text-purple-400'
-                }`}
-              >
-                <span className="mr-2">🌿</span>
-                WEED
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory('hash')}
-                className={`px-8 py-3 rounded-full border-2 transition-all font-bold ${
-                  selectedCategory === 'hash' || selectedCategory === 'all'
-                    ? 'border-red-500 bg-red-500/20 text-red-400'
-                    : 'border-purple-500 text-purple-400'
-                }`}
-              >
-                <span className="mr-2">🔥</span>
-                HASH
               </motion.button>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Grille de Produits */}
-        <div className="px-4 pb-24">
-          <div className="grid grid-cols-2 gap-4">
-            {filteredProducts.slice(0, 4).map((product, index) => (
-              <motion.div
-                key={product._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-                className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 shadow-xl"
-              >
-                {/* Image */}
-                <div className="relative h-48">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                  
-                  {/* Badge catégorie */}
-                  <div className="absolute top-3 left-3 bg-black/70 px-3 py-1 rounded-full">
-                    <span className="text-xs font-bold text-white flex items-center">
-                      {product.type === 'weed' ? '🌿' : '🔥'} {product.category}
-                    </span>
-                  </div>
-                  
-                  {/* Badge qualité */}
-                  <div className={`absolute top-3 right-3 ${product.badgeColor} px-3 py-1 rounded-full`}>
-                    <span className="text-xs font-bold text-white">{product.badge}</span>
-                  </div>
-                </div>
-
-                {/* Contenu */}
-                <div className="p-4">
-                  <h3 className="text-lg font-bold text-white mb-2">{product.name}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl">{product.flag}</span>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => router.push(`/products/${product._id}`)}
-                      className="bg-white text-black px-6 py-2 rounded-lg font-black text-sm hover:bg-gray-200 transition-all"
-                    >
-                      VOIR DÉTAILS
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+        {/* Hero Banner - Responsive */}
+        <section className="relative py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <motion.div
+              className="inline-block bg-black/80 backdrop-blur-sm border-2 border-white rounded-2xl px-6 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 md:mb-4">
+                {themeSettings.bannerText || 'NOUVEAU DROP'}
+              </h2>
+              <p className="text-sm md:text-base lg:text-lg text-gray-300 font-bold">
+                QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
+              </p>
+            </motion.div>
           </div>
-        </div>
+        </section>
 
-        {/* Barre de Navigation Inférieure */}
-        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-slate-900/95 backdrop-blur-lg">
-          <div className="flex justify-around items-center py-4 px-6">
+        {/* Categories - Responsive */}
+        <section className="px-4 md:px-6 lg:px-8 mb-8 md:mb-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+              {['all', 'weed', 'hash'].map((category) => (
+                <motion.button
+                  key={category}
+                  onClick={() => setSelectedCategory(category as any)}
+                  className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
+                    selectedCategory === category
+                      ? 'bg-white text-black border-white'
+                      : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {category === 'all' ? 'TOUT' : category.toUpperCase()}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Products Grid - Responsive */}
+        <section className="px-4 md:px-6 lg:px-8 pb-24 md:pb-32">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product._id || product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-black border-4 border-white rounded-2xl overflow-hidden group hover:border-gray-300 transition-all duration-300"
+                >
+                  {/* Product Image */}
+                  <div className="relative h-48 md:h-56 lg:h-64 bg-white overflow-hidden">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
+                      {product.image && product.image.startsWith('http') ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="text-6xl md:text-7xl lg:text-8xl opacity-60">🌿</div>
+                      )}
+                    </div>
+
+                    {/* Tag */}
+                    {product.tag && (
+                      <div className={`absolute top-3 left-3 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs md:text-sm font-black text-white ${
+                        product.tagColor === 'red' ? 'bg-red-500' : 'bg-green-500'
+                      }`}>
+                        {product.tag}
+                      </div>
+                    )}
+
+                    {/* Country Flag */}
+                    <div className="absolute top-3 right-3 text-xl md:text-2xl">
+                      {product.countryFlag}
+                    </div>
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="p-4 md:p-6">
+                    <h3 className="text-lg md:text-xl lg:text-2xl font-black text-white mb-2">{product.name}</h3>
+                    <p className="text-sm md:text-base text-white/80 mb-2">{product.origin}</p>
+                    
+                    {/* Price Display */}
+                    {product.pricing && product.pricing.length > 0 ? (
+                      <div className="mb-4">
+                        <div className="text-xs md:text-sm text-white/60 mb-2">À partir de:</div>
+                        <div className="text-xl md:text-2xl lg:text-3xl font-black text-white">
+                          {Math.min(...product.pricing.map((p: any) => p.price))}€
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4">
+                        {product.price}€
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="space-y-2 md:space-y-3">
+                      <motion.button
+                        onClick={() => router.push(`/products/${product._id || product.id}`)}
+                        className="w-full bg-white text-black py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-gray-200 transition-colors"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        VOIR DÉTAILS
+                      </motion.button>
+                      
+                      <motion.button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-black border-2 border-white text-white py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-white hover:text-black transition-all"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <ShoppingBag className="inline mr-2" size={16} />
+                        AJOUTER
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Bottom Navigation - Responsive */}
+        <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white z-50">
+          <div className="max-w-7xl mx-auto flex justify-around py-3 md:py-4 lg:py-6 px-2">
             <motion.button
+              onClick={() => router.push('/')}
+              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="flex flex-col items-center space-y-1 text-white"
             >
-              <Home className="w-6 h-6" />
-              <span className="text-xs font-medium">Accueil</span>
+              <Home size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
+              <span className="text-xs md:text-sm">ACCUEIL</span>
             </motion.button>
-            
+
             <motion.button
+              onClick={() => window.open('https://instagram.com/vershash', '_blank')}
+              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="flex flex-col items-center space-y-1 text-gray-400"
             >
-              <Instagram className="w-6 h-6" />
-              <span className="text-xs font-medium">Instagram</span>
+              <Instagram size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
+              <span className="text-xs md:text-sm">INSTAGRAM</span>
             </motion.button>
-            
+
             <motion.button
+              onClick={() => window.open('https://t.me/VershashBot', '_blank')}
+              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="flex flex-col items-center space-y-1 text-gray-400"
             >
-              <Send className="w-6 h-6" />
-              <span className="text-xs font-medium">Telegram</span>
+              <MessageCircle size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
+              <span className="text-xs md:text-sm">TELEGRAM</span>
             </motion.button>
-            
+
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
               onClick={() => setShowCart(true)}
-              className="relative flex flex-col items-center space-y-1 text-white"
+              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black relative"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               <div className="relative">
-                <ShoppingBag className="w-6 h-6" />
+                <ShoppingBag size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
                 {getTotalItems() > 0 && (
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  <div className="absolute -top-2 -right-2 bg-white text-black text-xs rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center font-black border-2 border-black">
                     {getTotalItems()}
-                  </span>
+                  </div>
                 )}
               </div>
-              <span className="text-xs font-medium">Panier ({getTotalItems()})</span>
+              <span className="text-xs md:text-sm">PANIER</span>
             </motion.button>
           </div>
         </div>
-      </div>
 
-      {/* Shopping Cart Sidebar */}
-      <AnimatePresence>
-        {showCart && (
-          <>
-            {/* Backdrop */}
+        {/* Cart Modal - Responsive */}
+        <AnimatePresence>
+          {showCart && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-50"
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
               onClick={() => setShowCart(false)}
-            />
-            
-            {/* Cart Panel - Style VERSHASH */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25 }}
-              className="fixed right-0 top-0 h-full w-full max-w-md bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 shadow-2xl z-50"
             >
-              {/* Cart Header */}
-              <div className="p-6 border-b border-slate-700">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-white">Mon Panier</h2>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-black border-4 border-white rounded-2xl w-full max-w-md md:max-w-lg lg:max-w-2xl max-h-[80vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Cart Header */}
+                <div className="flex justify-between items-center p-4 md:p-6 border-b-2 border-white">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white">MON PANIER</h3>
                   <button
                     onClick={() => setShowCart(false)}
-                    className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-white"
+                    className="bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors"
                   >
-                    <X className="w-5 h-5" />
+                    <X size={20} />
                   </button>
                 </div>
-              </div>
 
-              {/* Cart Items */}
-              <div className="flex-1 overflow-y-auto p-6">
-                {cart.length === 0 ? (
-                  <div className="text-center py-12">
-                    <ShoppingBag className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                    <p className="text-gray-400">Votre panier est vide</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {cart.map((item) => (
-                      <motion.div
-                        key={item._id}
-                        layout
-                        className="bg-slate-800/50 backdrop-blur-lg rounded-xl p-4"
-                      >
-                        <div className="flex gap-4">
-                          <img 
-                            src={item.image} 
-                            alt={item.name}
-                            className="w-20 h-20 object-cover rounded-lg"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-white">{item.name}</h4>
-                            <p className="text-sm text-gray-400 flex items-center">
-                              {item.type === 'weed' ? '🌿' : '🔥'} {item.category}
-                            </p>
-                            <div className="flex items-center justify-between mt-2">
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => updateQuantity(item._id, -1)}
-                                  className="w-7 h-7 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-600 transition-colors text-white"
-                                >
-                                  <Minus className="w-4 h-4" />
-                                </button>
-                                <span className="font-semibold w-8 text-center text-white">{item.quantity}</span>
-                                <button
-                                  onClick={() => updateQuantity(item._id, 1)}
-                                  className="w-7 h-7 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-600 transition-colors text-white"
-                                >
-                                  <Plus className="w-4 h-4" />
-                                </button>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <span className="font-bold text-white">{item.price * item.quantity}€</span>
-                                <button
-                                  onClick={() => removeFromCart(item._id)}
-                                  className="text-red-400 hover:text-red-300"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
+                {/* Cart Content */}
+                <div className="p-4 md:p-6 max-h-96 overflow-y-auto">
+                  {cart.length === 0 ? (
+                    <div className="text-center py-8 md:py-12">
+                      <ShoppingBag size={48} className="mx-auto text-gray-500 mb-4" />
+                      <p className="text-white font-bold text-lg md:text-xl">Votre panier est vide</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {cart.map((item) => (
+                        <div key={item._id} className="flex items-center gap-4 bg-white/10 p-3 md:p-4 rounded-lg">
+                          <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg flex items-center justify-center">
+                            <span className="text-2xl md:text-3xl">🌿</span>
                           </div>
+                          
+                          <div className="flex-1">
+                            <h4 className="font-black text-white text-sm md:text-base">{item.name}</h4>
+                            <p className="text-gray-300 text-xs md:text-sm">{item.price}€</p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                              className="bg-white text-black w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-black hover:bg-gray-200"
+                            >
+                              <Minus size={16} />
+                            </button>
+                            <span className="text-white font-black text-lg md:text-xl w-8 md:w-10 text-center">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                              className="bg-white text-black w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-black hover:bg-gray-200"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => removeFromCart(item._id)}
+                            className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
-                      </motion.div>
-                    ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Cart Footer */}
+                {cart.length > 0 && (
+                  <div className="border-t-2 border-white p-4 md:p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-xl md:text-2xl font-black text-white">TOTAL:</span>
+                      <span className="text-2xl md:text-3xl font-black text-white">{getTotalPrice()}€</span>
+                    </div>
+                    
+                    <motion.button
+                      onClick={() => {
+                        const message = cart.map(item => `${item.name} x${item.quantity} - ${item.price * item.quantity}€`).join('\n');
+                        const total = getTotalPrice();
+                        const fullMessage = `Commande VERSHASH:\n\n${message}\n\nTOTAL: ${total}€`;
+                        window.open(`https://t.me/VershashBot?text=${encodeURIComponent(fullMessage)}`, '_blank');
+                      }}
+                      className="w-full bg-white text-black py-3 md:py-4 rounded-lg font-black text-lg md:text-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Send size={20} />
+                      COMMANDER VIA TELEGRAM
+                    </motion.button>
                   </div>
                 )}
-              </div>
-
-              {/* Cart Footer */}
-              {cart.length > 0 && (
-                <div className="border-t border-slate-700 p-6">
-                  <div className="flex justify-between mb-4">
-                    <span className="text-gray-400">Total ({getTotalItems()} articles)</span>
-                    <span className="text-2xl font-bold text-white">{getTotalPrice()}€</span>
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
-                  >
-                    Procéder au paiement
-                  </motion.button>
-                  <p className="text-center text-sm text-gray-400 mt-3">
-                    Livraison discrète garantie
-                  </p>
-                </div>
-              )}
+              </motion.div>
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
