@@ -319,55 +319,81 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Bottom Navigation - Responsive */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white z-50">
-          <div className="max-w-7xl mx-auto flex justify-around py-3 md:py-4 lg:py-6 px-2">
-            <motion.button
-              onClick={() => router.push('/')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Home size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">ACCUEIL</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => window.open('https://instagram.com/vershash', '_blank')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Instagram size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">INSTAGRAM</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => window.open('https://t.me/VershashBot', '_blank')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <MessageCircle size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">TELEGRAM</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => setShowCart(true)}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black relative"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <div className="relative">
-                <ShoppingBag size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-                {getTotalItems() > 0 && (
-                  <div className="absolute -top-2 -right-2 bg-white text-black text-xs rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center font-black border-2 border-black">
-                    {getTotalItems()}
+        {/* Bottom Navigation - Design professionnel et moderne */}
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl z-50">
+          <div className="border-t border-gray-700/50">
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-4 gap-1 p-2">
+                {/* Accueil */}
+                <motion.button
+                  onClick={() => router.push('/')}
+                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="relative">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 group-hover:from-blue-500 group-hover:to-blue-600 transition-all duration-300">
+                      <Home size={24} className="group-hover:scale-110 transition-transform" />
+                    </div>
                   </div>
-                )}
+                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Accueil</span>
+                </motion.button>
+
+                {/* Instagram */}
+                <motion.a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="relative">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-pink-500/20 to-purple-600/20 group-hover:from-pink-500 group-hover:to-purple-600 transition-all duration-300">
+                      <Instagram size={24} className="group-hover:scale-110 transition-transform" />
+                    </div>
+                  </div>
+                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Instagram</span>
+                </motion.a>
+
+                {/* Telegram */}
+                <motion.a
+                  href="https://t.me/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="relative">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-sky-500/20 to-blue-600/20 group-hover:from-sky-500 group-hover:to-blue-600 transition-all duration-300">
+                      <Send size={24} className="group-hover:scale-110 transition-transform" />
+                    </div>
+                  </div>
+                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Telegram</span>
+                </motion.a>
+
+                {/* Panier */}
+                <motion.button
+                  onClick={() => setShowCart(true)}
+                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="relative">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 group-hover:from-green-500 group-hover:to-emerald-600 transition-all duration-300">
+                      <ShoppingBag size={24} className="group-hover:scale-110 transition-transform" />
+                      {getTotalItems() > 0 && (
+                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold shadow-lg animate-pulse">
+                          {getTotalItems()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Panier</span>
+                </motion.button>
               </div>
-              <span className="text-xs md:text-sm">PANIER</span>
-            </motion.button>
+            </div>
           </div>
         </div>
 

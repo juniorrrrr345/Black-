@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Send, Home, Instagram, MessageCircle, Plus, Minus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowLeft, ShoppingCart, Send, Home, Instagram, MessageCircle, 
+  Plus, Minus, Star, Package, Shield, Truck, Clock, 
+  Video, Image as ImageIcon, Tag, Info
+} from 'lucide-react';
 import { Product, ProductPricing } from '@/lib/store';
 import { useStore } from '@/lib/store';
 
@@ -14,6 +18,7 @@ export default function ProductPage() {
   const [selectedPricing, setSelectedPricing] = useState<ProductPricing | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
   const { addToCart, getTotalItems, themeSettings, loadThemeSettings } = useStore();
 
   useEffect(() => {
@@ -61,41 +66,44 @@ export default function ProductPage() {
   };
 
   const getBackgroundStyle = () => {
-    const { backgroundType, backgroundColor, backgroundImage, gradientFrom, gradientTo } = themeSettings;
-    
-    switch (backgroundType) {
-      case 'image':
-        return backgroundImage ? {
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed'
-        } : { backgroundColor: 'black' };
-      case 'gradient':
-        return {
-          background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
-        };
-      default:
-        return { backgroundColor };
+    if (themeSettings.backgroundType === 'gradient') {
+      return {
+        background: `linear-gradient(135deg, ${themeSettings.gradientStart || '#000000'} 0%, ${themeSettings.gradientEnd || '#1a1a1a'} 100%)`
+      };
+    } else if (themeSettings.backgroundType === 'image' && themeSettings.backgroundImage) {
+      return {
+        backgroundImage: `url(${themeSettings.backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundColor: '#000000'
+      };
     }
+    return { backgroundColor: '#000000' };
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl font-bold">Chargement...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-white mx-auto mb-4"></div>
+          <p className="text-white text-xl font-bold">Chargement...</p>
+        </div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div 
-        className="min-h-screen flex items-center justify-center"
-        style={getBackgroundStyle()}
-      >
-        <div className="text-white text-xl font-bold border-2 border-white rounded-lg px-6 py-4">
-          Produit non trouvé
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-white text-xl font-bold mb-4">Produit non trouvé</p>
+          <button
+            onClick={() => router.push('/')}
+            className="bg-white text-black px-6 py-3 rounded-lg font-bold hover:bg-gray-200 transition-colors"
+          >
+            Retour à l'accueil
+          </button>
         </div>
       </div>
     );
@@ -103,7 +111,6 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (selectedPricing) {
-      // Add multiple items based on quantity
       for (let i = 0; i < quantity; i++) {
         const productWithPricing = {
           ...product,
@@ -117,253 +124,303 @@ export default function ProductPage() {
         addToCart(product);
       }
     }
+    // Animation de confirmation
+    const btn = document.getElementById('add-to-cart-btn');
+    if (btn) {
+      btn.classList.add('animate-pulse');
+      setTimeout(() => btn.classList.remove('animate-pulse'), 1000);
+    }
   };
-
-  const increaseQuantity = () => setQuantity(prev => prev + 1);
-  const decreaseQuantity = () => setQuantity(prev => prev > 1 ? prev - 1 : 1);
 
   const handleTelegramOrder = () => {
     const productName = selectedPricing 
       ? `${product.name} (${selectedPricing.weight})` 
       : product.name;
     const price = selectedPricing ? selectedPricing.price : product.price;
-    const message = `Bonjour, je souhaite commander: ${productName} - ${price}€`;
-    const telegramUrl = `https://t.me/VershashBot?start=${encodeURIComponent(message)}`;
+    const message = `Bonjour, je souhaite commander: ${productName} - Quantité: ${quantity} - Prix total: ${(price * quantity).toFixed(2)}€`;
+    const telegramUrl = `https://t.me/?text=${encodeURIComponent(message)}`;
     window.open(telegramUrl, '_blank');
   };
 
-  const cartItemCount = getTotalItems();
+  const currentPrice = selectedPricing ? selectedPricing.price : product.price;
+  const totalPrice = currentPrice * quantity;
 
   return (
     <div 
-      className="min-h-screen text-white relative overflow-hidden"
+      className="min-h-screen text-white relative"
       style={getBackgroundStyle()}
     >
-      {/* Overlay pour assurer la lisibilité */}
+      {/* Overlay pour la lisibilité */}
       {themeSettings.backgroundType === 'image' && themeSettings.backgroundImage && (
-        <div className="absolute inset-0 bg-black/50 z-0"></div>
+        <div className="absolute inset-0 bg-black/60 z-0"></div>
       )}
 
       <div className="relative z-10">
-        {/* Header - Responsive */}
-        <div className="relative pt-6 pb-4 md:pt-8 md:pb-6 lg:pt-12 lg:pb-8 border-b-2 border-white">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-wider">
-                {themeSettings.shopName || 'VERSHASH'}
+        {/* Header élégant */}
+        <header className="bg-black/80 backdrop-blur-xl border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="flex items-center justify-between">
+              <motion.button
+                onClick={() => router.push('/')}
+                className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
+                whileHover={{ x: -5 }}
+              >
+                <ArrowLeft size={24} />
+                <span className="font-semibold">Retour</span>
+              </motion.button>
+
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                {themeSettings.shopName || 'Ma Boutique'}
               </h1>
+
+              <motion.button
+                onClick={() => router.push('/cart')}
+                className="relative p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ShoppingCart size={24} />
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                    {getTotalItems()}
+                  </span>
+                )}
+              </motion.button>
             </div>
-
-            {/* Back Button - Responsive */}
-            <motion.button
-              onClick={() => router.back()}
-              className="absolute top-6 left-4 md:top-8 md:left-6 lg:top-12 lg:left-8 bg-white text-black border-2 border-white rounded-lg px-3 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold text-sm md:text-base lg:text-lg"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ArrowLeft size={16} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
-              <span className="font-bold">RETOUR</span>
-            </motion.button>
           </div>
-        </div>
+        </header>
 
-        {/* Product Content - Responsive */}
-        <div className="max-w-sm md:max-w-md lg:max-w-2xl xl:max-w-4xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
-          <div className="bg-black border-4 border-white rounded-2xl overflow-hidden">
+        {/* Contenu principal */}
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            {/* Product Image - Responsive */}
-            <div className="relative h-64 md:h-80 lg:h-96 xl:h-[28rem] bg-white border-b-4 border-white overflow-hidden">
-              <div className="w-full h-full flex items-center justify-center relative bg-gradient-to-br from-gray-100 to-gray-300">
-                {product.image && product.image.startsWith('http') ? (
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
+            {/* Section Média (Image/Vidéo) */}
+            <div className="space-y-4">
+              <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-square">
+                {showVideo && product.video ? (
+                  <div className="w-full h-full">
+                    {product.video.includes('youtube') || product.video.includes('youtu.be') ? (
+                      <iframe
+                        src={product.video.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                        className="w-full h-full"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        src={product.video}
+                        controls
+                        className="w-full h-full object-cover"
+                        autoPlay
+                      />
+                    )}
+                  </div>
                 ) : (
-                  <div 
-                    className="w-full h-full bg-cover bg-center opacity-80"
-                    style={{
-                      backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23f3f4f6"/><g transform="translate(200,200)"><g transform="scale(4)"><path d="M0,-20 Q-5,-15 -8,-10 Q-10,-5 -8,0 Q-5,5 0,0 Q5,5 8,0 Q10,-5 8,-10 Q5,-15 0,-20 Z" fill="%23374151" opacity="0.9"/><path d="M-15,-10 Q-20,-5 -18,0 Q-15,5 -10,0 Q-5,5 0,0 Q5,5 10,0 Q15,5 18,0 Q20,-5 15,-10" fill="%23111827" opacity="0.8"/><path d="M0,0 L0,15" stroke="%23374151" stroke-width="3" stroke-linecap="round"/><circle cx="0" cy="-12" r="3" fill="%23000000" opacity="0.9"/></g></g></svg>')`
-                    }}
-                  />
+                  <div className="relative w-full h-full">
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+                        <Package size={100} className="text-gray-600" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Badges */}
+                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                  {product.tag && (
+                    <span className={`px-3 py-1 rounded-lg text-sm font-bold text-white ${
+                      product.tagColor === 'red' ? 'bg-red-500' : 'bg-green-500'
+                    }`}>
+                      {product.tag}
+                    </span>
+                  )}
+                  {product.category && (
+                    <span className="px-3 py-1 rounded-lg text-sm font-bold bg-blue-600 text-white">
+                      {product.category}
+                    </span>
+                  )}
+                </div>
+
+                {/* Bouton Switch Image/Vidéo */}
+                {product.video && (
+                  <button
+                    onClick={() => setShowVideo(!showVideo)}
+                    className="absolute bottom-4 right-4 p-3 rounded-full bg-black/80 backdrop-blur text-white hover:bg-black transition-colors"
+                  >
+                    {showVideo ? <ImageIcon size={20} /> : <Video size={20} />}
+                  </button>
                 )}
               </div>
 
-              {/* Tag - Responsive */}
-              <div className="absolute top-3 right-3 md:top-4 md:right-4 lg:top-6 lg:right-6 bg-black text-white px-2 py-1 md:px-4 md:py-2 lg:px-6 lg:py-3 border-2 border-white rounded-lg text-xs md:text-sm lg:text-base font-black flex items-center gap-2">
-                <span>{product.tag}</span>
-                <span className="text-sm md:text-base lg:text-lg">{product.countryFlag}</span>
-              </div>
+              {/* Galerie d'images miniatures (si disponible) */}
+              {product.images && product.images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {product.images.map((img: string, idx: number) => (
+                    <button
+                      key={idx}
+                      className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-700 hover:border-white transition-colors"
+                    >
+                      <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Product Info - Responsive */}
-            <div className="p-4 md:p-6 lg:p-8 xl:p-12 space-y-6 md:space-y-8 lg:space-y-12">
-              {/* Product Name */}
-              <div className="text-center border-b-2 border-white pb-4 md:pb-6 lg:pb-8">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black text-white tracking-wider mb-2 md:mb-4">{product.name}</h2>
-                <p className="text-white/80 text-base md:text-lg lg:text-xl font-bold">{product.origin}</p>
+            {/* Section Informations */}
+            <div className="space-y-6">
+              {/* En-tête du produit */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  {product.countryFlag && (
+                    <span className="text-2xl">{product.countryFlag}</span>
+                  )}
+                  {product.origin && (
+                    <span className="text-gray-400 text-sm">{product.origin}</span>
+                  )}
+                </div>
+                
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  {product.name}
+                </h1>
+                
+                {product.category && (
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <Tag size={16} />
+                    <span>Catégorie: {product.category}</span>
+                  </div>
+                )}
+
+                {/* Note et avis */}
+                <div className="flex items-center gap-4 mt-3">
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={18} className={i < 4 ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'} />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-400">(4.8/5 - 127 avis)</span>
+                </div>
               </div>
 
-              {/* Pricing Options - Responsive */}
+              {/* Description */}
+              {product.description && (
+                <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-700">
+                  <h3 className="flex items-center gap-2 text-lg font-semibold mb-2">
+                    <Info size={20} />
+                    Description
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {product.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Sélection du prix/poids */}
               {product.pricing && product.pricing.length > 0 && (
                 <div>
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-center mb-4 md:mb-6 lg:mb-8 text-white border-2 border-white rounded-lg py-2 md:py-3 lg:py-4">
-                    POIDS
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-                    {product.pricing.map((pricing: any, index: number) => (
-                      <motion.button
-                        key={index}
+                  <h3 className="text-lg font-semibold mb-3">Choisir une option:</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {product.pricing.map((pricing: ProductPricing) => (
+                      <button
+                        key={pricing.weight}
                         onClick={() => setSelectedPricing(pricing)}
-                        className={`border-4 rounded-2xl p-4 md:p-6 lg:p-8 text-center transition-all font-black ${
+                        className={`p-3 rounded-lg border-2 transition-all ${
                           selectedPricing?.weight === pricing.weight
                             ? 'border-white bg-white text-black'
-                            : 'border-white text-white hover:bg-white hover:text-black'
+                            : 'border-gray-600 hover:border-gray-400 bg-gray-900/50'
                         }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
                       >
-                        <div className="text-xl md:text-2xl lg:text-3xl font-black mb-2">{pricing.weight}</div>
-                        <div className="text-2xl md:text-3xl lg:text-4xl font-black">{pricing.price}€</div>
-                      </motion.button>
+                        <div className="font-semibold">{pricing.weight}</div>
+                        <div className="text-lg font-bold">{pricing.price}€</div>
+                      </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Quantity Selector - Responsive */}
-              <div className="border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8">
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-center mb-4 md:mb-6 lg:mb-8 text-white">QUANTITÉ</h3>
-                <div className="flex items-center justify-center gap-4 md:gap-6 lg:gap-8">
-                  <motion.button
-                    onClick={decreaseQuantity}
-                    className="bg-white text-black border-4 border-white rounded-full w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex items-center justify-center font-black text-xl md:text-2xl lg:text-3xl hover:bg-black hover:text-white transition-all"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Minus size={20} className="md:w-6 md:h-6 lg:w-8 lg:h-8" />
-                  </motion.button>
-                  
-                  <div className="bg-white text-black border-4 border-white rounded-2xl px-6 py-3 md:px-8 md:py-4 lg:px-12 lg:py-6 min-w-[80px] md:min-w-[100px] lg:min-w-[120px] text-center">
-                    <span className="text-2xl md:text-3xl lg:text-4xl font-black">{quantity}</span>
+              {/* Prix et quantité */}
+              <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl p-6 border border-blue-500/30">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Prix unitaire</p>
+                    <p className="text-3xl font-bold text-white">{currentPrice}€</p>
                   </div>
                   
-                  <motion.button
-                    onClick={increaseQuantity}
-                    className="bg-white text-black border-4 border-white rounded-full w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex items-center justify-center font-black text-xl md:text-2xl lg:text-3xl hover:bg-black hover:text-white transition-all"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Plus size={20} className="md:w-6 md:h-6 lg:w-8 lg:h-8" />
-                  </motion.button>
+                  {/* Sélecteur de quantité */}
+                  <div className="flex items-center gap-3 bg-black/50 rounded-lg p-2">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="p-2 rounded hover:bg-white/10 transition-colors"
+                    >
+                      <Minus size={20} />
+                    </button>
+                    <span className="w-12 text-center font-bold text-xl">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="p-2 rounded hover:bg-white/10 transition-colors"
+                    >
+                      <Plus size={20} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-600 pt-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg text-gray-300">Total:</p>
+                    <p className="text-3xl font-bold text-white">{totalPrice.toFixed(2)}€</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Total Price Display - Responsive */}
-              {selectedPricing && (
-                <div className="text-center border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8 bg-white text-black">
-                  <div className="text-lg md:text-xl lg:text-2xl font-black mb-2 md:mb-4">TOTAL</div>
-                  <div className="text-3xl md:text-4xl lg:text-5xl font-black">
-                    {(selectedPricing.price * quantity).toLocaleString()}€
-                  </div>
-                </div>
-              )}
+              {/* Boutons d'action */}
+              <div className="space-y-3">
+                <motion.button
+                  id="add-to-cart-btn"
+                  onClick={handleAddToCart}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg hover:from-green-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-3"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <ShoppingCart size={24} />
+                  Ajouter au panier
+                </motion.button>
 
-              {/* Selection Warning */}
-              {!selectedPricing && !!product.pricing && (
-                <div className="text-center text-white border-4 border-white rounded-2xl p-3 md:p-4 lg:p-6 bg-red-600">
-                  <div className="text-base md:text-lg lg:text-xl font-black">⚠️ VEUILLEZ SÉLECTIONNER UN POIDS</div>
-                </div>
-              )}
-
-              {/* Action Buttons - Responsive */}
-              <div className="space-y-3 md:space-y-4 lg:space-y-6">
-                {/* Telegram Order Button */}
                 <motion.button
                   onClick={handleTelegramOrder}
-                  disabled={!selectedPricing && !!product.pricing}
-                  className={`w-full py-4 md:py-6 lg:py-8 rounded-2xl font-black text-lg md:text-xl lg:text-2xl flex items-center justify-center gap-2 md:gap-3 lg:gap-4 border-4 transition-all ${
-                    !selectedPricing && !!product.pricing
-                      ? 'bg-gray-500 border-gray-500 text-gray-300 cursor-not-allowed'
-                      : 'bg-black border-white text-white hover:bg-white hover:text-black'
-                  }`}
-                  whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
-                  whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center justify-center gap-3"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <Send size={24} className="md:w-7 md:h-7 lg:w-8 lg:h-8" />
-                  COMMANDER
+                  <Send size={24} />
+                  Commander via Telegram
                 </motion.button>
+              </div>
 
-                {/* Add to Cart Button */}
-                <motion.button
-                  onClick={handleAddToCart}
-                  disabled={!selectedPricing && !!product.pricing}
-                  className={`w-full py-4 md:py-6 lg:py-8 rounded-2xl font-black text-lg md:text-xl lg:text-2xl border-4 transition-all flex items-center justify-center gap-2 md:gap-3 lg:gap-4 ${
-                    !selectedPricing && !!product.pricing
-                      ? 'bg-gray-500 border-gray-500 text-gray-300 cursor-not-allowed'
-                      : 'bg-white border-white text-black hover:bg-black hover:text-white'
-                  }`}
-                  whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
-                  whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
-                >
-                  <ShoppingCart size={24} className="md:w-7 md:h-7 lg:w-8 lg:h-8" />
-                  AJOUTER AU PANIER ({quantity})
-                </motion.button>
+              {/* Avantages */}
+              <div className="grid grid-cols-2 gap-3 pt-4">
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <Shield size={18} className="text-green-500" />
+                  <span>Paiement sécurisé</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <Truck size={18} className="text-blue-500" />
+                  <span>Livraison rapide</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <Clock size={18} className="text-yellow-500" />
+                  <span>Support 24/7</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <Package size={18} className="text-purple-500" />
+                  <span>Qualité garantie</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Bottom Navigation - Responsive */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white z-50">
-          <div className="max-w-7xl mx-auto flex justify-around py-3 md:py-4 lg:py-6 px-2">
-            <motion.button
-              onClick={() => router.push('/')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Home size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">ACCUEIL</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => window.open('https://instagram.com/vershash', '_blank')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Instagram size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">INSTAGRAM</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => window.open('https://t.me/VershashBot', '_blank')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <MessageCircle size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">TELEGRAM</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => router.push('/cart')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black relative"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <div className="relative">
-                <ShoppingCart size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-                {cartItemCount > 0 && (
-                  <div className="absolute -top-2 -right-2 bg-white text-black text-xs rounded-full w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center font-black border-2 border-black">
-                    {cartItemCount}
-                  </div>
-                )}
-              </div>
-              <span className="text-xs md:text-sm">PANIER ({cartItemCount})</span>
-            </motion.button>
           </div>
         </div>
       </div>
