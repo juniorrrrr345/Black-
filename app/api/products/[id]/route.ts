@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect, { connectToDatabase } from '@/lib/mongodb';
+import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
-import { ObjectId } from 'mongodb';
 
 export async function PUT(
   request: NextRequest,
@@ -61,31 +60,28 @@ export async function GET(
       return NextResponse.json(staticProduct);
     }
     
-    // Si pas trouvé dans les produits statiques, essayer MongoDB
+    // Si pas trouvé dans les produits statiques, essayer MongoDB avec Mongoose
     try {
-      const { db } = await connectToDatabase();
+      await dbConnect();
       
-      // Vérifier si c'est un ObjectId valide
-      if (ObjectId.isValid(id)) {
-        const product = await db
-          .collection('products')
-          .findOne({ _id: new ObjectId(id) });
-        
-        if (product) {
-          return NextResponse.json(product);
-        }
+      // Essayer de trouver par _id MongoDB ou par id string
+      let product = null;
+      
+      // Si l'ID ressemble à un ObjectId MongoDB (24 caractères hex)
+      if (/^[0-9a-fA-F]{24}$/.test(id)) {
+        product = await Product.findById(id);
       }
       
-      // Essayer aussi de chercher par id string
-      const productById = await db
-        .collection('products')
-        .findOne({ id: id });
+      // Si pas trouvé, essayer par id string
+      if (!product) {
+        product = await Product.findOne({ id: id });
+      }
       
-      if (productById) {
-        return NextResponse.json(productById);
+      if (product) {
+        return NextResponse.json(product);
       }
     } catch (dbError) {
-      console.log('Database error, using static products only:', dbError);
+      console.log('Database error, product not found:', dbError);
     }
     
     return NextResponse.json(

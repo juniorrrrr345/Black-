@@ -31,14 +31,11 @@ export default function ProductPage() {
       setLoading(true);
       const productId = String(params.id);
       
-      console.log('Looking for product with ID:', productId);
-      
       // Essayer l'API en premier (qui vérifie aussi les produits statiques)
       try {
         const response = await fetch(`/api/products/${productId}`);
         if (response.ok) {
           const apiProduct = await response.json();
-          console.log('Product found:', apiProduct.name);
           setProduct(apiProduct);
           if (apiProduct.pricing && apiProduct.pricing.length > 0) {
             setSelectedPricing(apiProduct.pricing[0]);
@@ -46,7 +43,7 @@ export default function ProductPage() {
           return; // Produit trouvé, on arrête ici
         }
       } catch (apiError) {
-        console.log('API error, trying static products:', apiError);
+        // Silently fallback to static products
       }
       
       // Fallback: charger directement depuis les produits statiques
@@ -54,13 +51,10 @@ export default function ProductPage() {
       const foundProduct = products.find(p => String(p.id) === productId);
       
       if (foundProduct) {
-        console.log('Product found in static imports:', foundProduct.name);
         setProduct({ ...foundProduct, _id: foundProduct.id });
         if (foundProduct.pricing && foundProduct.pricing.length > 0) {
           setSelectedPricing(foundProduct.pricing[0]);
         }
-      } else {
-        console.log('Product not found anywhere');
       }
     } catch (error) {
       console.error('Error loading product:', error);

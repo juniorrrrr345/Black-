@@ -34,7 +34,6 @@ export default function ModernShop() {
       
       // Charger d'abord les produits statiques
       const { products: staticProducts, categories: staticCategories } = await import('@/lib/products');
-      console.log('Loading static products:', staticProducts.length);
       setProducts(staticProducts.map(p => ({ ...p, _id: p.id, quantity: 50, available: true })));
       setCategories(staticCategories);
       
@@ -55,9 +54,9 @@ export default function ModernShop() {
             setCategories(categoriesData);
           }
         }
-      } catch (apiError) {
-        console.log('Using static products data');
-      }
+              } catch (apiError) {
+          // Using static products data as fallback
+        }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -330,7 +329,6 @@ export default function ModernShop() {
                       <motion.button
                         onClick={() => {
                           const productId = product.id || product._id;
-                          console.log('Navigating to product:', productId, product.name);
                           router.push(`/products/${productId}`);
                         }}
                         className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg font-semibold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-1"
