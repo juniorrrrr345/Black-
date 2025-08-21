@@ -68,7 +68,7 @@ export default function ProductPage() {
   const getBackgroundStyle = () => {
     if (themeSettings.backgroundType === 'gradient') {
       return {
-        background: `linear-gradient(135deg, ${themeSettings.gradientStart || '#000000'} 0%, ${themeSettings.gradientEnd || '#1a1a1a'} 100%)`
+        background: `linear-gradient(135deg, ${themeSettings.gradientFrom || '#000000'} 0%, ${themeSettings.gradientTo || '#1a1a1a'} 100%)`
       };
     } else if (themeSettings.backgroundType === 'image' && themeSettings.backgroundImage) {
       return {
@@ -79,7 +79,7 @@ export default function ProductPage() {
         backgroundColor: '#000000'
       };
     }
-    return { backgroundColor: '#000000' };
+    return { backgroundColor: themeSettings.backgroundColor || '#000000' };
   };
 
   if (loading) {
