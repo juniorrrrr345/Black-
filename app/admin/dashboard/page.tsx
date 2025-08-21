@@ -13,8 +13,12 @@ import {
   Save,
   X,
   Image as ImageIcon,
-  Tag
+  Tag,
+  Eye,
+  DollarSign,
+  Weight
 } from 'lucide-react';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -88,6 +92,24 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       alert('Erreur lors de la sauvegarde');
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
+      try {
+        const res = await fetch(`/api/products/${productId}`, {
+          method: 'DELETE',
+        });
+        if (res.ok) {
+          fetchData(); // Recharger les données
+          alert('Produit supprimé avec succès');
+        } else {
+          alert('Erreur lors de la suppression');
+        }
+      } catch (error) {
+        alert('Erreur lors de la suppression');
+      }
     }
   };
 
@@ -177,29 +199,81 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
-                <div key={product._id} className="bg-gray-900 rounded-lg p-4">
-                  <div className="aspect-square bg-gray-800 rounded-lg mb-3">
-                    {product.image && (
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-lg" />
+                <div key={product._id} className="bg-black border-4 border-white rounded-2xl p-6">
+                  <div className="aspect-square bg-white rounded-2xl mb-4 overflow-hidden border-2 border-black">
+                    {product.image ? (
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                        <ImageIcon size={48} className="text-gray-400" />
+                      </div>
                     )}
                   </div>
-                  <h3 className="font-bold">{product.name}</h3>
-                  <p className="text-purple-400 font-bold">{product.price}€</p>
-                  <p className="text-gray-400 text-sm">Stock: {product.quantity}</p>
-                  <div className="flex gap-2 mt-3">
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <h3 className="font-black text-white text-lg">{product.name}</h3>
+                      <span className="text-2xl">{product.countryFlag}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-black ${
+                        product.tagColor === 'red' ? 'bg-red-500' : 'bg-green-500'
+                      } text-white`}>
+                        {product.tag}
+                      </span>
+                      <span className="text-gray-300 text-sm">{product.category}</span>
+                    </div>
+
+                    {product.pricing && product.pricing.length > 0 ? (
+                      <div className="space-y-2">
+                        <p className="text-white font-bold text-sm">OPTIONS DE PRIX:</p>
+                        {product.pricing.map((pricing: any, index: number) => (
+                          <div key={index} className="flex justify-between text-sm bg-white/10 rounded-lg px-3 py-2">
+                            <span className="text-white font-bold">{pricing.weight}</span>
+                            <span className="text-white font-black">{pricing.price}€</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-white font-black text-xl">{product.price}€</p>
+                    )}
+                    
+                    <p className="text-gray-300 text-sm">
+                      <span className="font-bold">Stock:</span> {product.quantity} unités
+                    </p>
+                    
+                    {product.description && (
+                      <p className="text-gray-400 text-xs line-clamp-2">{product.description}</p>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 mt-4 pt-4 border-t-2 border-white">
+                    <button
+                      onClick={() => router.push(`/products/${product.id}`)}
+                      className="flex-1 bg-white text-black py-2 rounded-lg font-black hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <Eye size={16} />
+                      VOIR
+                    </button>
                     <button
                       onClick={() => {
                         setEditingProduct(product);
                         setShowProductModal(true);
                       }}
-                      className="flex-1 bg-gray-700 hover:bg-gray-600 py-1 rounded transition-colors"
+                      className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-black hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
                     >
-                      <Edit size={16} className="inline" />
+                      <Edit size={16} />
+                      EDIT
                     </button>
-                    <button className="flex-1 bg-red-600 hover:bg-red-700 py-1 rounded transition-colors">
-                      <Trash2 size={16} className="inline" />
+                    <button 
+                      onClick={() => handleDeleteProduct(product._id)}
+                      className="flex-1 bg-red-600 text-white py-2 rounded-lg font-black hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <Trash2 size={16} />
+                      SUP
                     </button>
                   </div>
                 </div>
@@ -376,30 +450,64 @@ export default function AdminDashboard() {
 function ProductFormModal({ product, categories, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: product?.name || '',
+    origin: product?.origin || '',
     price: product?.price || 0,
+    pricing: product?.pricing || [],
     quantity: product?.quantity || 0,
-    weight: product?.weight || '1g',
-    category: product?.category || '',
+    category: product?.category || 'weed',
+    tag: product?.tag || '',
+    tagColor: product?.tagColor || 'green',
+    country: product?.country || '',
+    countryFlag: product?.countryFlag || '',
     description: product?.description || '',
     image: product?.image || '',
   });
 
+  const [pricingOptions, setPricingOptions] = useState(
+    product?.pricing || [{ weight: '100g', price: 0 }]
+  );
+
+  const addPricingOption = () => {
+    setPricingOptions([...pricingOptions, { weight: '', price: 0 }]);
+  };
+
+  const removePricingOption = (index: number) => {
+    if (pricingOptions.length > 1) {
+      setPricingOptions(pricingOptions.filter((_, i) => i !== index));
+    }
+  };
+
+  const updatePricingOption = (index: number, field: string, value: any) => {
+    const updated = [...pricingOptions];
+    updated[index] = { ...updated[index], [field]: value };
+    setPricingOptions(updated);
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
+      const submitData = {
+        ...formData,
+        pricing: pricingOptions.filter(p => p.weight && p.price > 0)
+      };
+
       const url = product ? `/api/products/${product._id}` : '/api/products';
       const method = product ? 'PUT' : 'POST';
       
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       });
       
       if (res.ok) {
         onSave();
+      } else {
+        const errorData = await res.json();
+        alert('Erreur: ' + (errorData.error || 'Erreur lors de la sauvegarde'));
       }
     } catch (error) {
+      console.error('Erreur:', error);
       alert('Erreur lors de la sauvegarde');
     }
   };
@@ -407,95 +515,249 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80" onClick={onClose} />
-      <div className="relative bg-gray-900 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto p-6">
-        <h3 className="text-xl font-bold mb-4">
-          {product ? 'Modifier le produit' : 'Ajouter un produit'}
-        </h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Nom du produit"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            required
-          />
-          <input
-            type="number"
-            placeholder="Prix"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            required
-          />
-          <input
-            type="number"
-            placeholder="Quantité"
-            value={formData.quantity}
-            onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Poids (ex: 1g, 3g, 5g)"
-            value={formData.weight}
-            onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            required
-          />
-          <select
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            required
-          >
-            <option value="">Sélectionner une catégorie</option>
-            {categories.map((cat: any) => (
-              <option key={cat._id} value={cat.slug}>{cat.name}</option>
-            ))}
-          </select>
-          <textarea
-            placeholder="Description"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            rows={3}
-          />
-          <input
-            type="text"
-            placeholder="URL de l'image"
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-          />
-          <div className="flex gap-3">
+      <div className="relative bg-black border-4 border-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-8">
+          <div className="flex justify-between items-center mb-6 border-b-2 border-white pb-4">
+            <h3 className="text-3xl font-black text-white">
+              {product ? 'MODIFIER LE PRODUIT' : 'AJOUTER UN PRODUIT'}
+            </h3>
             <button
-              type="submit"
-              className="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded-lg transition-colors"
-            >
-              Sauvegarder
-            </button>
-            <button
-              type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded-lg transition-colors"
+              className="bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors"
             >
-              Annuler
+              <X size={24} />
             </button>
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Image Upload */}
+              <div>
+                <label className="block text-white font-black text-lg mb-4">
+                  📸 PHOTO DU PRODUIT
+                </label>
+                <CloudinaryUpload
+                  currentImage={formData.image}
+                  onUpload={(url) => setFormData({ ...formData, image: url })}
+                  onRemove={() => setFormData({ ...formData, image: '' })}
+                />
+              </div>
+
+              {/* Product Info */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-white font-black text-sm mb-2">
+                    NOM DU PRODUIT
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Fond De Haze"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-white font-black text-sm mb-2">
+                    ORIGINE
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Pays-Bas"
+                    value={formData.origin}
+                    onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                    className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white font-black text-sm mb-2">
+                      PAYS (CODE)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: NL"
+                      value={formData.country}
+                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white font-black text-sm mb-2">
+                      DRAPEAU
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: 🇳🇱"
+                      value={formData.countryFlag}
+                      onChange={(e) => setFormData({ ...formData, countryFlag: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white font-black text-sm mb-2">
+                      CATÉGORIE
+                    </label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                      required
+                    >
+                      <option value="weed">🌿 Weed</option>
+                      <option value="hash">🍫 Hash</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-white font-black text-sm mb-2">
+                      STOCK TOTAL
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Ex: 100"
+                      value={formData.quantity}
+                      onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white font-black text-sm mb-2">
+                      TAG
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: WEED"
+                      value={formData.tag}
+                      onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white font-black text-sm mb-2">
+                      COULEUR TAG
+                    </label>
+                    <select
+                      value={formData.tagColor}
+                      onChange={(e) => setFormData({ ...formData, tagColor: e.target.value })}
+                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                    >
+                      <option value="green">🟢 Vert</option>
+                      <option value="red">🔴 Rouge</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-white font-black text-lg mb-4">
+                📝 DESCRIPTION
+              </label>
+              <textarea
+                placeholder="Description détaillée du produit..."
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+                rows={4}
+              />
+            </div>
+
+            {/* Pricing Options */}
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <label className="block text-white font-black text-lg">
+                  💰 OPTIONS DE PRIX
+                </label>
+                <button
+                  type="button"
+                  onClick={addPricingOption}
+                  className="bg-white text-black px-4 py-2 rounded-lg font-black hover:bg-gray-200 transition-colors flex items-center gap-2"
+                >
+                  <Plus size={20} />
+                  AJOUTER
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {pricingOptions.map((pricing, index) => (
+                  <div key={index} className="flex gap-4 items-center bg-white/10 p-4 rounded-lg border-2 border-white">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Ex: 100g"
+                        value={pricing.weight}
+                        onChange={(e) => updatePricingOption(index, 'weight', e.target.value)}
+                        className="w-full bg-white text-black px-3 py-2 rounded-lg border-2 border-black font-bold"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        placeholder="Prix en €"
+                        value={pricing.price}
+                        onChange={(e) => updatePricingOption(index, 'price', parseFloat(e.target.value) || 0)}
+                        className="w-full bg-white text-black px-3 py-2 rounded-lg border-2 border-black font-bold"
+                      />
+                    </div>
+                    {pricingOptions.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removePricingOption(index)}
+                        className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 pt-6 border-t-2 border-white">
+              <button
+                type="submit"
+                className="flex-1 bg-white text-black py-4 rounded-lg font-black text-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+              >
+                <Save size={24} />
+                SAUVEGARDER
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-red-600 text-white py-4 rounded-lg font-black text-lg hover:bg-red-700 transition-colors"
+              >
+                ANNULER
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
 }
 
-// Category Form Modal Component
+// Category Form Modal Component  
 function CategoryFormModal({ category, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: category?.name || '',
     slug: category?.slug || '',
     order: category?.order || 0,
+    icon: category?.icon || '🌿',
+    description: category?.description || '',
+    visible: category?.visible !== false, // Par défaut visible
   });
 
   const handleSubmit = async (e: any) => {
@@ -511,7 +773,14 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
       });
       
       if (res.ok) {
+        // Forcer le rechargement du cache côté client
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('categories-cache');
+        }
         onSave();
+      } else {
+        const errorData = await res.json();
+        alert('Erreur: ' + (errorData.error || 'Erreur lors de la sauvegarde'));
       }
     } catch (error) {
       alert('Erreur lors de la sauvegarde');
@@ -521,47 +790,114 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80" onClick={onClose} />
-      <div className="relative bg-gray-900 rounded-lg max-w-md w-full p-6">
-        <h3 className="text-xl font-bold mb-4">
-          {category ? 'Modifier la catégorie' : 'Ajouter une catégorie'}
-        </h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Nom de la catégorie"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Slug (URL)"
-            value={formData.slug}
-            onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-            required
-          />
-          <input
-            type="number"
-            placeholder="Ordre d'affichage"
-            value={formData.order}
-            onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
-            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
-          />
-          <div className="flex gap-3">
+      <div className="relative bg-black border-4 border-white rounded-2xl max-w-lg w-full p-8">
+        <div className="flex justify-between items-center mb-6 border-b-2 border-white pb-4">
+          <h3 className="text-3xl font-black text-white">
+            {category ? 'MODIFIER LA CATÉGORIE' : 'AJOUTER UNE CATÉGORIE'}
+          </h3>
+          <button
+            onClick={onClose}
+            className="bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-white font-black text-sm mb-2">
+              NOM DE LA CATÉGORIE
+            </label>
+            <input
+              type="text"
+              placeholder="Ex: Weed Premium"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-white font-black text-sm mb-2">
+              SLUG (URL)
+            </label>
+            <input
+              type="text"
+              placeholder="Ex: weed-premium"
+              value={formData.slug}
+              onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-white font-black text-sm mb-2">
+                ICÔNE
+              </label>
+              <input
+                type="text"
+                placeholder="Ex: 🌿"
+                value={formData.icon}
+                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold text-center text-2xl"
+              />
+            </div>
+            <div>
+              <label className="block text-white font-black text-sm mb-2">
+                ORDRE D'AFFICHAGE
+              </label>
+              <input
+                type="number"
+                placeholder="Ex: 1"
+                value={formData.order}
+                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-white font-black text-sm mb-2">
+              DESCRIPTION
+            </label>
+            <textarea
+              placeholder="Description de la catégorie..."
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+              rows={3}
+            />
+          </div>
+
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.visible}
+                onChange={(e) => setFormData({ ...formData, visible: e.target.checked })}
+                className="w-5 h-5"
+              />
+              <span className="text-white font-black">VISIBLE DANS LA BOUTIQUE</span>
+            </label>
+          </div>
+
+          <div className="flex gap-4 pt-6 border-t-2 border-white">
             <button
               type="submit"
-              className="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded-lg transition-colors"
+              className="flex-1 bg-white text-black py-4 rounded-lg font-black text-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
-              Sauvegarder
+              <Save size={24} />
+              SAUVEGARDER
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded-lg transition-colors"
+              className="flex-1 bg-red-600 text-white py-4 rounded-lg font-black text-lg hover:bg-red-700 transition-colors"
             >
-              Annuler
+              ANNULER
             </button>
           </div>
         </form>
