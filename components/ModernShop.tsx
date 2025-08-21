@@ -34,6 +34,7 @@ export default function ModernShop() {
       
       // Charger d'abord les produits statiques
       const { products: staticProducts, categories: staticCategories } = await import('@/lib/products');
+      console.log('Loading static products:', staticProducts.length);
       setProducts(staticProducts.map(p => ({ ...p, _id: p.id, quantity: 50, available: true })));
       setCategories(staticCategories);
       
@@ -249,7 +250,7 @@ export default function ModernShop() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               {filteredProducts.map((product, index) => (
                 <motion.div
-                  key={product._id || product.id}
+                  key={product.id || product._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
@@ -327,7 +328,11 @@ export default function ModernShop() {
                     {/* Actions - Boutons adaptés pour mobile */}
                     <div className="space-y-2">
                       <motion.button
-                        onClick={() => router.push(`/products/${product._id || product.id}`)}
+                        onClick={() => {
+                          const productId = product.id || product._id;
+                          console.log('Navigating to product:', productId, product.name);
+                          router.push(`/products/${productId}`);
+                        }}
                         className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg font-semibold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-1"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}

@@ -32,26 +32,36 @@ export default function ProductPage() {
       
       // Charger d'abord depuis les produits statiques
       const { products } = await import('@/lib/products');
-      const foundProduct = products.find(p => p.id === String(params.id));
+      const productId = String(params.id);
+      
+      console.log('Looking for product with ID:', productId);
+      console.log('Available products:', products.map(p => p.id));
+      
+      const foundProduct = products.find(p => String(p.id) === productId);
       
       if (foundProduct) {
+        console.log('Product found:', foundProduct.name);
         setProduct({ ...foundProduct, _id: foundProduct.id });
         if (foundProduct.pricing && foundProduct.pricing.length > 0) {
           setSelectedPricing(foundProduct.pricing[0]);
         }
       } else {
+        console.log('Product not found in static products, trying API...');
         // Si pas trouvé dans les produits statiques, essayer l'API
         try {
-          const response = await fetch(`/api/products/${params.id}`);
+          const response = await fetch(`/api/products/${productId}`);
           if (response.ok) {
             const apiProduct = await response.json();
+            console.log('Product found in API:', apiProduct.name);
             setProduct(apiProduct);
             if (apiProduct.pricing && apiProduct.pricing.length > 0) {
               setSelectedPricing(apiProduct.pricing[0]);
             }
+          } else {
+            console.log('Product not found in API either');
           }
         } catch (apiError) {
-          console.log('Product not found in API:', apiError);
+          console.log('API error:', apiError);
         }
       }
     } catch (error) {
