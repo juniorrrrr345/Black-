@@ -172,17 +172,19 @@ export default function ProductPage() {
                 {themeSettings.shopName || 'Ma Boutique'}
               </h1>
 
-              <button
+              <motion.button
                 onClick={() => router.push('/cart')}
-                className="relative p-2 rounded-lg hover:bg-white/10 transition-colors"
+                className="relative bg-white text-black p-3 rounded-xl hover:bg-green-500 hover:text-white transition-all group shadow-lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <ShoppingCart size={24} />
+                <ShoppingCart size={28} className="group-hover:scale-110 transition-transform" />
                 {getTotalItems() > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full min-w-[24px] h-6 px-1 flex items-center justify-center font-bold shadow-lg animate-pulse">
                     {getTotalItems()}
                   </span>
                 )}
-              </button>
+              </motion.button>
             </div>
           </div>
         </header>
@@ -401,11 +403,12 @@ export default function ProductPage() {
                         </div>
                         <motion.button
                           onClick={() => handleAddToCart(pricing)}
-                          className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg"
-                          whileHover={{ scale: 1.1 }}
+                          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg font-bold"
+                          whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <ShoppingCart size={22} />
+                          <ShoppingCart size={24} />
+                          <span className="hidden sm:inline">AJOUTER</span>
                         </motion.button>
                       </motion.div>
                     ))}
@@ -420,11 +423,12 @@ export default function ProductPage() {
                     </span>
                     <motion.button
                       onClick={() => handleAddToCart()}
-                      className="p-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg"
-                      whileHover={{ scale: 1.1 }}
+                      className="flex items-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg font-bold text-lg"
+                      whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <ShoppingCart size={24} />
+                      <ShoppingCart size={26} />
+                      <span>AJOUTER AU PANIER</span>
                     </motion.button>
                   </motion.div>
                 )}
