@@ -24,9 +24,22 @@ export interface CartItem extends Product {
   quantity: number;
 }
 
+export interface ThemeSettings {
+  backgroundType: 'color' | 'image' | 'gradient';
+  backgroundColor: string;
+  backgroundImage: string;
+  gradientFrom: string;
+  gradientTo: string;
+  shopName: string;
+  bannerText: string;
+  bannerImage: string;
+  orderLink: string;
+}
+
 interface StoreState {
   cart: CartItem[];
   isAuthenticated: boolean;
+  themeSettings: ThemeSettings;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -34,11 +47,24 @@ interface StoreState {
   getTotalItems: () => number;
   getTotalPrice: () => number;
   setAuthenticated: (value: boolean) => void;
+  updateThemeSettings: (settings: Partial<ThemeSettings>) => void;
+  loadThemeSettings: () => Promise<void>;
 }
 
 export const useStore = create<StoreState>((set, get) => ({
   cart: [],
   isAuthenticated: false,
+  themeSettings: {
+    backgroundType: 'color',
+    backgroundColor: 'black',
+    backgroundImage: '',
+    gradientFrom: '#000000',
+    gradientTo: '#111111',
+    shopName: 'VERSHASH',
+    bannerText: 'NOUVEAU DROP',
+    bannerImage: '',
+    orderLink: ''
+  },
   
   addToCart: (product) => {
     set((state) => {
@@ -93,5 +119,50 @@ export const useStore = create<StoreState>((set, get) => ({
   
   setAuthenticated: (value) => {
     set({ isAuthenticated: value });
+  },
+
+  updateThemeSettings: (newSettings) => {
+    set((state) => ({
+      themeSettings: { ...state.themeSettings, ...newSettings }
+    }));
+    
+    // Sauvegarder dans localStorage
+    const updatedSettings = { ...get().themeSettings, ...newSettings };
+    localStorage.setItem('theme-settings', JSON.stringify(updatedSettings));
+  },
+
+  loadThemeSettings: async () => {
+    try {
+      // Charger depuis localStorage en premier
+      const saved = localStorage.getItem('theme-settings');
+      if (saved) {
+        const parsedSettings = JSON.parse(saved);
+        set((state) => ({
+          themeSettings: { ...state.themeSettings, ...parsedSettings }
+        }));
+      }
+      
+      // Puis essayer de charger depuis l'API
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const apiSettings = await response.json();
+        const themeSettings = {
+          backgroundType: apiSettings.backgroundType || 'color',
+          backgroundColor: apiSettings.backgroundColor || 'black',
+          backgroundImage: apiSettings.backgroundImage || '',
+          gradientFrom: apiSettings.gradientFrom || '#000000',
+          gradientTo: apiSettings.gradientTo || '#111111',
+          shopName: apiSettings.shopName || 'VERSHASH',
+          bannerText: apiSettings.bannerText || 'NOUVEAU DROP',
+          bannerImage: apiSettings.bannerImage || '',
+          orderLink: apiSettings.orderLink || ''
+        };
+        
+        set({ themeSettings });
+        localStorage.setItem('theme-settings', JSON.stringify(themeSettings));
+      }
+    } catch (error) {
+      console.error('Error loading theme settings:', error);
+    }
   },
 }));
