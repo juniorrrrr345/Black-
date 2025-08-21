@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Send, Home, Instagram, MessageCircle, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Send, Home, Instagram, MessageCircle } from 'lucide-react';
 import { products } from '@/lib/products';
 import { Product, ProductPricing } from '@/lib/store';
 import { useStore } from '@/lib/store';
@@ -13,7 +13,6 @@ export default function ProductPage() {
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedPricing, setSelectedPricing] = useState<ProductPricing | null>(null);
-  const [quantity, setQuantity] = useState(1);
   const { addToCart, getTotalItems } = useStore();
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-800 flex items-center justify-center">
         <div className="text-white text-xl font-bold border-2 border-white rounded-lg px-6 py-4">
           Produit non trouvé
         </div>
@@ -39,24 +38,16 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (selectedPricing) {
-      // Add multiple items based on quantity
-      for (let i = 0; i < quantity; i++) {
-        const productWithPricing = {
-          ...product,
-          price: selectedPricing.price,
-          name: `${product.name} (${selectedPricing.weight})`
-        };
-        addToCart(productWithPricing);
-      }
+      const productWithPricing = {
+        ...product,
+        price: selectedPricing.price,
+        name: `${product.name} (${selectedPricing.weight})`
+      };
+      addToCart(productWithPricing);
     } else {
-      for (let i = 0; i < quantity; i++) {
-        addToCart(product);
-      }
+      addToCart(product);
     }
   };
-
-  const increaseQuantity = () => setQuantity(prev => prev + 1);
-  const decreaseQuantity = () => setQuantity(prev => prev > 1 ? prev - 1 : 1);
 
   const handleTelegramOrder = () => {
     const productName = selectedPricing 
@@ -71,216 +62,173 @@ export default function ProductPage() {
   const cartItemCount = getTotalItems();
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <div className="relative pt-8 pb-6 border-b-2 border-white">
-        <div className="text-center">
-          <h1 className="text-5xl md:text-6xl font-black text-white mb-4 tracking-wider">
-            VERSHASH
-          </h1>
-        </div>
-
-        {/* Back Button */}
-        <motion.button
-          onClick={() => router.back()}
-          className="absolute top-8 left-4 bg-white text-black border-2 border-white rounded-lg px-6 py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <ArrowLeft size={20} />
-          <span className="text-sm font-bold">RETOUR</span>
-        </motion.button>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-800 text-white relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 right-10 w-40 h-40 bg-pink-300 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-blue-300 rounded-full blur-2xl"></div>
       </div>
 
-      {/* Product Content */}
-      <div className="max-w-lg mx-auto px-6 py-8">
-        <div className="bg-black border-4 border-white rounded-2xl overflow-hidden">
+      {/* Header */}
+      <div className="relative pt-12 pb-8 text-center">
+        <h1 className="text-6xl md:text-7xl font-black text-white mb-4 tracking-wider drop-shadow-2xl">
+          VERSHASH
+        </h1>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 px-6 pb-32">
+        <div className="max-w-md mx-auto">
           
           {/* Product Image */}
-          <div className="relative h-80 bg-white border-b-4 border-white overflow-hidden">
-            {/* Product Image */}
-            <div className="w-full h-full flex items-center justify-center relative bg-gradient-to-br from-gray-100 to-gray-300">
-              <div 
-                className="w-full h-full bg-cover bg-center opacity-80"
-                style={{
-                  backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23f3f4f6"/><g transform="translate(200,200)"><g transform="scale(4)"><path d="M0,-20 Q-5,-15 -8,-10 Q-10,-5 -8,0 Q-5,5 0,0 Q5,5 8,0 Q10,-5 8,-10 Q5,-15 0,-20 Z" fill="%23374151" opacity="0.9"/><path d="M-15,-10 Q-20,-5 -18,0 Q-15,5 -10,0 Q-5,5 0,0 Q5,5 10,0 Q15,5 18,0 Q20,-5 15,-10" fill="%23111827" opacity="0.8"/><path d="M0,0 L0,15" stroke="%23374151" stroke-width="3" stroke-linecap="round"/><circle cx="0" cy="-12" r="3" fill="%23000000" opacity="0.9"/></g></g></svg>')`
-                }}
-              />
-            </div>
-
-            {/* Tag */}
-            <div className="absolute top-4 right-4 bg-black text-white px-4 py-2 border-2 border-white rounded-lg text-sm font-black flex items-center gap-2">
-              <span>{product.tag}</span>
-              <span className="text-lg">{product.countryFlag}</span>
+          <div className="relative mb-8">
+            <div className="bg-gradient-to-br from-blue-400 via-teal-300 to-blue-500 rounded-3xl p-1 shadow-2xl">
+              <div className="bg-gradient-to-br from-blue-200 to-blue-100 rounded-3xl h-80 flex items-center justify-center relative overflow-hidden">
+                {/* Decorative cannabis image overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-green-100/20 to-green-200/30"></div>
+                <div className="relative z-10 w-full h-full flex items-center justify-center">
+                  <div className="text-8xl opacity-60 filter drop-shadow-lg">🌿</div>
+                </div>
+                
+                {/* Product tag */}
+                <div className="absolute top-6 right-6 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-full text-sm font-black flex items-center gap-2 shadow-lg border-2 border-white">
+                  <span>{product.tag}</span>
+                  <span className="text-lg">🌲</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Product Info */}
-          <div className="p-8 space-y-8">
-            {/* Product Name */}
-            <div className="text-center border-b-2 border-white pb-6">
-              <h2 className="text-3xl font-black text-white tracking-wider">{product.name}</h2>
-              <p className="text-white/80 mt-2 font-bold text-lg">{product.origin}</p>
-            </div>
+          {/* Product Title */}
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-black text-white mb-2 tracking-wide drop-shadow-lg">
+              {product.name} {product.countryFlag}
+            </h2>
+          </div>
 
-            {/* Pricing Options */}
-            {product.pricing && product.pricing.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-black text-center mb-6 text-white border-2 border-white rounded-lg py-3">
-                  SÉLECTIONNER LE POIDS
-                </h3>
-                <div className="grid grid-cols-2 gap-6">
-                  {product.pricing.map((pricing, index) => (
-                    <motion.button
-                      key={index}
-                      onClick={() => setSelectedPricing(pricing)}
-                      className={`border-4 rounded-2xl p-6 text-center transition-all font-black ${
-                        selectedPricing?.weight === pricing.weight
-                          ? 'border-white bg-white text-black'
-                          : 'border-white text-white hover:bg-white hover:text-black'
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <div className="text-2xl font-black mb-2">{pricing.weight}</div>
-                      <div className="text-3xl font-black">{pricing.price}€</div>
-                    </motion.button>
-                  ))}
-                </div>
+          {/* Small flag indicator */}
+          <div className="flex justify-center mb-8">
+            <div className="text-2xl">{product.countryFlag}</div>
+          </div>
+
+          {/* Pricing Section */}
+          <div className="mb-8">
+            <h3 className="text-2xl font-black text-center mb-6 text-white drop-shadow-lg">
+              Poids
+            </h3>
+            
+            {!selectedPricing && (
+              <div className="text-center mb-6">
+                <p className="text-red-400 font-bold text-lg">Veuillez sélectionner un poids</p>
               </div>
             )}
 
-            {/* Quantity Selector */}
-            <div className="border-4 border-white rounded-2xl p-6">
-              <h3 className="text-2xl font-black text-center mb-6 text-white">QUANTITÉ</h3>
-              <div className="flex items-center justify-center gap-6">
+            <div className="grid grid-cols-2 gap-4">
+              {product.pricing?.map((pricing, index) => (
                 <motion.button
-                  onClick={decreaseQuantity}
-                  className="bg-white text-black border-4 border-white rounded-full w-16 h-16 flex items-center justify-center font-black text-2xl hover:bg-black hover:text-white transition-all"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  key={index}
+                  onClick={() => setSelectedPricing(pricing)}
+                  className={`border-2 rounded-2xl p-6 text-center transition-all font-black backdrop-blur-sm ${
+                    selectedPricing?.weight === pricing.weight
+                      ? 'border-pink-400 bg-pink-500/20 text-white shadow-lg shadow-pink-500/25'
+                      : 'border-white/50 text-white hover:border-pink-400 hover:bg-pink-500/10'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Minus size={24} />
+                  <div className="text-xl font-black mb-2">{pricing.weight}</div>
+                  <div className="text-2xl font-black">{pricing.price}€</div>
                 </motion.button>
-                
-                <div className="bg-white text-black border-4 border-white rounded-2xl px-8 py-4 min-w-[100px] text-center">
-                  <span className="text-3xl font-black">{quantity}</span>
-                </div>
-                
-                <motion.button
-                  onClick={increaseQuantity}
-                  className="bg-white text-black border-4 border-white rounded-full w-16 h-16 flex items-center justify-center font-black text-2xl hover:bg-black hover:text-white transition-all"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Plus size={24} />
-                </motion.button>
-              </div>
+              ))}
             </div>
+          </div>
 
-            {/* Total Price Display */}
-            {selectedPricing && (
-              <div className="text-center border-4 border-white rounded-2xl p-6 bg-white text-black">
-                <div className="text-xl font-black mb-2">TOTAL</div>
-                <div className="text-4xl font-black">
-                  {(selectedPricing.price * quantity).toLocaleString()}€
-                </div>
-              </div>
-            )}
+          {/* Action Buttons */}
+          <div className="space-y-4">
+            {/* Commander Button */}
+            <motion.button
+              onClick={handleTelegramOrder}
+              disabled={!selectedPricing}
+              className={`w-full py-6 rounded-2xl font-black text-xl flex items-center justify-center gap-3 transition-all shadow-2xl ${
+                !selectedPricing
+                  ? 'bg-gray-600/50 border-2 border-gray-500 text-gray-300 cursor-not-allowed backdrop-blur-sm'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-500 border-2 border-white text-white hover:from-blue-500 hover:to-blue-400 shadow-blue-500/25'
+              }`}
+              whileHover={!selectedPricing ? {} : { scale: 1.02 }}
+              whileTap={!selectedPricing ? {} : { scale: 0.98 }}
+            >
+              <Send size={24} />
+              COMMANDER
+            </motion.button>
 
-            {/* Selection Warning */}
-            {!selectedPricing && !!product.pricing && (
-              <div className="text-center text-white border-4 border-white rounded-2xl p-4 bg-red-600">
-                <div className="text-lg font-black">⚠️ VEUILLEZ SÉLECTIONNER UN POIDS</div>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="space-y-4">
-              {/* Telegram Order Button */}
-              <motion.button
-                onClick={handleTelegramOrder}
-                disabled={!selectedPricing && !!product.pricing}
-                className={`w-full py-6 rounded-2xl font-black text-xl flex items-center justify-center gap-3 border-4 transition-all ${
-                  !selectedPricing && !!product.pricing
-                    ? 'bg-gray-500 border-gray-500 text-gray-300 cursor-not-allowed'
-                    : 'bg-black border-white text-white hover:bg-white hover:text-black'
-                }`}
-                whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
-                whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
-              >
-                <Send size={28} />
-                COMMANDER VIA TELEGRAM
-              </motion.button>
-
-              {/* Add to Cart Button */}
-              <motion.button
-                onClick={handleAddToCart}
-                disabled={!selectedPricing && !!product.pricing}
-                className={`w-full py-6 rounded-2xl font-black text-xl border-4 transition-all flex items-center justify-center gap-3 ${
-                  !selectedPricing && !!product.pricing
-                    ? 'bg-gray-500 border-gray-500 text-gray-300 cursor-not-allowed'
-                    : 'bg-white border-white text-black hover:bg-black hover:text-white'
-                }`}
-                whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
-                whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
-              >
-                <ShoppingCart size={28} />
-                AJOUTER AU PANIER ({quantity})
-              </motion.button>
-            </div>
+            {/* Add to Cart Button */}
+            <motion.button
+              onClick={handleAddToCart}
+              disabled={!selectedPricing}
+              className={`w-full py-6 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 shadow-2xl ${
+                !selectedPricing
+                  ? 'bg-gray-600/50 border-2 border-gray-500 text-gray-300 cursor-not-allowed backdrop-blur-sm'
+                  : 'bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-white text-white hover:from-purple-500 hover:to-pink-500 shadow-purple-500/25'
+              }`}
+              whileHover={!selectedPricing ? {} : { scale: 1.02 }}
+              whileTap={!selectedPricing ? {} : { scale: 0.98 }}
+            >
+              <ShoppingCart size={24} />
+              AJOUTER AU PANIER
+            </motion.button>
           </div>
         </div>
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white">
-        <div className="max-w-lg mx-auto flex justify-around py-6">
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-purple-900/95 via-blue-900/95 to-purple-800/95 backdrop-blur-lg border-t border-white/20">
+        <div className="max-w-lg mx-auto flex justify-around py-4">
           <motion.button
             onClick={() => router.push('/')}
-            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
+            className="flex flex-col items-center gap-1 text-white hover:text-pink-300 transition-all rounded-xl p-3 font-bold"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <Home size={28} />
-            <span className="text-xs">ACCUEIL</span>
+            <Home size={24} />
+            <span className="text-xs">Accueil</span>
           </motion.button>
 
           <motion.button
             onClick={() => window.open('https://instagram.com/vershash', '_blank')}
-            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
+            className="flex flex-col items-center gap-1 text-white hover:text-pink-300 transition-all rounded-xl p-3 font-bold"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <Instagram size={28} />
-            <span className="text-xs">INSTAGRAM</span>
+            <Instagram size={24} />
+            <span className="text-xs">Instagram</span>
           </motion.button>
 
           <motion.button
             onClick={() => window.open('https://t.me/VershashBot', '_blank')}
-            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
+            className="flex flex-col items-center gap-1 text-white hover:text-pink-300 transition-all rounded-xl p-3 font-bold"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <MessageCircle size={28} />
-            <span className="text-xs">TELEGRAM</span>
+            <MessageCircle size={24} />
+            <span className="text-xs">Telegram</span>
           </motion.button>
 
           <motion.button
             onClick={() => router.push('/cart')}
-            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black relative"
+            className="flex flex-col items-center gap-1 text-white hover:text-pink-300 transition-all rounded-xl p-3 font-bold relative"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
             <div className="relative">
-              <ShoppingCart size={28} />
+              <ShoppingCart size={24} />
               {cartItemCount > 0 && (
-                <div className="absolute -top-3 -right-3 bg-white text-black text-sm rounded-full w-7 h-7 flex items-center justify-center font-black border-2 border-black">
+                <div className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-black border-2 border-white">
                   {cartItemCount}
                 </div>
               )}
             </div>
-            <span className="text-xs">PANIER ({cartItemCount})</span>
+            <span className="text-xs">Panier ({cartItemCount})</span>
           </motion.button>
         </div>
       </div>
