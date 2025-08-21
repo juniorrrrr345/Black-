@@ -5,102 +5,98 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingBag, Home, Instagram, Send, MessageCircle, 
   Star, TrendingUp, Package, Clock, Shield, 
-  Plus, Minus, X, Trash2, ChevronRight, Sparkles 
+  Plus, Minus, X, Trash2, ChevronRight, Sparkles,
+  ChevronLeft, ChevronDown
 } from 'lucide-react';
 
-// Produits d'exemple
+// Produits d'exemple avec style VERSHASH
 const sampleProducts = [
   {
     _id: '1',
-    name: 'Purple Haze Premium',
-    category: 'Fleurs CBD',
+    name: 'Cali Spain',
+    category: 'WEED',
+    type: 'weed',
     price: 45,
-    originalPrice: 60,
     image: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=400',
-    rating: 4.8,
-    reviews: 234,
-    badge: 'Best Seller',
-    description: 'Fleur premium avec un taux de CBD élevé',
-    inStock: true
+    badge: 'BON RAPPORT QUALITÉ',
+    badgeColor: 'bg-red-600',
+    flag: '🇪🇸',
+    description: 'Qualité premium d\'Espagne'
   },
   {
     _id: '2',
-    name: 'OG Kush Elite',
-    category: 'Fleurs CBD',
+    name: 'Lemon Cherry Gelato',
+    category: 'WEED',
+    type: 'weed',
     price: 55,
-    originalPrice: 70,
     image: 'https://images.unsplash.com/photo-1598662957563-ee4965d4d72c?w=400',
-    rating: 4.9,
-    reviews: 189,
-    badge: 'Nouveau',
-    description: 'Variété légendaire aux arômes uniques',
-    inStock: true
+    badge: 'DE LA FRAPPE',
+    badgeColor: 'bg-green-500',
+    flag: '🇨🇦',
+    description: 'Saveurs citron-cerise exceptionnelles'
   },
   {
     _id: '3',
-    name: 'Amnesia Gold',
-    category: 'Fleurs CBD',
+    name: 'Purple Haze',
+    category: 'WEED',
+    type: 'weed',
     price: 50,
-    originalPrice: 65,
     image: 'https://images.unsplash.com/photo-1587049352846-4a222e784efd?w=400',
-    rating: 4.7,
-    reviews: 156,
-    badge: 'Premium',
-    description: 'Qualité supérieure, effet relaxant',
-    inStock: true
+    badge: 'PREMIUM',
+    badgeColor: 'bg-purple-600',
+    flag: '🇳🇱',
+    description: 'Classique hollandais'
   },
   {
     _id: '4',
-    name: 'Strawberry Diesel',
-    category: 'Fleurs CBD',
+    name: 'Afghan Hash',
+    category: 'HASH',
+    type: 'hash',
     price: 48,
-    originalPrice: 62,
     image: 'https://images.unsplash.com/photo-1536819114556-1e10f967fb61?w=400',
-    rating: 4.6,
-    reviews: 203,
-    badge: 'Promo',
-    description: 'Notes fruitées et diesel caractéristiques',
-    inStock: true
+    badge: 'TRADITIONNEL',
+    badgeColor: 'bg-amber-600',
+    flag: '🇦🇫',
+    description: 'Hash traditionnel afghan'
   },
   {
     _id: '5',
-    name: 'White Widow Supreme',
-    category: 'Fleurs CBD',
+    name: 'Moroccan Gold',
+    category: 'HASH',
+    type: 'hash',
     price: 60,
-    originalPrice: 75,
     image: 'https://images.unsplash.com/photo-1520209268518-aec60b8bb5ca?w=400',
-    rating: 5.0,
-    reviews: 312,
-    badge: 'Exclusif',
-    description: 'La légendaire White Widow en version CBD',
-    inStock: true
+    badge: 'GOLD QUALITY',
+    badgeColor: 'bg-yellow-600',
+    flag: '🇲🇦',
+    description: 'Hash doré du Maroc'
   },
   {
     _id: '6',
-    name: 'Gelato Dream',
-    category: 'Fleurs CBD',
+    name: 'Bubble Hash',
+    category: 'HASH',
+    type: 'hash',
     price: 52,
-    originalPrice: 68,
     image: 'https://images.unsplash.com/photo-1503262028195-93c528f03218?w=400',
-    rating: 4.8,
-    reviews: 178,
-    badge: 'Populaire',
-    description: 'Saveurs douces et crémeuses',
-    inStock: true
+    badge: 'BUBBLE',
+    badgeColor: 'bg-blue-600',
+    flag: '🇨🇦',
+    description: 'Hash bubble premium'
   }
 ];
 
 export default function ModernShop() {
   const [cart, setCart] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Animation du header au scroll
-  const [scrolled, setScrolled] = useState(false);
+  // Carrousel automatique
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % 2);
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   const addToCart = (product: any) => {
@@ -114,7 +110,6 @@ export default function ModernShop() {
     } else {
       setCart([...cart, { ...product, quantity: 1 }]);
     }
-    // Petit feedback visuel
     setShowCart(true);
     setTimeout(() => setShowCart(false), 2000);
   };
@@ -141,294 +136,222 @@ export default function ModernShop() {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
   };
 
+  const filteredProducts = selectedCategory === 'all' 
+    ? sampleProducts 
+    : sampleProducts.filter(product => product.type === selectedCategory);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Header Moderne */}
-      <motion.header 
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg' : 'bg-white'
-        }`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-      >
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <motion.div 
-              className="flex items-center space-x-3"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                PremiumShop
-              </span>
-            </motion.div>
-
-            {/* Navigation centrale */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
-                Nouveautés
-              </a>
-              <a href="#" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
-                Promotions
-              </a>
-              <a href="#" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
-                Best Sellers
-              </a>
-            </nav>
-
-            {/* Actions */}
-            <div className="flex items-center space-x-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowCart(true)}
-                className="relative p-2"
-              >
-                <ShoppingBag className="w-6 h-6 text-gray-700" />
-                {getTotalItems() > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                    {getTotalItems()}
-                  </span>
-                )}
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Hero Section */}
-      <section className="pt-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50"></div>
-        <div className="relative container mx-auto px-4 py-20">
-          <motion.div 
-            className="text-center max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Interface Mobile VERSHASH */}
+      <div className="max-w-md mx-auto bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen relative overflow-hidden">
+        
+        {/* Header VERSHASH */}
+        <div className="text-center py-8 relative z-10">
+          <motion.h1 
+            className="text-4xl font-black text-white tracking-wider"
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <motion.div
-              className="inline-flex items-center space-x-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-6"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <TrendingUp className="w-4 h-4" />
-              <span>Livraison gratuite dès 50€</span>
-            </motion.div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Collection Premium
-              </span>
-            </h1>
-            
-            <p className="text-xl text-gray-600 mb-8">
-              Découvrez notre sélection exclusive de produits haut de gamme
-            </p>
-
-            <div className="flex flex-wrap justify-center gap-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all"
-              >
-                Explorer la collection
-                <ChevronRight className="inline ml-2 w-5 h-5" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-white text-gray-800 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all border border-gray-200"
-              >
-                Voir les promotions
-              </motion.button>
-            </div>
-          </motion.div>
+            VERSHASH
+          </motion.h1>
         </div>
-      </section>
 
-      {/* Features */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { icon: Package, title: 'Livraison Express', desc: '24-48h' },
-              { icon: Shield, title: 'Paiement Sécurisé', desc: '100% protégé' },
-              { icon: Star, title: 'Qualité Premium', desc: 'Produits certifiés' },
-              { icon: Clock, title: 'Support 24/7', desc: 'À votre service' }
-            ].map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl mb-4">
-                  <feature.icon className="w-7 h-7 text-indigo-600" />
+        {/* Carrousel Hero */}
+        <div className="relative h-80 mx-4 mb-6 rounded-3xl overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -300 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-800 rounded-3xl"
+            >
+              <div className="relative h-full flex flex-col justify-center items-center text-center p-6">
+                <div className="text-6xl font-black text-white mb-4">NEW</div>
+                <div className="bg-black/80 px-6 py-3 rounded-full flex items-center space-x-2">
+                  <span className="text-2xl">🇨🇦</span>
+                  <span className="text-white font-bold text-lg">RESTOCK CANADIENNE</span>
+                  <span className="text-2xl">🇨🇦</span>
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-1">{feature.title}</h3>
-                <p className="text-sm text-gray-500">{feature.desc}</p>
-              </motion.div>
+                
+                {/* Image de produit au centre */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-30">
+                  <img 
+                    src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=400" 
+                    alt="Product"
+                    className="w-64 h-64 object-cover rounded-full"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation du carrousel */}
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
+            {[0, 1].map((index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  currentSlide === index ? 'bg-white' : 'bg-white/50'
+                }`}
+              />
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Products Grid */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.div 
-            className="text-center mb-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          {/* Flèches de navigation */}
+          <button
+            onClick={() => setCurrentSlide((prev) => (prev - 1 + 2) % 2)}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/30 rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors"
           >
-            <h2 className="text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Nos Produits Premium
-              </span>
-            </h2>
-            <p className="text-gray-600">Sélection exclusive de produits d'exception</p>
-          </motion.div>
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setCurrentSlide((prev) => (prev + 1) % 2)}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/30 rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sampleProducts.map((product, index) => (
+        {/* Section Catégories */}
+        <div className="mx-4 mb-8">
+          <div className="bg-slate-800/50 backdrop-blur-lg rounded-3xl p-6">
+            <h2 className="text-2xl font-bold text-white text-center mb-6">Catégorie</h2>
+            <div className="flex justify-center space-x-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedCategory('weed')}
+                className={`px-8 py-3 rounded-full border-2 transition-all font-bold ${
+                  selectedCategory === 'weed' || selectedCategory === 'all'
+                    ? 'border-green-500 bg-green-500/20 text-green-400'
+                    : 'border-purple-500 text-purple-400'
+                }`}
+              >
+                <span className="mr-2">🌿</span>
+                WEED
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedCategory('hash')}
+                className={`px-8 py-3 rounded-full border-2 transition-all font-bold ${
+                  selectedCategory === 'hash' || selectedCategory === 'all'
+                    ? 'border-red-500 bg-red-500/20 text-red-400'
+                    : 'border-purple-500 text-purple-400'
+                }`}
+              >
+                <span className="mr-2">🔥</span>
+                HASH
+              </motion.button>
+            </div>
+          </div>
+        </div>
+
+        {/* Grille de Produits */}
+        <div className="px-4 pb-24">
+          <div className="grid grid-cols-2 gap-4">
+            {filteredProducts.slice(0, 4).map((product, index) => (
               <motion.div
                 key={product._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="group"
+                whileHover={{ scale: 1.02 }}
+                className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 shadow-xl"
               >
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                  {/* Image */}
-                  <div className="relative h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    {/* Badge */}
-                    <span className="absolute top-4 left-4 px-3 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-semibold rounded-full">
-                      {product.badge}
-                    </span>
-                    {/* Discount */}
-                    <span className="absolute top-4 right-4 px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                      -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                {/* Image */}
+                <div className="relative h-48">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                  
+                  {/* Badge catégorie */}
+                  <div className="absolute top-3 left-3 bg-black/70 px-3 py-1 rounded-full">
+                    <span className="text-xs font-bold text-white flex items-center">
+                      {product.type === 'weed' ? '🌿' : '🔥'} {product.category}
                     </span>
                   </div>
+                  
+                  {/* Badge qualité */}
+                  <div className={`absolute top-3 right-3 ${product.badgeColor} px-3 py-1 rounded-full`}>
+                    <span className="text-xs font-bold text-white">{product.badge}</span>
+                  </div>
+                </div>
 
-                  {/* Content */}
-                  <div className="p-6">
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-500 mb-1">{product.category}</p>
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">{product.name}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
-                    </div>
-
-                    {/* Rating */}
-                    <div className="flex items-center mb-4">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : ''}`} />
-                        ))}
-                      </div>
-                      <span className="ml-2 text-sm text-gray-500">
-                        {product.rating} ({product.reviews} avis)
-                      </span>
-                    </div>
-
-                    {/* Price and Action */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-2xl font-bold text-gray-800">{product.price}€</span>
-                        <span className="ml-2 text-sm text-gray-400 line-through">{product.originalPrice}€</span>
-                      </div>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => addToCart(product)}
-                        className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-                      >
-                        <Plus className="w-5 h-5" />
-                      </motion.button>
-                    </div>
+                {/* Contenu */}
+                <div className="p-4">
+                  <h3 className="text-lg font-bold text-white mb-2">{product.name}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl">{product.flag}</span>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => addToCart(product)}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 rounded-full text-white font-bold text-sm hover:shadow-lg transition-all"
+                    >
+                      {product.price}€
+                    </motion.button>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {/* Accueil */}
-            <div>
-              <h3 className="font-bold text-lg mb-4 flex items-center">
-                <Home className="w-5 h-5 mr-2" />
-                Accueil
-              </h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Nouveautés</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Promotions</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Best Sellers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">À propos</a></li>
-              </ul>
-            </div>
-
-            {/* Nos Réseaux */}
-            <div>
-              <h3 className="font-bold text-lg mb-4">Nos Réseaux</h3>
-              <div className="flex space-x-4">
-                <motion.a
-                  href="#"
-                  whileHover={{ scale: 1.1 }}
-                  className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center"
-                >
-                  <Instagram className="w-5 h-5" />
-                </motion.a>
-                <motion.a
-                  href="#"
-                  whileHover={{ scale: 1.1 }}
-                  className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center"
-                >
-                  <Send className="w-5 h-5" />
-                </motion.a>
-                <motion.a
-                  href="#"
-                  whileHover={{ scale: 1.1 }}
-                  className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                </motion.a>
+        {/* Barre de Navigation Inférieure */}
+        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-slate-900/95 backdrop-blur-lg">
+          <div className="flex justify-around items-center py-4 px-6">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex flex-col items-center space-y-1 text-white"
+            >
+              <Home className="w-6 h-6" />
+              <span className="text-xs font-medium">Accueil</span>
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex flex-col items-center space-y-1 text-gray-400"
+            >
+              <Instagram className="w-6 h-6" />
+              <span className="text-xs font-medium">Instagram</span>
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex flex-col items-center space-y-1 text-gray-400"
+            >
+              <Send className="w-6 h-6" />
+              <span className="text-xs font-medium">Telegram</span>
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setShowCart(true)}
+              className="relative flex flex-col items-center space-y-1 text-white"
+            >
+              <div className="relative">
+                <ShoppingBag className="w-6 h-6" />
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {getTotalItems()}
+                  </span>
+                )}
               </div>
-              <p className="text-gray-400 mt-4 text-sm">
-                Suivez-nous pour les dernières nouveautés et offres exclusives
-              </p>
-            </div>
-
-            {/* Contact & Support */}
-            <div>
-              <h3 className="font-bold text-lg mb-4">Support Client</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>📧 contact@premiumshop.com</li>
-                <li>📱 +33 1 23 45 67 89</li>
-                <li>🕒 Lun-Ven: 9h-18h</li>
-                <li>📍 Paris, France</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 PremiumShop. Tous droits réservés.</p>
+              <span className="text-xs font-medium">Panier ({getTotalItems()})</span>
+            </motion.button>
           </div>
         </div>
-      </footer>
+      </div>
 
       {/* Shopping Cart Sidebar */}
       <AnimatePresence>
@@ -443,21 +366,21 @@ export default function ModernShop() {
               onClick={() => setShowCart(false)}
             />
             
-            {/* Cart Panel */}
+            {/* Cart Panel - Style VERSHASH */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl z-50"
+              className="fixed right-0 top-0 h-full w-full max-w-md bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 shadow-2xl z-50"
             >
               {/* Cart Header */}
-              <div className="p-6 border-b">
+              <div className="p-6 border-b border-slate-700">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-gray-800">Mon Panier</h2>
+                  <h2 className="text-2xl font-bold text-white">Mon Panier</h2>
                   <button
                     onClick={() => setShowCart(false)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-white"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -468,8 +391,8 @@ export default function ModernShop() {
               <div className="flex-1 overflow-y-auto p-6">
                 {cart.length === 0 ? (
                   <div className="text-center py-12">
-                    <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">Votre panier est vide</p>
+                    <ShoppingBag className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-400">Votre panier est vide</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -477,7 +400,7 @@ export default function ModernShop() {
                       <motion.div
                         key={item._id}
                         layout
-                        className="bg-gray-50 rounded-xl p-4"
+                        className="bg-slate-800/50 backdrop-blur-lg rounded-xl p-4"
                       >
                         <div className="flex gap-4">
                           <img 
@@ -486,29 +409,31 @@ export default function ModernShop() {
                             className="w-20 h-20 object-cover rounded-lg"
                           />
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800">{item.name}</h4>
-                            <p className="text-sm text-gray-500">{item.category}</p>
+                            <h4 className="font-semibold text-white">{item.name}</h4>
+                            <p className="text-sm text-gray-400 flex items-center">
+                              {item.type === 'weed' ? '🌿' : '🔥'} {item.category}
+                            </p>
                             <div className="flex items-center justify-between mt-2">
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => updateQuantity(item._id, -1)}
-                                  className="w-7 h-7 bg-white rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors"
+                                  className="w-7 h-7 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-600 transition-colors text-white"
                                 >
                                   <Minus className="w-4 h-4" />
                                 </button>
-                                <span className="font-semibold w-8 text-center">{item.quantity}</span>
+                                <span className="font-semibold w-8 text-center text-white">{item.quantity}</span>
                                 <button
                                   onClick={() => updateQuantity(item._id, 1)}
-                                  className="w-7 h-7 bg-white rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors"
+                                  className="w-7 h-7 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-600 transition-colors text-white"
                                 >
                                   <Plus className="w-4 h-4" />
                                 </button>
                               </div>
                               <div className="flex items-center gap-3">
-                                <span className="font-bold text-gray-800">{item.price * item.quantity}€</span>
+                                <span className="font-bold text-white">{item.price * item.quantity}€</span>
                                 <button
                                   onClick={() => removeFromCart(item._id)}
-                                  className="text-red-500 hover:text-red-600"
+                                  className="text-red-400 hover:text-red-300"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -524,20 +449,20 @@ export default function ModernShop() {
 
               {/* Cart Footer */}
               {cart.length > 0 && (
-                <div className="border-t p-6">
+                <div className="border-t border-slate-700 p-6">
                   <div className="flex justify-between mb-4">
-                    <span className="text-gray-600">Total ({getTotalItems()} articles)</span>
-                    <span className="text-2xl font-bold text-gray-800">{getTotalPrice()}€</span>
+                    <span className="text-gray-400">Total ({getTotalItems()} articles)</span>
+                    <span className="text-2xl font-bold text-white">{getTotalPrice()}€</span>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
                   >
                     Procéder au paiement
                   </motion.button>
-                  <p className="text-center text-sm text-gray-500 mt-3">
-                    Livraison gratuite dès 50€ d'achat
+                  <p className="text-center text-sm text-gray-400 mt-3">
+                    Livraison discrète garantie
                   </p>
                 </div>
               )}
