@@ -111,7 +111,7 @@ export default function ModernShop() {
       const response = await fetch('/api/settings');
       if (response.ok) {
         const data = await response.json();
-        setSettings(prev => ({ ...prev, ...data }));
+        setSettings((prev: any) => ({ ...prev, ...data }));
       }
     } catch (error) {
       console.error('Erreur chargement settings:', error);
