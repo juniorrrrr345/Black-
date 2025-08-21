@@ -12,12 +12,16 @@ export interface Product {
   price: number; // Base price for compatibility
   pricing?: ProductPricing[]; // Multiple pricing options
   image: string;
-  category: 'weed' | 'hash';
+  category: string | 'weed' | 'hash';
   tag?: string;
-  tagColor?: 'red' | 'green';
+  tagColor?: string | 'red' | 'green' | 'blue';
   country: string;
   countryFlag: string;
   description?: string;
+  video?: string;
+  images?: string[];
+  stock?: number;
+  featured?: boolean;
 }
 
 export interface CartItem extends Product {

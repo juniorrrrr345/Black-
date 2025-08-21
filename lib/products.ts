@@ -6,18 +6,18 @@ export interface ProductPricing {
 export interface Product {
   id: string;
   name: string;
-  price: number;
-  image: string;
-  images?: string[];
-  video?: string;
-  category: string | 'weed' | 'hash';
-  description: string;
   origin: string;
+  price: number;
+  pricing?: ProductPricing[];
+  image: string;
+  category: string | 'weed' | 'hash';
+  tag?: string;
+  tagColor?: string | 'red' | 'green' | 'blue';
   country: string;
   countryFlag: string;
-  tag?: string;
-  tagColor?: string;
-  pricing?: ProductPricing[];
+  description?: string;
+  video?: string;
+  images?: string[];
   stock?: number;
   featured?: boolean;
 }
