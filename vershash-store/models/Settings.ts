@@ -5,6 +5,13 @@ export interface ISettings {
   shopName: string;
   bannerImage: string;
   bannerText: string;
+  orderLink: string;
+  socialLinks: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    telegram?: string;
+  };
   updatedAt: Date;
 }
 
@@ -21,6 +28,17 @@ const SettingsSchema = new mongoose.Schema({
     type: String,
     default: 'NOUVEAU DROP',
   },
+  orderLink: {
+    type: String,
+    default: '',
+    description: 'Lien pour envoyer les commandes (Telegram, WhatsApp, etc.)'
+  },
+  socialLinks: {
+    instagram: { type: String, default: '' },
+    facebook: { type: String, default: '' },
+    twitter: { type: String, default: '' },
+    telegram: { type: String, default: '' },
+  }
 }, {
   timestamps: true,
 });

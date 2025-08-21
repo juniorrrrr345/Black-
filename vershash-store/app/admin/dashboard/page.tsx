@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  const [settings, setSettings] = useState({ shopName: 'VERSHASH', bannerText: 'NOUVEAU DROP', bannerImage: '' });
+  const [settings, setSettings] = useState<any>({ shopName: 'VERSHASH', bannerText: 'NOUVEAU DROP', bannerImage: '', orderLink: '' });
   const [isLoading, setIsLoading] = useState(true);
   
   // Modal states
@@ -310,6 +310,20 @@ export default function AdminDashboard() {
                 )}
               </div>
 
+              <div>
+                <label className="block text-sm font-medium mb-2">🔗 Lien de commande (Telegram/WhatsApp)</label>
+                <input
+                  type="text"
+                  value={settings.orderLink || ''}
+                  onChange={(e) => setSettings({ ...settings, orderLink: e.target.value })}
+                  placeholder="https://t.me/votre_bot?text={message}"
+                  className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Utilisez {'{message}'} pour insérer le message de commande
+                </p>
+              </div>
+
               <button
                 onClick={handleSaveSettings}
                 className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-colors"
@@ -364,6 +378,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
     name: product?.name || '',
     price: product?.price || 0,
     quantity: product?.quantity || 0,
+    weight: product?.weight || '1g',
     category: product?.category || '',
     description: product?.description || '',
     image: product?.image || '',
@@ -418,6 +433,14 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
             placeholder="Quantité"
             value={formData.quantity}
             onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) })}
+            className="w-full bg-gray-800 px-4 py-2 rounded-lg"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Poids (ex: 1g, 3g, 5g)"
+            value={formData.weight}
+            onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
             className="w-full bg-gray-800 px-4 py-2 rounded-lg"
             required
           />
