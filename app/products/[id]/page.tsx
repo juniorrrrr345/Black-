@@ -144,7 +144,7 @@ export default function ProductPage() {
             )}
 
             {/* Selection Warning */}
-            {!selectedPricing && product.pricing && (
+            {!selectedPricing && !!product.pricing && (
               <div className="text-center text-red-400 text-sm">
                 Veuillez sélectionner un poids
               </div>
@@ -155,14 +155,14 @@ export default function ProductPage() {
               {/* Telegram Order Button */}
               <motion.button
                 onClick={handleTelegramOrder}
-                disabled={!selectedPricing && product.pricing}
+                disabled={!selectedPricing && !!product.pricing}
                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all ${
-                  !selectedPricing && product.pricing
+                  !selectedPricing && !!product.pricing
                     ? 'bg-gray-600 cursor-not-allowed'
                     : 'bg-blue-600 hover:bg-blue-700'
                 }`}
-                whileHover={!selectedPricing && product.pricing ? {} : { scale: 1.02 }}
-                whileTap={!selectedPricing && product.pricing ? {} : { scale: 0.98 }}
+                whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
+                whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
               >
                 <Send size={24} />
                 COMMANDER
@@ -171,14 +171,14 @@ export default function ProductPage() {
               {/* Add to Cart Button */}
               <motion.button
                 onClick={handleAddToCart}
-                disabled={!selectedPricing && product.pricing}
+                disabled={!selectedPricing && !!product.pricing}
                 className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
-                  !selectedPricing && product.pricing
+                  !selectedPricing && !!product.pricing
                     ? 'bg-gray-600 cursor-not-allowed'
                     : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                 }`}
-                whileHover={!selectedPricing && product.pricing ? {} : { scale: 1.02 }}
-                whileTap={!selectedPricing && product.pricing ? {} : { scale: 0.98 }}
+                whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
+                whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
               >
                 AJOUTER AU PANIER
               </motion.button>
