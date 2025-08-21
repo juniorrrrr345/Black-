@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 export interface Product {
   id: string;
@@ -31,70 +30,62 @@ interface StoreState {
   setAuthenticated: (value: boolean) => void;
 }
 
-export const useStore = create<StoreState>()(
-  persist(
-    (set, get) => ({
-      cart: [],
-      isAuthenticated: false,
+export const useStore = create<StoreState>((set, get) => ({
+  cart: [],
+  isAuthenticated: false,
+  
+  addToCart: (product) => {
+    set((state) => {
+      const existingItem = state.cart.find((item) => item.id === product.id);
       
-      addToCart: (product) => {
-        set((state) => {
-          const existingItem = state.cart.find((item) => item.id === product.id);
-          
-          if (existingItem) {
-            return {
-              cart: state.cart.map((item) =>
-                item.id === product.id
-                  ? { ...item, quantity: item.quantity + 1 }
-                  : item
-              ),
-            };
-          }
-          
-          return {
-            cart: [...state.cart, { ...product, quantity: 1 }],
-          };
-        });
-      },
-      
-      removeFromCart: (productId) => {
-        set((state) => ({
-          cart: state.cart.filter((item) => item.id !== productId),
-        }));
-      },
-      
-      updateQuantity: (productId, quantity) => {
-        if (quantity <= 0) {
-          get().removeFromCart(productId);
-          return;
-        }
-        
-        set((state) => ({
+      if (existingItem) {
+        return {
           cart: state.cart.map((item) =>
-            item.id === productId ? { ...item, quantity } : item
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
           ),
-        }));
-      },
+        };
+      }
       
-      clearCart: () => {
-        set({ cart: [] });
-      },
-      
-      getTotalItems: () => {
-        return get().cart.reduce((total, item) => total + item.quantity, 0);
-      },
-      
-      getTotalPrice: () => {
-        return get().cart.reduce((total, item) => total + item.price * item.quantity, 0);
-      },
-      
-      setAuthenticated: (value) => {
-        set({ isAuthenticated: value });
-      },
-    }),
-    {
-      name: 'vershash-store',
-      partialize: (state) => ({ cart: state.cart }),
+      return {
+        cart: [...state.cart, { ...product, quantity: 1 }],
+      };
+    });
+  },
+  
+  removeFromCart: (productId) => {
+    set((state) => ({
+      cart: state.cart.filter((item) => item.id !== productId),
+    }));
+  },
+  
+  updateQuantity: (productId, quantity) => {
+    if (quantity <= 0) {
+      get().removeFromCart(productId);
+      return;
     }
-  )
-);
+    
+    set((state) => ({
+      cart: state.cart.map((item) =>
+        item.id === productId ? { ...item, quantity } : item
+      ),
+    }));
+  },
+  
+  clearCart: () => {
+    set({ cart: [] });
+  },
+  
+  getTotalItems: () => {
+    return get().cart.reduce((total, item) => total + item.quantity, 0);
+  },
+  
+  getTotalPrice: () => {
+    return get().cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  },
+  
+  setAuthenticated: (value) => {
+    set({ isAuthenticated: value });
+  },
+}));
