@@ -204,6 +204,17 @@ export default function AdminDashboard() {
               <Settings className="inline mr-2" size={16} />
               PARAMÈTRES
             </button>
+            <button
+              onClick={() => setActiveTab('background')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'background'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <ImageIcon className="inline mr-2" size={16} />
+              BACKGROUND
+            </button>
           </div>
         </div>
       </div>
@@ -568,6 +579,230 @@ export default function AdminDashboard() {
               >
                 <Eye size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
                 PRÉVISUALISER
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Background Tab */}
+        {activeTab === 'background' && (
+          <div>
+            <div className="mb-6 md:mb-8">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2">🎨 PERSONNALISATION DU FOND</h2>
+              <p className="text-gray-400">Personnalisez l'apparence de votre boutique</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              {/* Type de fond */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <h3 className="text-xl font-black text-white mb-6">TYPE DE FOND</h3>
+                
+                <div className="space-y-4">
+                  {/* Sélecteur de type */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => setSettings({ ...settings, backgroundType: 'color' })}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        settings.backgroundType === 'color' 
+                          ? 'bg-white text-black border-white' 
+                          : 'bg-black text-white border-gray-600 hover:border-white'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">🎨</div>
+                      <div className="font-bold text-sm">Couleur</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({ ...settings, backgroundType: 'gradient' })}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        settings.backgroundType === 'gradient' 
+                          ? 'bg-white text-black border-white' 
+                          : 'bg-black text-white border-gray-600 hover:border-white'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">🌈</div>
+                      <div className="font-bold text-sm">Dégradé</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({ ...settings, backgroundType: 'image' })}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        settings.backgroundType === 'image' 
+                          ? 'bg-white text-black border-white' 
+                          : 'bg-black text-white border-gray-600 hover:border-white'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">🖼️</div>
+                      <div className="font-bold text-sm">Image</div>
+                    </button>
+                  </div>
+
+                  {/* Options selon le type */}
+                  {settings.backgroundType === 'color' && (
+                    <div>
+                      <label className="block text-white font-bold mb-3">Couleur de fond</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={settings.backgroundColor}
+                          onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                          className="w-20 h-12 rounded cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={settings.backgroundColor}
+                          onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                          className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-mono font-bold"
+                          placeholder="#000000"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {settings.backgroundType === 'gradient' && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-white font-bold mb-3">Couleur de départ</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.gradientFrom}
+                            onChange={(e) => setSettings({ ...settings, gradientFrom: e.target.value })}
+                            className="w-20 h-12 rounded cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.gradientFrom}
+                            onChange={(e) => setSettings({ ...settings, gradientFrom: e.target.value })}
+                            className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-mono font-bold"
+                            placeholder="#000000"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-white font-bold mb-3">Couleur de fin</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.gradientTo}
+                            onChange={(e) => setSettings({ ...settings, gradientTo: e.target.value })}
+                            className="w-20 h-12 rounded cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.gradientTo}
+                            onChange={(e) => setSettings({ ...settings, gradientTo: e.target.value })}
+                            className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-mono font-bold"
+                            placeholder="#111111"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {settings.backgroundType === 'image' && (
+                    <div>
+                      <label className="block text-white font-bold mb-3">Image de fond</label>
+                      <CloudinaryUpload
+                        currentImage={settings.backgroundImage}
+                        onUpload={(url) => setSettings({ ...settings, backgroundImage: url })}
+                        onRemove={() => setSettings({ ...settings, backgroundImage: '' })}
+                      />
+                      <p className="text-gray-400 text-sm mt-3">
+                        💡 L'image sera affichée en plein écran avec un overlay sombre pour la lisibilité
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Aperçu */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <h3 className="text-xl font-black text-white mb-6">APERÇU EN DIRECT</h3>
+                
+                <div 
+                  className="h-96 rounded-lg border-2 border-gray-600 overflow-hidden relative"
+                  style={
+                    settings.backgroundType === 'color' 
+                      ? { backgroundColor: settings.backgroundColor }
+                      : settings.backgroundType === 'gradient'
+                      ? { background: `linear-gradient(135deg, ${settings.gradientFrom}, ${settings.gradientTo})` }
+                      : settings.backgroundImage 
+                      ? { 
+                          backgroundImage: `url(${settings.backgroundImage})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }
+                      : { backgroundColor: 'black' }
+                  }
+                >
+                  {settings.backgroundType === 'image' && settings.backgroundImage && (
+                    <div className="absolute inset-0 bg-black/50"></div>
+                  )}
+                  
+                  <div className="relative z-10 p-6 text-white">
+                    <h4 className="text-2xl font-black mb-4">{settings.shopName || 'MA BOUTIQUE'}</h4>
+                    <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+                      <p className="font-semibold mb-2">Exemple de contenu</p>
+                      <p className="text-sm text-gray-200">
+                        Voici comment votre contenu apparaîtra avec ce fond
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Presets */}
+                <div className="mt-6">
+                  <h4 className="text-white font-bold mb-3">Thèmes prédéfinis</h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => setSettings({
+                        ...settings,
+                        backgroundType: 'color',
+                        backgroundColor: '#000000'
+                      })}
+                      className="p-3 bg-black border-2 border-gray-600 rounded-lg hover:border-white transition-colors"
+                    >
+                      <div className="text-xs font-bold text-white">Noir</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({
+                        ...settings,
+                        backgroundType: 'gradient',
+                        gradientFrom: '#1a1a2e',
+                        gradientTo: '#16213e'
+                      })}
+                      className="p-3 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border-2 border-gray-600 rounded-lg hover:border-white transition-colors"
+                    >
+                      <div className="text-xs font-bold text-white">Nuit</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({
+                        ...settings,
+                        backgroundType: 'gradient',
+                        gradientFrom: '#0f3443',
+                        gradientTo: '#34e89e'
+                      })}
+                      className="p-3 bg-gradient-to-br from-[#0f3443] to-[#34e89e] border-2 border-gray-600 rounded-lg hover:border-white transition-colors"
+                    >
+                      <div className="text-xs font-bold text-white">Ocean</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bouton sauvegarder */}
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={handleSaveSettings}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:from-green-700 hover:to-emerald-700 transition-all flex items-center gap-3"
+              >
+                <Save size={24} />
+                SAUVEGARDER LES CHANGEMENTS
               </button>
             </div>
           </div>
