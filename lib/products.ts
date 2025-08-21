@@ -104,5 +104,22 @@ export const products: Product[] = [
     country: 'IN',
     countryFlag: '🇮🇳',
     description: 'Hash artisanal indien fait à la main selon la méthode traditionnelle.'
+  },
+  {
+    id: '9',
+    name: 'Fond De Haze',
+    origin: 'Pays-Bas',
+    price: 250, // Base price for 100g
+    pricing: [
+      { weight: '100g', price: 250 },
+      { weight: '200g', price: 450 }
+    ],
+    image: '/products/fond-de-haze.jpg',
+    category: 'weed',
+    tag: 'WEED',
+    tagColor: 'green',
+    country: 'NL',
+    countryFlag: '🇳🇱',
+    description: 'Haze premium des Pays-Bas avec un profil aromatique exceptionnel et des effets puissants.'
   }
 ];

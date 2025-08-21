@@ -8,6 +8,9 @@ import {
   Plus, Minus, X, Trash2, ChevronRight, Sparkles 
 } from 'lucide-react';
 
+import { products } from '@/lib/products';
+import { useRouter } from 'next/navigation';
+
 // Produits d'exemple
 const sampleProducts = [
   {
@@ -91,6 +94,7 @@ const sampleProducts = [
 ];
 
 export default function ModernShop() {
+  const router = useRouter();
   const [cart, setCart] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);

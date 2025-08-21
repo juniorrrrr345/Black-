@@ -1,10 +1,16 @@
 import { create } from 'zustand';
 
+export interface ProductPricing {
+  weight: string;
+  price: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   origin: string;
-  price: number;
+  price: number; // Base price for compatibility
+  pricing?: ProductPricing[]; // Multiple pricing options
   image: string;
   category: 'weed' | 'hash';
   tag?: string;

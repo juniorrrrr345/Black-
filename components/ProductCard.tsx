@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/lib/store';
 import { useStore } from '@/lib/store';
 import { ShoppingCart } from 'lucide-react';
@@ -11,13 +12,20 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const addToCart = useStore((state) => state.addToCart);
+  const router = useRouter();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
     addToCart(product);
+  };
+
+  const handleCardClick = () => {
+    router.push(`/products/${product.id}`);
   };
 
   return (
     <motion.div
+      onClick={handleCardClick}
       className="relative bg-gray-900/50 rounded-2xl overflow-hidden glass-effect group cursor-pointer"
       whileHover={{ y: -5 }}
       initial={{ opacity: 0, y: 20 }}
