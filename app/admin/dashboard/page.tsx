@@ -691,7 +691,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
               </div>
 
               <div className="space-y-3">
-                {pricingOptions.map((pricing, index) => (
+                {pricingOptions.map((pricing: any, index: number) => (
                   <div key={index} className="flex gap-4 items-center bg-white/10 p-4 rounded-lg border-2 border-white">
                     <div className="flex-1">
                       <input
