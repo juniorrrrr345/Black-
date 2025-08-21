@@ -9,6 +9,9 @@ import {
   ChevronLeft, ChevronDown
 } from 'lucide-react';
 
+import { products } from '@/lib/products';
+import { useRouter } from 'next/navigation';
+
 // Produits d'exemple avec style VERSHASH
 const sampleProducts = [
   {
@@ -86,6 +89,7 @@ const sampleProducts = [
 ];
 
 export default function ModernShop() {
+  const router = useRouter();
   const [cart, setCart] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
