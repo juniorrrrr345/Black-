@@ -16,7 +16,7 @@ export default function ModernShop() {
   const router = useRouter();
   const [cart, setCart] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
