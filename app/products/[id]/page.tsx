@@ -309,7 +309,7 @@ export default function ProductPage() {
               {/* Galerie miniatures - Desktop uniquement */}
               {allImages.length > 1 && (
                 <div className="hidden lg:flex gap-2 overflow-x-auto pb-2">
-                  {allImages.map((img, idx) => (
+                  {allImages.map((img: string, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => setCurrentImageIndex(idx)}
