@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, ShoppingCart, Package, 
-  Video, Image as ImageIcon, Tag, Info, ChevronLeft, ChevronRight
+  Video, Image as ImageIcon, Tag, Info, ChevronLeft, ChevronRight, Play
 } from 'lucide-react';
 import { Product, ProductPricing } from '@/lib/store';
 import { useStore } from '@/lib/store';
@@ -16,7 +16,7 @@ export default function ProductPage() {
   const [product, setProduct] = useState<any | null>(null);
   const [selectedPricing, setSelectedPricing] = useState<ProductPricing | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showVideo, setShowVideo] = useState(false);
+  const [showVideo, setShowVideo] = useState(true); // Afficher la vidéo par défaut si elle existe
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { addToCart, getTotalItems, themeSettings, loadThemeSettings } = useStore();
 
@@ -206,9 +206,11 @@ export default function ProductPage() {
                     >
                       {product.video.includes('youtube') || product.video.includes('youtu.be') ? (
                         <iframe
-                          src={product.video.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                          src={`${product.video.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}?autoplay=1&mute=1&controls=1&rel=0`}
                           className="w-full h-full"
                           allowFullScreen
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          title={`Vidéo de ${product.name}`}
                         />
                       ) : (
                         <video
@@ -216,6 +218,8 @@ export default function ProductPage() {
                           controls
                           className="w-full h-full object-cover"
                           autoPlay
+                          muted
+                          loop
                         />
                       )}
                     </motion.div>
@@ -277,15 +281,16 @@ export default function ProductPage() {
                   )}
                 </div>
 
-                {/* Switch Image/Vidéo */}
-                {product.video && (
+                {/* Switch Image/Vidéo - Seulement si on a les deux */}
+                {product.video && allImages.length > 0 && (
                   <button
                     onClick={() => setShowVideo(!showVideo)}
-                    className="absolute bottom-4 right-4 p-3 rounded-full bg-black/70 backdrop-blur text-white hover:bg-black/90 transition-all group"
+                    className="absolute bottom-4 right-4 p-3 rounded-full bg-white/90 backdrop-blur text-black hover:bg-white transition-all group shadow-lg"
+                    title={showVideo ? "Voir les photos" : "Voir la vidéo"}
                   >
                     {showVideo ? 
-                      <ImageIcon size={20} className="group-hover:scale-110 transition-transform" /> : 
-                      <Video size={20} className="group-hover:scale-110 transition-transform" />
+                      <ImageIcon size={24} className="group-hover:scale-110 transition-transform" /> : 
+                      <Video size={24} className="group-hover:scale-110 transition-transform" />
                     }
                   </button>
                 )}
@@ -306,15 +311,35 @@ export default function ProductPage() {
                 )}
               </div>
 
-              {/* Galerie miniatures - Desktop uniquement */}
-              {allImages.length > 1 && (
+              {/* Galerie miniatures avec vidéo - Desktop uniquement */}
+              {(product.video || allImages.length > 1) && (
                 <div className="hidden lg:flex gap-2 overflow-x-auto pb-2">
+                  {/* Miniature vidéo si elle existe */}
+                  {product.video && (
+                    <button
+                      onClick={() => setShowVideo(true)}
+                      className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all relative group ${
+                        showVideo ? 'border-white ring-2 ring-white' : 'border-gray-700 hover:border-gray-500'
+                      }`}
+                    >
+                      <div className="w-full h-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
+                        <Video size={32} className="text-white" />
+                      </div>
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <Play size={24} className="text-white" />
+                      </div>
+                    </button>
+                  )}
+                  {/* Miniatures des images */}
                   {allImages.map((img: string, idx: number) => (
                     <button
                       key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
+                      onClick={() => {
+                        setCurrentImageIndex(idx);
+                        setShowVideo(false);
+                      }}
                       className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
-                        idx === currentImageIndex ? 'border-white' : 'border-gray-700 hover:border-gray-500'
+                        !showVideo && idx === currentImageIndex ? 'border-white ring-2 ring-white' : 'border-gray-700 hover:border-gray-500'
                       }`}
                     >
                       <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
