@@ -328,12 +328,7 @@ export default function ModernShop() {
                       <ShoppingBag size={28} className="group-hover:scale-110 transition-transform" />
                     </motion.button>
 
-                    {/* Country Flag - Moved to top left */}
-                    {product.countryFlag && (
-                      <div className="absolute top-2 left-2 text-lg sm:text-xl bg-white/90 rounded-full p-1 shadow-lg">
-                        {product.countryFlag}
-                      </div>
-                    )}
+
 
                     {/* Video indicator */}
                     {product.video && (
@@ -530,11 +525,7 @@ export default function ModernShop() {
                                   <Package size={32} className="text-white" />
                                 </div>
                               )}
-                              {item.countryFlag && (
-                                <span className="absolute -top-2 -right-2 text-lg bg-white rounded-full p-1 shadow-lg">
-                                  {item.countryFlag}
-                                </span>
-                              )}
+
                             </div>
                             
                             {/* Product Info */}

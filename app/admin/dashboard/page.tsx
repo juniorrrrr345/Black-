@@ -274,9 +274,8 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="flex items-start justify-between">
+                    <div>
                       <h3 className="font-black text-white text-lg">{product.name}</h3>
-                      <span className="text-2xl">{product.countryFlag}</span>
                     </div>
                     
                     <div className="flex items-center gap-2">
@@ -856,8 +855,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
     category: product?.category || 'weed',
     tag: product?.tag || '',
     tagColor: product?.tagColor || 'green',
-    country: product?.country || '',
-    countryFlag: product?.countryFlag || '',
+
     description: product?.description || '',
     image: product?.image || '',
     video: product?.video || '',
@@ -991,33 +989,6 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
                     className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
                     required
                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-white font-black text-sm mb-2">
-                      PAYS (CODE)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: NL"
-                      value={formData.country}
-                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-white font-black text-sm mb-2">
-                      DRAPEAU
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 🇳🇱"
-                      value={formData.countryFlag}
-                      onChange={(e) => setFormData({ ...formData, countryFlag: e.target.value })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                    />
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
