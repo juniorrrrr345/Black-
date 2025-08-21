@@ -11,7 +11,6 @@ import {
 
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
-import Footer from '@/components/Footer';
 
 export default function ModernShop() {
   const router = useRouter();
@@ -232,27 +231,8 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Bannière promotionnelle */}
-        <section className="px-4 md:px-6 lg:px-8 mb-8">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-8 text-center"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2">
-                {themeSettings.bannerText || '🎉 OFFRE SPÉCIALE'}
-              </h3>
-              <p className="text-sm md:text-base lg:text-lg text-white/90 font-bold">
-                LIVRAISON GRATUITE • RETOURS FACILES • GARANTIE SATISFACTION
-              </p>
-            </motion.div>
-          </div>
-        </section>
-
         {/* Products Grid - Responsive */}
-        <section className="px-4 md:px-6 lg:px-8 pb-32 mb-64">
+        <section className="px-4 md:px-6 lg:px-8 pb-24">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {filteredProducts.map((product, index) => (
@@ -339,9 +319,6 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Footer */}
-        <Footer />
-        
         {/* Bottom Navigation - Responsive */}
         <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white z-50">
           <div className="max-w-7xl mx-auto flex justify-around py-3 md:py-4 lg:py-6 px-2">
