@@ -1,26 +1,31 @@
 import mongoose from 'mongoose';
 
+export interface IPricingOption {
+  weight: string;
+  price: number;
+}
+
 export interface IProduct {
   _id: string;
   name: string;
+  origin: string;
   image: string;
-  price: number;
+  price: number; // Base price for compatibility
+  pricing?: IPricingOption[]; // Multiple pricing options
   quantity: number;
-  weight: string;
-  category: string;
+  category: 'weed' | 'hash';
+  tag?: string;
+  tagColor?: 'red' | 'green';
+  country: string;
+  countryFlag: string;
   description?: string;
   available: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const ProductSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  image: {
+const PricingOptionSchema = new mongoose.Schema({
+  weight: {
     type: String,
     required: true,
   },
@@ -29,21 +34,62 @@ const ProductSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
+}, { _id: false });
+
+const ProductSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  origin: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  image: {
+    type: String,
+    default: '',
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  pricing: {
+    type: [PricingOptionSchema],
+    default: [],
+  },
   quantity: {
     type: Number,
     required: true,
     min: 0,
     default: 0,
   },
-  weight: {
-    type: String,
-    default: '1g',
-    description: 'Poids du produit (ex: 1g, 3g, 5g, 10g)'
-  },
   category: {
     type: String,
     required: true,
     enum: ['weed', 'hash'],
+    default: 'weed',
+  },
+  tag: {
+    type: String,
+    default: '',
+  },
+  tagColor: {
+    type: String,
+    enum: ['red', 'green'],
+    default: 'green',
+  },
+  country: {
+    type: String,
+    required: true,
+    default: 'FR',
+  },
+  countryFlag: {
+    type: String,
+    required: true,
+    default: '🇫🇷',
   },
   description: {
     type: String,
@@ -56,5 +102,9 @@ const ProductSchema = new mongoose.Schema({
 }, {
   timestamps: true,
 });
+
+// Index for better performance
+ProductSchema.index({ category: 1, available: 1 });
+ProductSchema.index({ name: 'text', description: 'text' });
 
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);
