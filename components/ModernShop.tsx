@@ -6,7 +6,7 @@ import {
   ShoppingBag, Home, Instagram, Send, MessageCircle, 
   Star, TrendingUp, Package, Clock, Shield, 
   Plus, Minus, X, Trash2, ChevronRight, Sparkles,
-  ChevronLeft, ChevronDown
+  ChevronLeft, ChevronDown, Video, Eye
 } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
@@ -231,85 +231,112 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Products Grid - Responsive */}
+        {/* Products Grid - Responsive - 2 colonnes sur mobile */}
         <section className="px-4 md:px-6 lg:px-8 pb-24">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
+              Nos Produits Premium
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               {filteredProducts.map((product, index) => (
                 <motion.div
                   key={product._id || product.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-black border-4 border-white rounded-2xl overflow-hidden group hover:border-gray-300 transition-all duration-300"
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 rounded-xl overflow-hidden group hover:border-white transition-all duration-300 shadow-xl"
                 >
                   {/* Product Image */}
-                  <div className="relative h-48 md:h-56 lg:h-64 bg-white overflow-hidden">
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
-                      {product.image && product.image.startsWith('http') ? (
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="text-6xl md:text-7xl lg:text-8xl opacity-60">🌿</div>
-                      )}
-                    </div>
-
-                    {/* Tag */}
-                    {product.tag && (
-                      <div className={`absolute top-3 left-3 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs md:text-sm font-black text-white ${
-                        product.tagColor === 'red' ? 'bg-red-500' : 'bg-green-500'
-                      }`}>
-                        {product.tag}
+                  <div className="relative aspect-square bg-white overflow-hidden">
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                        <Package size={50} className="text-gray-500" />
                       </div>
                     )}
 
-                    {/* Country Flag */}
-                    <div className="absolute top-3 right-3 text-xl md:text-2xl">
-                      {product.countryFlag}
+                    {/* Tags et badges */}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      {product.tag && (
+                        <div className={`px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold text-white shadow-lg ${
+                          product.tagColor === 'red' ? 'bg-red-500' : 
+                          product.tagColor === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                        }`}>
+                          {product.tag}
+                        </div>
+                      )}
+                      {product.category && (
+                        <div className="px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold bg-black/80 text-white backdrop-blur">
+                          {product.category}
+                        </div>
+                      )}
                     </div>
+
+                    {/* Country Flag */}
+                    {product.countryFlag && (
+                      <div className="absolute top-2 right-2 text-lg sm:text-xl bg-white/90 rounded-full p-1 shadow-lg">
+                        {product.countryFlag}
+                      </div>
+                    )}
+
+                    {/* Video indicator */}
+                    {product.video && (
+                      <div className="absolute bottom-2 right-2 bg-black/80 text-white p-1.5 rounded-full">
+                        <Video size={14} />
+                      </div>
+                    )}
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-4 md:p-6">
-                    <h3 className="text-lg md:text-xl lg:text-2xl font-black text-white mb-2">{product.name}</h3>
-                    <p className="text-sm md:text-base text-white/80 mb-2">{product.origin}</p>
+                  <div className="p-3 sm:p-4">
+                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white mb-1 line-clamp-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-400 mb-2 line-clamp-1">
+                      {product.origin}
+                    </p>
                     
                     {/* Price Display */}
                     {product.pricing && product.pricing.length > 0 ? (
-                      <div className="mb-4">
-                        <div className="text-xs md:text-sm text-white/60 mb-2">À partir de:</div>
-                        <div className="text-xl md:text-2xl lg:text-3xl font-black text-white">
+                      <div className="mb-3">
+                        <div className="text-[10px] sm:text-xs text-gray-500 mb-1">À partir de</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                           {Math.min(...product.pricing.map((p: any) => p.price))}€
                         </div>
                       </div>
                     ) : (
-                      <div className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4">
+                      <div className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3">
                         {product.price}€
                       </div>
                     )}
 
-                    {/* Actions */}
-                    <div className="space-y-2 md:space-y-3">
+                    {/* Actions - Boutons adaptés pour mobile */}
+                    <div className="space-y-2">
                       <motion.button
                         onClick={() => router.push(`/products/${product._id || product.id}`)}
-                        className="w-full bg-white text-black py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-gray-200 transition-colors"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg font-semibold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-1"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        VOIR DÉTAILS
+                        <Eye size={14} className="sm:hidden" />
+                        <span className="hidden sm:inline">VOIR DÉTAILS</span>
+                        <span className="sm:hidden">VOIR</span>
                       </motion.button>
                       
                       <motion.button
                         onClick={() => addToCart(product)}
-                        className="w-full bg-black border-2 border-white text-white py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-white hover:text-black transition-all"
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 rounded-lg font-semibold text-xs sm:text-sm hover:from-green-700 hover:to-emerald-700 transition-all flex items-center justify-center gap-1"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <ShoppingBag className="inline mr-2" size={16} />
-                        AJOUTER
+                        <ShoppingBag size={14} />
+                        <span className="hidden sm:inline">AJOUTER</span>
+                        <Plus size={14} className="sm:hidden" />
                       </motion.button>
                     </div>
                   </div>
