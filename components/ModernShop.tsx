@@ -200,63 +200,45 @@ export default function ModernShop() {
             <h2 className="text-2xl md:text-3xl font-black text-white text-center mb-8">
               NOS CATÉGORIES
             </h2>
-            <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-              {/* Catégories principales WEED et HASH */}
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+              {/* Catégories principales */}
               <motion.button
                 onClick={() => setSelectedCategory('all')}
-                className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
+                className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
                   selectedCategory === 'all'
-                    ? 'text-black'
-                    : 'text-white hover:text-black'
+                    ? 'bg-white text-black border-white'
+                    : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {/* Fond avec bordure arrondie */}
-                <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
-                  selectedCategory === 'all'
-                    ? 'bg-white border-white'
-                    : 'bg-black/50 border-white hover:bg-white'
-                }`}></div>
-                <span className="relative z-10">TOUT</span>
+                TOUT
               </motion.button>
 
               <motion.button
                 onClick={() => setSelectedCategory('weed')}
-                className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
+                className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
                   selectedCategory === 'weed'
-                    ? 'text-black'
-                    : 'text-white hover:text-black'
+                    ? 'bg-green-500 text-white border-green-500'
+                    : 'bg-black/50 text-white border-green-500 hover:bg-green-500 hover:text-white'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {/* Fond avec bordure arrondie */}
-                <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
-                  selectedCategory === 'weed'
-                    ? 'bg-green-500 border-green-500'
-                    : 'bg-black/50 border-green-500 hover:bg-green-500'
-                }`}></div>
-                <span className="relative z-10">🌿 WEED</span>
+                🌿 WEED
               </motion.button>
 
               <motion.button
                 onClick={() => setSelectedCategory('hash')}
-                className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
+                className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
                   selectedCategory === 'hash'
-                    ? 'text-black'
-                    : 'text-white hover:text-black'
+                    ? 'bg-amber-600 text-white border-amber-600'
+                    : 'bg-black/50 text-white border-amber-600 hover:bg-amber-600 hover:text-white'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {/* Fond avec bordure arrondie */}
-                <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
-                  selectedCategory === 'hash'
-                    ? 'bg-amber-600 border-amber-600'
-                    : 'bg-black/50 border-amber-600 hover:bg-amber-600'
-                }`}></div>
-                <span className="relative z-10">🟫 HASH</span>
+                🟫 HASH
               </motion.button>
 
               {/* Autres catégories si nécessaire */}
@@ -266,20 +248,15 @@ export default function ModernShop() {
                   <motion.button
                     key={category.id || category.value}
                     onClick={() => setSelectedCategory(category.value)}
-                    className={`relative px-6 py-3 md:px-8 md:py-4 lg:px-10 lg:py-5 font-black text-base md:text-lg lg:text-xl transition-all ${
+                    className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
                       selectedCategory === category.value
-                        ? 'text-black'
-                        : 'text-white hover:text-black'
+                        ? 'bg-white text-black border-white'
+                        : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <div className={`absolute inset-0 rounded-2xl border-3 transition-all ${
-                      selectedCategory === category.value
-                        ? 'bg-white border-white'
-                        : 'bg-black/50 border-white hover:bg-white'
-                    }`}></div>
-                    <span className="relative z-10">{category.name.toUpperCase()}</span>
+                    {category.name.toUpperCase()}
                   </motion.button>
                 ))
               }
