@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ArrowLeft, ShoppingCart, Send, Home, Instagram, MessageCircle, 
-  Plus, Minus, Star, Package, Shield, Truck, Clock, 
+  ArrowLeft, ShoppingCart, Package, 
   Video, Image as ImageIcon, Tag, Info
 } from 'lucide-react';
 import { Product, ProductPricing } from '@/lib/store';
@@ -16,7 +15,7 @@ export default function ProductPage() {
   const router = useRouter();
   const [product, setProduct] = useState<any | null>(null);
   const [selectedPricing, setSelectedPricing] = useState<ProductPricing | null>(null);
-  const [quantity, setQuantity] = useState(1);
+
   const [loading, setLoading] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
   const { addToCart, getTotalItems, themeSettings, loadThemeSettings } = useStore();
@@ -109,39 +108,18 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (selectedPricing) {
-      for (let i = 0; i < quantity; i++) {
-        const productWithPricing = {
-          ...product,
-          price: selectedPricing.price,
-          name: `${product.name} (${selectedPricing.weight})`
-        };
-        addToCart(productWithPricing);
-      }
+      const productWithPricing = {
+        ...product,
+        price: selectedPricing.price,
+        name: `${product.name} (${selectedPricing.weight})`
+      };
+      addToCart(productWithPricing);
     } else {
-      for (let i = 0; i < quantity; i++) {
-        addToCart(product);
-      }
+      addToCart(product);
     }
-    // Animation de confirmation
-    const btn = document.getElementById('add-to-cart-btn');
-    if (btn) {
-      btn.classList.add('animate-pulse');
-      setTimeout(() => btn.classList.remove('animate-pulse'), 1000);
-    }
-  };
-
-  const handleTelegramOrder = () => {
-    const productName = selectedPricing 
-      ? `${product.name} (${selectedPricing.weight})` 
-      : product.name;
-    const price = selectedPricing ? selectedPricing.price : product.price;
-    const message = `Bonjour, je souhaite commander: ${productName} - Quantité: ${quantity} - Prix total: ${(price * quantity).toFixed(2)}€`;
-    const telegramUrl = `https://t.me/?text=${encodeURIComponent(message)}`;
-    window.open(telegramUrl, '_blank');
   };
 
   const currentPrice = selectedPricing ? selectedPricing.price : product.price;
-  const totalPrice = currentPrice * quantity;
 
   return (
     <div 
@@ -294,15 +272,7 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Note et avis */}
-                <div className="flex items-center gap-4 mt-3">
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={18} className={i < 4 ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'} />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-400">(4.8/5 - 127 avis)</span>
-                </div>
+
               </div>
 
               {/* Description */}
@@ -318,106 +288,50 @@ export default function ProductPage() {
                 </div>
               )}
 
-              {/* Sélection du prix/poids */}
-              {product.pricing && product.pricing.length > 0 && (
+              {/* Sélection du prix/poids avec panier */}
+              {product.pricing && product.pricing.length > 0 ? (
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Choisir une option:</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <h3 className="text-lg font-semibold mb-3">Options disponibles:</h3>
+                  <div className="space-y-3">
                     {product.pricing.map((pricing: ProductPricing) => (
-                      <button
+                      <div
                         key={pricing.weight}
-                        onClick={() => setSelectedPricing(pricing)}
-                        className={`p-3 rounded-lg border-2 transition-all ${
-                          selectedPricing?.weight === pricing.weight
-                            ? 'border-white bg-white text-black'
-                            : 'border-gray-600 hover:border-gray-400 bg-gray-900/50'
-                        }`}
+                        className="flex items-center justify-between p-4 rounded-lg bg-gray-900/50 border border-gray-700 hover:border-gray-500 transition-all"
                       >
-                        <div className="font-semibold">{pricing.weight}</div>
-                        <div className="text-lg font-bold">{pricing.price}€</div>
-                      </button>
+                        <div className="flex items-center gap-4">
+                          <span className="text-lg font-semibold text-white">{pricing.weight}</span>
+                          <span className="text-xl font-bold text-green-400">{pricing.price}€</span>
+                        </div>
+                        <motion.button
+                          onClick={() => {
+                            setSelectedPricing(pricing);
+                            handleAddToCart();
+                          }}
+                          className="p-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <ShoppingCart size={20} />
+                        </motion.button>
+                      </div>
                     ))}
                   </div>
                 </div>
+              ) : (
+                <div className="flex items-center justify-between p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                  <div className="flex items-center gap-4">
+                    <span className="text-xl font-bold text-green-400">{currentPrice}€</span>
+                  </div>
+                  <motion.button
+                    onClick={handleAddToCart}
+                    className="p-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ShoppingCart size={20} />
+                  </motion.button>
+                </div>
               )}
-
-              {/* Prix et quantité */}
-              <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl p-6 border border-blue-500/30">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm text-gray-400 mb-1">Prix unitaire</p>
-                    <p className="text-3xl font-bold text-white">{currentPrice}€</p>
-                  </div>
-                  
-                  {/* Sélecteur de quantité */}
-                  <div className="flex items-center gap-3 bg-black/50 rounded-lg p-2">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="p-2 rounded hover:bg-white/10 transition-colors"
-                    >
-                      <Minus size={20} />
-                    </button>
-                    <span className="w-12 text-center font-bold text-xl">{quantity}</span>
-                    <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="p-2 rounded hover:bg-white/10 transition-colors"
-                    >
-                      <Plus size={20} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-600 pt-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg text-gray-300">Total:</p>
-                    <p className="text-3xl font-bold text-white">{totalPrice.toFixed(2)}€</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Boutons d'action */}
-              <div className="space-y-3">
-                <motion.button
-                  id="add-to-cart-btn"
-                  onClick={handleAddToCart}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg hover:from-green-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-3"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <ShoppingCart size={24} />
-                  Ajouter au panier
-                </motion.button>
-
-                <motion.button
-                  onClick={handleTelegramOrder}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center justify-center gap-3"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Send size={24} />
-                  Commander via Telegram
-                </motion.button>
-              </div>
-
-              {/* Avantages */}
-              <div className="grid grid-cols-2 gap-3 pt-4">
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <Shield size={18} className="text-green-500" />
-                  <span>Paiement sécurisé</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <Truck size={18} className="text-blue-500" />
-                  <span>Livraison rapide</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <Clock size={18} className="text-yellow-500" />
-                  <span>Support 24/7</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <Package size={18} className="text-purple-500" />
-                  <span>Qualité garantie</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
