@@ -488,7 +488,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
     try {
       const submitData = {
         ...formData,
-        pricing: pricingOptions.filter(p => p.weight && p.price > 0)
+        pricing: pricingOptions.filter((p: any) => p.weight && p.price > 0)
       };
 
       const url = product ? `/api/products/${product._id}` : '/api/products';
