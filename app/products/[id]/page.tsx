@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Send, Home, Instagram, MessageCircle } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Send, Home, Instagram, MessageCircle, Plus, Minus } from 'lucide-react';
 import { products } from '@/lib/products';
 import { Product, ProductPricing } from '@/lib/store';
 import { useStore } from '@/lib/store';
@@ -13,6 +13,7 @@ export default function ProductPage() {
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedPricing, setSelectedPricing] = useState<ProductPricing | null>(null);
+  const [quantity, setQuantity] = useState(1);
   const { addToCart, getTotalItems } = useStore();
 
   useEffect(() => {
@@ -28,25 +29,34 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Produit non trouvé</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl font-bold border-2 border-white rounded-lg px-6 py-4">
+          Produit non trouvé
+        </div>
       </div>
     );
   }
 
   const handleAddToCart = () => {
     if (selectedPricing) {
-      // Create a modified product with selected pricing
-      const productWithPricing = {
-        ...product,
-        price: selectedPricing.price,
-        name: `${product.name} (${selectedPricing.weight})`
-      };
-      addToCart(productWithPricing);
+      // Add multiple items based on quantity
+      for (let i = 0; i < quantity; i++) {
+        const productWithPricing = {
+          ...product,
+          price: selectedPricing.price,
+          name: `${product.name} (${selectedPricing.weight})`
+        };
+        addToCart(productWithPricing);
+      }
     } else {
-      addToCart(product);
+      for (let i = 0; i < quantity; i++) {
+        addToCart(product);
+      }
     }
   };
+
+  const increaseQuantity = () => setQuantity(prev => prev + 1);
+  const decreaseQuantity = () => setQuantity(prev => prev > 1 ? prev - 1 : 1);
 
   const handleTelegramOrder = () => {
     const productName = selectedPricing 
@@ -61,11 +71,11 @@ export default function ProductPage() {
   const cartItemCount = getTotalItems();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
+    <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="relative pt-8 pb-4">
+      <div className="relative pt-8 pb-6 border-b-2 border-white">
         <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">
+          <h1 className="text-5xl md:text-6xl font-black text-white mb-4 tracking-wider">
             VERSHASH
           </h1>
         </div>
@@ -73,114 +83,150 @@ export default function ProductPage() {
         {/* Back Button */}
         <motion.button
           onClick={() => router.back()}
-          className="absolute top-8 left-4 bg-gray-800/50 backdrop-blur-sm border border-purple-500/30 rounded-lg px-4 py-2 flex items-center gap-2 hover:bg-gray-700/50 transition-all"
+          className="absolute top-8 left-4 bg-white text-black border-2 border-white rounded-lg px-6 py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           <ArrowLeft size={20} />
-          <span className="text-sm">Retour</span>
+          <span className="text-sm font-bold">RETOUR</span>
         </motion.button>
       </div>
 
       {/* Product Content */}
-      <div className="max-w-md mx-auto px-4 pb-24">
-        <div className="bg-gray-900/50 backdrop-blur-sm border border-purple-500/20 rounded-3xl overflow-hidden">
+      <div className="max-w-lg mx-auto px-6 py-8">
+        <div className="bg-black border-4 border-white rounded-2xl overflow-hidden">
           
           {/* Product Image */}
-          <div className="relative h-80 bg-gradient-to-br from-purple-800/30 to-blue-800/30 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
-            
+          <div className="relative h-80 bg-white border-b-4 border-white overflow-hidden">
             {/* Product Image */}
-            <div className="w-full h-full flex items-center justify-center relative">
+            <div className="w-full h-full flex items-center justify-center relative bg-gradient-to-br from-gray-100 to-gray-300">
               <div 
-                className="w-full h-full bg-cover bg-center"
+                className="w-full h-full bg-cover bg-center opacity-80"
                 style={{
-                  backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><radialGradient id="bg" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23059669;stop-opacity:0.8" /><stop offset="100%" style="stop-color:%23064e3b;stop-opacity:1" /></radialGradient></defs><rect width="400" height="400" fill="url(%23bg)"/><g transform="translate(200,200)"><g transform="scale(3)"><path d="M0,-20 Q-5,-15 -8,-10 Q-10,-5 -8,0 Q-5,5 0,0 Q5,5 8,0 Q10,-5 8,-10 Q5,-15 0,-20 Z" fill="%2310b981" opacity="0.9"/><path d="M-15,-10 Q-20,-5 -18,0 Q-15,5 -10,0 Q-5,5 0,0 Q5,5 10,0 Q15,5 18,0 Q20,-5 15,-10" fill="%2334d399" opacity="0.8"/><path d="M0,0 L0,15" stroke="%23059669" stroke-width="2" stroke-linecap="round"/><circle cx="0" cy="-12" r="2" fill="%23fbbf24" opacity="0.9"/></g></g></svg>')`
+                  backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23f3f4f6"/><g transform="translate(200,200)"><g transform="scale(4)"><path d="M0,-20 Q-5,-15 -8,-10 Q-10,-5 -8,0 Q-5,5 0,0 Q5,5 8,0 Q10,-5 8,-10 Q5,-15 0,-20 Z" fill="%23374151" opacity="0.9"/><path d="M-15,-10 Q-20,-5 -18,0 Q-15,5 -10,0 Q-5,5 0,0 Q5,5 10,0 Q15,5 18,0 Q20,-5 15,-10" fill="%23111827" opacity="0.8"/><path d="M0,0 L0,15" stroke="%23374151" stroke-width="3" stroke-linecap="round"/><circle cx="0" cy="-12" r="3" fill="%23000000" opacity="0.9"/></g></g></svg>')`
                 }}
               />
-              
-              {/* Overlay effect to match the original design */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
             </div>
 
             {/* Tag */}
-            <div className="absolute top-4 right-4 bg-green-500 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+            <div className="absolute top-4 right-4 bg-black text-white px-4 py-2 border-2 border-white rounded-lg text-sm font-black flex items-center gap-2">
               <span>{product.tag}</span>
-              <span className="text-lg">🌿</span>
+              <span className="text-lg">{product.countryFlag}</span>
             </div>
           </div>
 
           {/* Product Info */}
-          <div className="p-6 space-y-6">
-            {/* Product Name and Flag */}
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">{product.name}</h2>
-              <span className="text-3xl">{product.countryFlag}</span>
+          <div className="p-8 space-y-8">
+            {/* Product Name */}
+            <div className="text-center border-b-2 border-white pb-6">
+              <h2 className="text-3xl font-black text-white tracking-wider">{product.name}</h2>
+              <p className="text-white/80 mt-2 font-bold text-lg">{product.origin}</p>
             </div>
 
             {/* Pricing Options */}
             {product.pricing && product.pricing.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold mb-4 text-center">Poids</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <h3 className="text-2xl font-black text-center mb-6 text-white border-2 border-white rounded-lg py-3">
+                  SÉLECTIONNER LE POIDS
+                </h3>
+                <div className="grid grid-cols-2 gap-6">
                   {product.pricing.map((pricing, index) => (
                     <motion.button
                       key={index}
                       onClick={() => setSelectedPricing(pricing)}
-                      className={`border-2 rounded-xl p-4 text-center transition-all ${
+                      className={`border-4 rounded-2xl p-6 text-center transition-all font-black ${
                         selectedPricing?.weight === pricing.weight
-                          ? 'border-purple-500 bg-purple-500/20'
-                          : 'border-purple-500/30 hover:border-purple-500/60'
+                          ? 'border-white bg-white text-black'
+                          : 'border-white text-white hover:bg-white hover:text-black'
                       }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <div className="text-xl font-bold">{pricing.weight}</div>
-                      <div className="text-2xl font-bold text-purple-400">{pricing.price}€</div>
+                      <div className="text-2xl font-black mb-2">{pricing.weight}</div>
+                      <div className="text-3xl font-black">{pricing.price}€</div>
                     </motion.button>
                   ))}
                 </div>
               </div>
             )}
 
+            {/* Quantity Selector */}
+            <div className="border-4 border-white rounded-2xl p-6">
+              <h3 className="text-2xl font-black text-center mb-6 text-white">QUANTITÉ</h3>
+              <div className="flex items-center justify-center gap-6">
+                <motion.button
+                  onClick={decreaseQuantity}
+                  className="bg-white text-black border-4 border-white rounded-full w-16 h-16 flex items-center justify-center font-black text-2xl hover:bg-black hover:text-white transition-all"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Minus size={24} />
+                </motion.button>
+                
+                <div className="bg-white text-black border-4 border-white rounded-2xl px-8 py-4 min-w-[100px] text-center">
+                  <span className="text-3xl font-black">{quantity}</span>
+                </div>
+                
+                <motion.button
+                  onClick={increaseQuantity}
+                  className="bg-white text-black border-4 border-white rounded-full w-16 h-16 flex items-center justify-center font-black text-2xl hover:bg-black hover:text-white transition-all"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Plus size={24} />
+                </motion.button>
+              </div>
+            </div>
+
+            {/* Total Price Display */}
+            {selectedPricing && (
+              <div className="text-center border-4 border-white rounded-2xl p-6 bg-white text-black">
+                <div className="text-xl font-black mb-2">TOTAL</div>
+                <div className="text-4xl font-black">
+                  {(selectedPricing.price * quantity).toLocaleString()}€
+                </div>
+              </div>
+            )}
+
             {/* Selection Warning */}
             {!selectedPricing && !!product.pricing && (
-              <div className="text-center text-red-400 text-sm">
-                Veuillez sélectionner un poids
+              <div className="text-center text-white border-4 border-white rounded-2xl p-4 bg-red-600">
+                <div className="text-lg font-black">⚠️ VEUILLEZ SÉLECTIONNER UN POIDS</div>
               </div>
             )}
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Telegram Order Button */}
               <motion.button
                 onClick={handleTelegramOrder}
                 disabled={!selectedPricing && !!product.pricing}
-                className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all ${
+                className={`w-full py-6 rounded-2xl font-black text-xl flex items-center justify-center gap-3 border-4 transition-all ${
                   !selectedPricing && !!product.pricing
-                    ? 'bg-gray-600 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    ? 'bg-gray-500 border-gray-500 text-gray-300 cursor-not-allowed'
+                    : 'bg-black border-white text-white hover:bg-white hover:text-black'
                 }`}
                 whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
                 whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
               >
-                <Send size={24} />
-                COMMANDER
+                <Send size={28} />
+                COMMANDER VIA TELEGRAM
               </motion.button>
 
               {/* Add to Cart Button */}
               <motion.button
                 onClick={handleAddToCart}
                 disabled={!selectedPricing && !!product.pricing}
-                className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
+                className={`w-full py-6 rounded-2xl font-black text-xl border-4 transition-all flex items-center justify-center gap-3 ${
                   !selectedPricing && !!product.pricing
-                    ? 'bg-gray-600 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+                    ? 'bg-gray-500 border-gray-500 text-gray-300 cursor-not-allowed'
+                    : 'bg-white border-white text-black hover:bg-black hover:text-white'
                 }`}
                 whileHover={!selectedPricing && !!product.pricing ? {} : { scale: 1.02 }}
                 whileTap={!selectedPricing && !!product.pricing ? {} : { scale: 0.98 }}
               >
-                AJOUTER AU PANIER
+                <ShoppingCart size={28} />
+                AJOUTER AU PANIER ({quantity})
               </motion.button>
             </div>
           </div>
@@ -188,53 +234,53 @@ export default function ProductPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm border-t border-purple-500/20">
-        <div className="max-w-md mx-auto flex justify-around py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white">
+        <div className="max-w-lg mx-auto flex justify-around py-6">
           <motion.button
             onClick={() => router.push('/')}
-            className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
+            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <Home size={24} />
-            <span className="text-xs">Accueil</span>
+            <Home size={28} />
+            <span className="text-xs">ACCUEIL</span>
           </motion.button>
 
           <motion.button
             onClick={() => window.open('https://instagram.com/vershash', '_blank')}
-            className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
+            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <Instagram size={24} />
-            <span className="text-xs">Instagram</span>
+            <Instagram size={28} />
+            <span className="text-xs">INSTAGRAM</span>
           </motion.button>
 
           <motion.button
             onClick={() => window.open('https://t.me/VershashBot', '_blank')}
-            className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
+            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <MessageCircle size={24} />
-            <span className="text-xs">Telegram</span>
+            <MessageCircle size={28} />
+            <span className="text-xs">TELEGRAM</span>
           </motion.button>
 
           <motion.button
             onClick={() => router.push('/cart')}
-            className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors relative"
+            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black relative"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
             <div className="relative">
-              <ShoppingCart size={24} />
+              <ShoppingCart size={28} />
               {cartItemCount > 0 && (
-                <div className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <div className="absolute -top-3 -right-3 bg-white text-black text-sm rounded-full w-7 h-7 flex items-center justify-center font-black border-2 border-black">
                   {cartItemCount}
                 </div>
               )}
             </div>
-            <span className="text-xs">Panier ({cartItemCount})</span>
+            <span className="text-xs">PANIER ({cartItemCount})</span>
           </motion.button>
         </div>
       </div>
