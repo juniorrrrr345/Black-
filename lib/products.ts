@@ -78,21 +78,20 @@ export const products: Product[] = [
   {
     id: '3',
     name: 'AirPods Pro 2',
+    origin: 'Shenzhen, China',
     price: 279,
     image: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800',
+    category: 'Audio',
+    tag: 'BEST SELLER',
+    tagColor: 'green',
+    country: 'CN',
+    countryFlag: '🇨🇳',
+    description: 'Réduction active du bruit 2x plus efficace. Audio spatial personnalisé avec suivi dynamique de la tête. Jusqu\'à 6 heures d\'écoute.',
+    video: 'https://www.youtube.com/watch?v=TKqOx4Vt2Ek',
     images: [
       'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800',
       'https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?w=800'
     ],
-    video: 'https://www.youtube.com/watch?v=TKqOx4Vt2Ek',
-    category: 'Audio',
-    description: 'Réduction active du bruit 2x plus efficace. Audio spatial personnalisé avec suivi dynamique de la tête. Jusqu\'à 6 heures d\'écoute.',
-    origin: 'Shenzhen, China',
-    country: 'CN',
-    countryFlag: '🇨🇳',
-    tag: 'BEST SELLER',
-    tagColor: 'green',
-    price: 279,
     stock: 25
   },
   {
@@ -241,21 +240,20 @@ export const products: Product[] = [
   {
     id: '10',
     name: 'Bose QuietComfort Ultra',
+    origin: 'Boston, USA',
     price: 429,
     image: 'https://images.unsplash.com/photo-1545127398-14699f92334b?w=800',
+    category: 'Audio',
+    tag: 'PREMIUM',
+    tagColor: 'blue',
+    country: 'US',
+    countryFlag: '🇺🇸',
+    description: 'Casque à réduction de bruit de référence, audio spatial immersif, confort exceptionnel, 24h d\'autonomie.',
+    video: 'https://www.youtube.com/watch?v=aSoSN7aTJCU',
     images: [
       'https://images.unsplash.com/photo-1545127398-14699f92334b?w=800',
       'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800'
     ],
-    video: 'https://www.youtube.com/watch?v=aSoSN7aTJCU',
-    category: 'Audio',
-    description: 'Casque à réduction de bruit de référence, audio spatial immersif, confort exceptionnel, 24h d\'autonomie.',
-    origin: 'Boston, USA',
-    country: 'US',
-    countryFlag: '🇺🇸',
-    tag: 'PREMIUM',
-    tagColor: 'blue',
-    price: 429,
     stock: 20
   },
   {
