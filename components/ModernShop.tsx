@@ -94,6 +94,29 @@ export default function ModernShop() {
   const [showCart, setShowCart] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [settings, setSettings] = useState<any>({
+    shopName: 'VERSHASH',
+    bannerText: 'NOUVEAU DROP',
+    bannerImage: '',
+    backgroundColor: 'black'
+  });
+
+  // Chargement des paramètres
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(prev => ({ ...prev, ...data }));
+      }
+    } catch (error) {
+      console.error('Erreur chargement settings:', error);
+    }
+  };
 
   // Carrousel automatique
   useEffect(() => {
