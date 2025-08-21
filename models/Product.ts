@@ -45,7 +45,8 @@ const ProductSchema = new mongoose.Schema({
   },
   origin: {
     type: String,
-    required: true,
+    required: false,
+    default: '',
     trim: true,
   },
   image: {
@@ -88,12 +89,12 @@ const ProductSchema = new mongoose.Schema({
   },
   country: {
     type: String,
-    required: true,
+    required: false,
     default: 'FR',
   },
   countryFlag: {
     type: String,
-    required: true,
+    required: false,
     default: '🇫🇷',
   },
   description: {
