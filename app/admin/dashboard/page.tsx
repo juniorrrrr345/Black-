@@ -473,7 +473,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
 
   const removePricingOption = (index: number) => {
     if (pricingOptions.length > 1) {
-      setPricingOptions(pricingOptions.filter((_, i) => i !== index));
+      setPricingOptions(pricingOptions.filter((_: any, i: number) => i !== index));
     }
   };
 
