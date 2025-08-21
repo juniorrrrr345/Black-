@@ -29,40 +29,38 @@ export default function ProductPage() {
   const loadProduct = async () => {
     try {
       setLoading(true);
-      
-      // Charger d'abord depuis les produits statiques
-      const { products } = await import('@/lib/products');
       const productId = String(params.id);
       
       console.log('Looking for product with ID:', productId);
-      console.log('Available products:', products.map(p => p.id));
       
+      // Essayer l'API en premier (qui vérifie aussi les produits statiques)
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        if (response.ok) {
+          const apiProduct = await response.json();
+          console.log('Product found:', apiProduct.name);
+          setProduct(apiProduct);
+          if (apiProduct.pricing && apiProduct.pricing.length > 0) {
+            setSelectedPricing(apiProduct.pricing[0]);
+          }
+          return; // Produit trouvé, on arrête ici
+        }
+      } catch (apiError) {
+        console.log('API error, trying static products:', apiError);
+      }
+      
+      // Fallback: charger directement depuis les produits statiques
+      const { products } = await import('@/lib/products');
       const foundProduct = products.find(p => String(p.id) === productId);
       
       if (foundProduct) {
-        console.log('Product found:', foundProduct.name);
+        console.log('Product found in static imports:', foundProduct.name);
         setProduct({ ...foundProduct, _id: foundProduct.id });
         if (foundProduct.pricing && foundProduct.pricing.length > 0) {
           setSelectedPricing(foundProduct.pricing[0]);
         }
       } else {
-        console.log('Product not found in static products, trying API...');
-        // Si pas trouvé dans les produits statiques, essayer l'API
-        try {
-          const response = await fetch(`/api/products/${productId}`);
-          if (response.ok) {
-            const apiProduct = await response.json();
-            console.log('Product found in API:', apiProduct.name);
-            setProduct(apiProduct);
-            if (apiProduct.pricing && apiProduct.pricing.length > 0) {
-              setSelectedPricing(apiProduct.pricing[0]);
-            }
-          } else {
-            console.log('Product not found in API either');
-          }
-        } catch (apiError) {
-          console.log('API error:', apiError);
-        }
+        console.log('Product not found anywhere');
       }
     } catch (error) {
       console.error('Error loading product:', error);
