@@ -23,7 +23,19 @@ export async function GET() {
     
     return NextResponse.json(settings);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+    // Retourner les paramètres par défaut si MongoDB n'est pas disponible
+    console.log('MongoDB not available, using default settings');
+    return NextResponse.json({
+      shopName: 'VERSHASH',
+      bannerText: 'NOUVEAU DROP',
+      bannerImage: '',
+      backgroundType: 'color',
+      backgroundColor: 'black',
+      backgroundImage: '',
+      gradientFrom: '#000000',
+      gradientTo: '#111111',
+      orderLink: ''
+    });
   }
 }
 

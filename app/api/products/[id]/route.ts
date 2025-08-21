@@ -3,45 +3,167 @@ import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
 
 export async function PUT(
-  request: NextRequest,
+  request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
-    await dbConnect();
     const body = await request.json();
-    const product = await Product.findByIdAndUpdate(
-      id,
-      body,
-      { new: true, runValidators: true }
-    );
     
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    try {
+      await dbConnect();
+      
+      // Essayer de mettre à jour dans MongoDB
+      let product = null;
+      
+      // Si l'ID ressemble à un ObjectId MongoDB
+      if (/^[0-9a-fA-F]{24}$/.test(id)) {
+        product = await Product.findByIdAndUpdate(id, body, { 
+          new: true, 
+          runValidators: true 
+        });
+      }
+      
+      // Si pas trouvé, essayer par id string
+      if (!product) {
+        product = await Product.findOneAndUpdate(
+          { id: id }, 
+          body, 
+          { new: true, runValidators: true }
+        );
+      }
+      
+      if (product) {
+        // Invalider le cache
+        const { cacheHelpers } = await import('@/lib/cache');
+        cacheHelpers.invalidateProducts();
+        
+        return NextResponse.json(product);
+      }
+      
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      );
+    } catch (dbError) {
+      // Si MongoDB n'est pas disponible, mettre à jour dans le cache local
+      console.log('MongoDB not available, updating in local cache');
+      
+      const { cacheHelpers } = await import('@/lib/cache');
+      const cachedProducts = cacheHelpers.getProducts();
+      let products: any[] = Array.isArray(cachedProducts) ? cachedProducts : [];
+      
+      if (products.length === 0) {
+        const { products: staticProducts } = await import('@/lib/products');
+        products = staticProducts.map(p => ({ 
+          ...p, 
+          _id: p.id,
+          quantity: p.stock || 50,
+          available: true 
+        }));
+      }
+      
+      const productIndex = products.findIndex((p: any) => 
+        p._id === id || p.id === id
+      );
+      
+      if (productIndex !== -1) {
+        products[productIndex] = {
+          ...products[productIndex],
+          ...body,
+          updatedAt: new Date().toISOString()
+        };
+        cacheHelpers.setProducts(products);
+        return NextResponse.json(products[productIndex]);
+      }
+      
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      );
     }
-    
-    return NextResponse.json(product);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
+    console.error('Error updating product:', error);
+    return NextResponse.json(
+      { error: 'Failed to update product' },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE(
-  request: NextRequest,
+  request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
-    await dbConnect();
-    const product = await Product.findByIdAndDelete(id);
     
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    try {
+      await dbConnect();
+      
+      // Essayer de supprimer dans MongoDB
+      let product = null;
+      
+      // Si l'ID ressemble à un ObjectId MongoDB
+      if (/^[0-9a-fA-F]{24}$/.test(id)) {
+        product = await Product.findByIdAndDelete(id);
+      }
+      
+      // Si pas trouvé, essayer par id string
+      if (!product) {
+        product = await Product.findOneAndDelete({ id: id });
+      }
+      
+      if (product) {
+        // Invalider le cache
+        const { cacheHelpers } = await import('@/lib/cache');
+        cacheHelpers.invalidateProducts();
+        
+        return NextResponse.json({ message: 'Product deleted successfully' });
+      }
+      
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      );
+    } catch (dbError) {
+      // Si MongoDB n'est pas disponible, supprimer du cache local
+      console.log('MongoDB not available, deleting from local cache');
+      
+      const { cacheHelpers } = await import('@/lib/cache');
+      const cachedProducts = cacheHelpers.getProducts();
+      let products: any[] = Array.isArray(cachedProducts) ? cachedProducts : [];
+      
+      if (products.length === 0) {
+        const { products: staticProducts } = await import('@/lib/products');
+        products = staticProducts.map(p => ({ 
+          ...p, 
+          _id: p.id,
+          quantity: p.stock || 50,
+          available: true 
+        }));
+      }
+      
+      const filteredProducts = products.filter((p: any) => 
+        p._id !== id && p.id !== id
+      );
+      
+      if (filteredProducts.length < products.length) {
+        cacheHelpers.setProducts(filteredProducts);
+        return NextResponse.json({ message: 'Product deleted successfully' });
+      }
+      
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      );
     }
-    
-    return NextResponse.json({ message: 'Product deleted successfully' });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+    console.error('Error deleting product:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete product' },
+      { status: 500 }
+    );
   }
 }
 
