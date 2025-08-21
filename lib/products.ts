@@ -10,9 +10,10 @@ export interface Product {
   image: string;
   images?: string[];
   video?: string;
-  category: string;
+  category: string | 'weed' | 'hash';
   description: string;
   origin: string;
+  country: string;
   countryFlag: string;
   tag?: string;
   tagColor?: string;
@@ -36,6 +37,7 @@ export const products: Product[] = [
     category: 'Smartphones',
     description: 'Le dernier iPhone avec puce A17 Pro, système de caméra Pro, design en titane. Écran Super Retina XDR de 6,7 pouces avec ProMotion.',
     origin: 'Cupertino, USA',
+    country: 'US',
     countryFlag: '🇺🇸',
     tag: 'NOUVEAU',
     tagColor: 'red',
@@ -61,6 +63,7 @@ export const products: Product[] = [
     category: 'Ordinateurs',
     description: 'MacBook Pro avec puce M3, écran Liquid Retina XDR, jusqu\'à 22 heures d\'autonomie. Performance exceptionnelle pour les professionnels.',
     origin: 'Cupertino, USA',
+    country: 'US',
     countryFlag: '🇺🇸',
     tag: 'PRO',
     tagColor: 'green',
@@ -85,6 +88,7 @@ export const products: Product[] = [
     category: 'Audio',
     description: 'Réduction active du bruit 2x plus efficace. Audio spatial personnalisé avec suivi dynamique de la tête. Jusqu\'à 6 heures d\'écoute.',
     origin: 'Shenzhen, China',
+    country: 'CN',
     countryFlag: '🇨🇳',
     tag: 'BEST SELLER',
     tagColor: 'green',
@@ -104,6 +108,7 @@ export const products: Product[] = [
     category: 'Tablettes',
     description: 'iPad Pro avec puce M2, écran Liquid Retina XDR, compatible Apple Pencil et Magic Keyboard. L\'ordinateur est une tablette.',
     origin: 'Cupertino, USA',
+    country: 'US',
     countryFlag: '🇺🇸',
     tag: 'PROMO -10%',
     tagColor: 'red',
@@ -127,6 +132,7 @@ export const products: Product[] = [
     category: 'Montres',
     description: 'Montre la plus robuste et performante d\'Apple. Boîtier en titane, autonomie jusqu\'à 72h, GPS double fréquence.',
     origin: 'Cupertino, USA',
+    country: 'US',
     countryFlag: '🇺🇸',
     tag: 'SPORT',
     tagColor: 'green',
@@ -150,6 +156,7 @@ export const products: Product[] = [
     category: 'Gaming',
     description: 'Console de jeu nouvelle génération avec SSD ultra-rapide, ray tracing, audio 3D et manette DualSense haptique.',
     origin: 'Tokyo, Japan',
+    country: 'JP',
     countryFlag: '🇯🇵',
     tag: 'GAMING',
     tagColor: 'blue',
@@ -172,6 +179,7 @@ export const products: Product[] = [
     category: 'Smartphones',
     description: 'Smartphone Android premium avec S Pen intégré, caméra 200MP, écran Dynamic AMOLED 2X de 6,8 pouces.',
     origin: 'Seoul, Korea',
+    country: 'KR',
     countryFlag: '🇰🇷',
     tag: 'ANDROID',
     tagColor: 'green',
@@ -195,6 +203,7 @@ export const products: Product[] = [
     category: 'Drones',
     description: 'Drone compact de moins de 249g, caméra 4K/60fps, détection d\'obstacles omnidirectionnelle, 34 min de vol.',
     origin: 'Shenzhen, China',
+    country: 'CN',
     countryFlag: '🇨🇳',
     tag: 'COMPACT',
     tagColor: 'blue',
@@ -218,6 +227,7 @@ export const products: Product[] = [
     category: 'Photo',
     description: 'Appareil photo hybride plein format 24,2 MP, vidéo 4K 60p, stabilisation jusqu\'à 8 stops, rafale 40 fps.',
     origin: 'Tokyo, Japan',
+    country: 'JP',
     countryFlag: '🇯🇵',
     tag: 'PRO',
     tagColor: 'green',
@@ -241,6 +251,7 @@ export const products: Product[] = [
     category: 'Audio',
     description: 'Casque à réduction de bruit de référence, audio spatial immersif, confort exceptionnel, 24h d\'autonomie.',
     origin: 'Boston, USA',
+    country: 'US',
     countryFlag: '🇺🇸',
     tag: 'PREMIUM',
     tagColor: 'blue',
@@ -260,6 +271,7 @@ export const products: Product[] = [
     category: 'TV',
     description: 'TV OLED 65 pouces 4K, processeur α9 AI 4K Gen6, Dolby Vision et Atmos, HDMI 2.1 pour gaming.',
     origin: 'Seoul, Korea',
+    country: 'KR',
     countryFlag: '🇰🇷',
     tag: 'OLED',
     tagColor: 'red',
@@ -283,6 +295,7 @@ export const products: Product[] = [
     category: 'Ordinateurs',
     description: 'Laptop élégant avec écran tactile PixelSense, processeur Intel Core i7, jusqu\'à 18h d\'autonomie.',
     origin: 'Redmond, USA',
+    country: 'US',
     countryFlag: '🇺🇸',
     tag: 'BUSINESS',
     tagColor: 'blue',
