@@ -169,7 +169,7 @@ export default function ModernShop() {
                 {/* Cart Button */}
                 <motion.button
                   onClick={() => setShowCart(true)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all font-bold shadow-lg"
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-colors font-bold shadow-lg"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -248,7 +248,7 @@ export default function ModernShop() {
               {filteredProducts.map((product, index) => (
                 <div
                   key={product.id || product._id}
-                  className="bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 rounded-xl overflow-hidden group hover:border-white transition-all duration-300 shadow-xl"
+                  className="bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 rounded-xl overflow-hidden group hover:border-white transition-colors duration-300 shadow-xl"
                 >
                   {/* Product Image */}
                   <div className="relative aspect-square bg-white overflow-hidden">
@@ -322,7 +322,7 @@ export default function ModernShop() {
                         const productId = product.id || product._id;
                         router.push(`/products/${productId}`);
                       }}
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-colors flex items-center justify-center gap-2"
                     >
                       <Eye size={16} />
                       <span>VOIR DÉTAILS</span>
@@ -342,10 +342,10 @@ export default function ModernShop() {
                 {/* Accueil */}
                 <button
                   onClick={() => router.push('/')}
-                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
+                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
                 >
                   <div className="relative">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
+                    <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
                       <span className="text-2xl">🏠</span>
                     </div>
                   </div>
@@ -359,10 +359,10 @@ export default function ModernShop() {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
+                    className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
                   >
                     <div className="relative">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
+                      <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
                         <span className="text-2xl">{social.emoji || '🔗'}</span>
                       </div>
                     </div>
@@ -373,13 +373,13 @@ export default function ModernShop() {
                 {/* Panier */}
                 <button
                   onClick={() => setShowCart(true)}
-                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
+                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
                 >
                   <div className="relative">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
+                    <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
                       <span className="text-2xl">🛒</span>
                       {getTotalItems() > 0 && (
-                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold shadow-lg animate-pulse">
+                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold animate-pulse">
                           {getTotalItems()}
                         </div>
                       )}
@@ -548,7 +548,7 @@ export default function ModernShop() {
                         const fullMessage = `🛒 Commande VERSHASH\n\n${message}\n\n💰 TOTAL: ${total}€`;
                         window.open(`https://t.me/VershashBot?text=${encodeURIComponent(fullMessage)}`, '_blank');
                       }}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-black text-lg md:text-xl hover:from-green-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-3 shadow-lg"
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-black text-lg md:text-xl hover:from-green-600 hover:to-emerald-700 transition-colors flex items-center justify-center gap-3 shadow-lg"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
