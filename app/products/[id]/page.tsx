@@ -415,12 +415,12 @@ export default function ProductPage() {
                         </div>
                         <motion.button
                           onClick={() => handleAddToCart(pricing)}
-                          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg font-bold"
+                          className="flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg font-bold text-sm"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <ShoppingCart size={24} />
-                          <span className="hidden sm:inline">AJOUTER</span>
+                          <ShoppingCart size={20} />
+                          <span>AJOUTER AU PANIER</span>
                         </motion.button>
                       </motion.div>
                     ))}

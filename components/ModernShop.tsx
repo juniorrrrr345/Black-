@@ -319,31 +319,19 @@ export default function ModernShop() {
                       </div>
                     )}
 
-                    {/* Actions - Voir détails et Ajouter au panier */}
-                    <div className="space-y-2">
-                      <motion.button
-                        onClick={() => {
-                          const productId = product.id || product._id;
-                          router.push(`/products/${productId}`);
-                        }}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Eye size={14} />
-                        <span>VOIR DÉTAILS</span>
-                      </motion.button>
-                      
-                      <motion.button
-                        onClick={() => addToCart(product)}
-                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 rounded-lg font-bold text-xs sm:text-sm hover:from-green-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-2"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <ShoppingBag size={14} />
-                        <span>AJOUTER AU PANIER</span>
-                      </motion.button>
-                    </div>
+                    {/* Action - Voir détails seulement */}
+                    <motion.button
+                      onClick={() => {
+                        const productId = product.id || product._id;
+                        router.push(`/products/${productId}`);
+                      }}
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Eye size={16} />
+                      <span>VOIR DÉTAILS</span>
+                    </motion.button>
                   </div>
                 </motion.div>
               ))}
