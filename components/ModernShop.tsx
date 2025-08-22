@@ -246,11 +246,8 @@ export default function ModernShop() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               {filteredProducts.map((product, index) => (
-                <motion.div
+                <div
                   key={product.id || product._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
                   className="bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 rounded-xl overflow-hidden group hover:border-white transition-all duration-300 shadow-xl"
                 >
                   {/* Product Image */}
@@ -320,20 +317,18 @@ export default function ModernShop() {
                     )}
 
                     {/* Action - Voir détails seulement */}
-                    <motion.button
+                    <button
                       onClick={() => {
                         const productId = product.id || product._id;
                         router.push(`/products/${productId}`);
                       }}
                       className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                     >
                       <Eye size={16} />
                       <span>VOIR DÉTAILS</span>
-                    </motion.button>
+                    </button>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -343,61 +338,55 @@ export default function ModernShop() {
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl z-50">
           <div className="border-t border-gray-700/50">
             <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-4 gap-1 p-2">
+              <div className="flex justify-center items-center gap-4 p-3">
                 {/* Accueil */}
-                <motion.button
+                <button
                   onClick={() => router.push('/')}
-                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
                 >
                   <div className="relative">
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 group-hover:from-blue-500 group-hover:to-blue-600 transition-all duration-300">
-                      <Home size={24} className="group-hover:scale-110 transition-transform" />
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 group-hover:from-blue-500 group-hover:to-blue-600 transition-all duration-300">
+                      <Home size={20} />
                     </div>
                   </div>
-                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Accueil</span>
-                </motion.button>
+                  <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">Accueil</span>
+                </button>
 
-                {/* Réseaux sociaux dynamiques */}
-                {socials.filter(s => s.enabled && s.name && s.url).map(social => (
-                  <motion.a
+                {/* Réseaux sociaux */}
+                {socials.filter(s => s.enabled && s.name && s.url).slice(0, 3).map(social => (
+                  <a
                     key={social.id}
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
                   >
                     <div className="relative">
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
-                        {social.icon === 'instagram' && <Instagram size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'telegram' && <Send size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'whatsapp' && <MessageCircle size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'facebook' && <Facebook size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'twitter' && <Twitter size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'youtube' && <Youtube size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'tiktok' && <Music size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'snapchat' && <Ghost size={24} className="group-hover:scale-110 transition-transform" />}
-                        {social.icon === 'discord' && <Gamepad2 size={24} className="group-hover:scale-110 transition-transform" />}
-                        {(social.icon === 'link' || !social.icon) && <Link size={24} className="group-hover:scale-110 transition-transform" />}
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
+                        {social.icon === 'instagram' && <Instagram size={20} />}
+                        {social.icon === 'telegram' && <Send size={20} />}
+                        {social.icon === 'whatsapp' && <MessageCircle size={20} />}
+                        {social.icon === 'facebook' && <Facebook size={20} />}
+                        {social.icon === 'twitter' && <Twitter size={20} />}
+                        {social.icon === 'youtube' && <Youtube size={20} />}
+                        {social.icon === 'tiktok' && <Music size={20} />}
+                        {social.icon === 'snapchat' && <Ghost size={20} />}
+                        {social.icon === 'discord' && <Gamepad2 size={20} />}
+                        {(social.icon === 'link' || !social.icon) && <Link size={20} />}
                       </div>
                     </div>
-                    <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">{social.name}</span>
-                  </motion.a>
+                    <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">{social.name}</span>
+                  </a>
                 ))}
 
                 {/* Panier */}
-                <motion.button
+                <button
                   onClick={() => setShowCart(true)}
-                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
                 >
                   <div className="relative">
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 group-hover:from-green-500 group-hover:to-emerald-600 transition-all duration-300">
-                      <ShoppingBag size={24} className="group-hover:scale-110 transition-transform" />
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-600/20 group-hover:from-green-500 group-hover:to-emerald-600 transition-all duration-300">
+                      <ShoppingBag size={20} />
                       {getTotalItems() > 0 && (
                         <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold shadow-lg animate-pulse">
                           {getTotalItems()}
@@ -405,8 +394,8 @@ export default function ModernShop() {
                       )}
                     </div>
                   </div>
-                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Panier</span>
-                </motion.button>
+                  <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">Panier</span>
+                </button>
               </div>
             </div>
           </div>
