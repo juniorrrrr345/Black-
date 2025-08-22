@@ -211,7 +211,7 @@ export default function ModernShop() {
               {/* Bouton Tout */}
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-all shadow-lg ${
+                className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-colors shadow-lg ${
                   selectedCategory === 'all'
                     ? 'bg-gradient-to-r from-white to-gray-100 text-black shadow-white/30'
                     : 'bg-gradient-to-r from-gray-900 to-black text-white hover:from-gray-800 hover:to-gray-900 shadow-black/50'
@@ -225,7 +225,7 @@ export default function ModernShop() {
                 <button
                   key={category._id || category.id}
                   onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
-                  className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-all shadow-lg ${
+                  className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-colors shadow-lg ${
                     selectedCategory === (category.slug || category.value || category.name.toLowerCase())
                       ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-green-500/30'
                       : 'bg-gradient-to-r from-gray-900 to-black text-green-400 hover:from-green-900/30 hover:to-green-950/30 shadow-black/50'
@@ -345,8 +345,8 @@ export default function ModernShop() {
                   className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
                 >
                   <div className="relative">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 group-hover:from-blue-500 group-hover:to-blue-600 transition-all duration-300">
-                      <Home size={20} />
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
+                      <span className="text-2xl">🏠</span>
                     </div>
                   </div>
                   <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">Accueil</span>
@@ -376,8 +376,8 @@ export default function ModernShop() {
                   className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/10 rounded-xl transition-all group"
                 >
                   <div className="relative">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-600/20 group-hover:from-green-500 group-hover:to-emerald-600 transition-all duration-300">
-                      <ShoppingBag size={20} />
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
+                      <span className="text-2xl">🛒</span>
                       {getTotalItems() > 0 && (
                         <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold shadow-lg animate-pulse">
                           {getTotalItems()}
