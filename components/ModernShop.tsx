@@ -6,7 +6,8 @@ import {
   ShoppingBag, Home, Instagram, Send, MessageCircle, 
   Star, TrendingUp, Package, Clock, Shield, 
   Plus, Minus, X, Trash2, ChevronRight, Sparkles,
-  ChevronLeft, ChevronDown, Video, Eye
+  ChevronLeft, ChevronDown, Video, Eye,
+  Facebook, Twitter, Youtube, Music, Ghost, Gamepad2, Link
 } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
@@ -355,39 +356,34 @@ export default function ModernShop() {
                   <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Accueil</span>
                 </motion.button>
 
-                {/* Instagram */}
-                <motion.a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="relative">
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-pink-500/20 to-purple-600/20 group-hover:from-pink-500 group-hover:to-purple-600 transition-all duration-300">
-                      <Instagram size={24} className="group-hover:scale-110 transition-transform" />
+                {/* Réseaux sociaux dynamiques */}
+                {socials.filter(s => s.enabled && s.name && s.url).map(social => (
+                  <motion.a
+                    key={social.id}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className="relative">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
+                        {social.icon === 'instagram' && <Instagram size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'telegram' && <Send size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'whatsapp' && <MessageCircle size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'facebook' && <Facebook size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'twitter' && <Twitter size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'youtube' && <Youtube size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'tiktok' && <Music size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'snapchat' && <Ghost size={24} className="group-hover:scale-110 transition-transform" />}
+                        {social.icon === 'discord' && <Gamepad2 size={24} className="group-hover:scale-110 transition-transform" />}
+                        {(social.icon === 'link' || !social.icon) && <Link size={24} className="group-hover:scale-110 transition-transform" />}
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Instagram</span>
-                </motion.a>
-
-                {/* Telegram */}
-                <motion.a
-                  href="https://t.me/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-col items-center justify-center py-3 px-2 text-white hover:bg-white/10 rounded-2xl transition-all group"
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="relative">
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-sky-500/20 to-blue-600/20 group-hover:from-sky-500 group-hover:to-blue-600 transition-all duration-300">
-                      <Send size={24} className="group-hover:scale-110 transition-transform" />
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">Telegram</span>
-                </motion.a>
+                    <span className="text-xs font-semibold mt-1.5 opacity-80 group-hover:opacity-100">{social.name}</span>
+                  </motion.a>
+                ))}
 
                 {/* Panier */}
                 <motion.button

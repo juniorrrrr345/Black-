@@ -53,6 +53,11 @@ export default function AdminDashboard() {
     checkAuth();
     fetchData();
     loadThemeSettings();
+    // Charger les réseaux sociaux depuis localStorage
+    const savedSocials = localStorage.getItem('shop-socials');
+    if (savedSocials) {
+      setSocials(JSON.parse(savedSocials));
+    }
   }, []);
 
   const checkAuth = () => {
@@ -1304,7 +1309,7 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
 
   const [formData, setFormData] = useState({
     name: category?.name || '',
-    slug: category?.slug || '',
+    slug: category?.slug || generateSlug(category?.name || ''),
     order: category?.order || 0,
     icon: category?.icon || '🌿',
     description: category?.description || '',
@@ -1314,13 +1319,13 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      // S'assurer que le slug est bien généré
+      // Toujours générer le slug basé sur le nom actuel
       const dataToSend = {
         ...formData,
-        slug: formData.slug || generateSlug(formData.name)
+        slug: generateSlug(formData.name) // Toujours générer à partir du nom
       };
       
-      const url = category ? `/api/categories/${category._id}` : '/api/categories';
+      const url = category ? `/api/categories/${category._id || category.id}` : '/api/categories';
       const method = category ? 'PUT' : 'POST';
       
       const res = await fetch(url, {
