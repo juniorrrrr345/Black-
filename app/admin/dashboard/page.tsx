@@ -16,7 +16,15 @@ import {
   Tag,
   Eye,
   DollarSign,
-  Weight
+  Weight,
+  Share2,
+  Instagram,
+  Send,
+  MessageCircle,
+  Facebook,
+  Twitter,
+  Youtube,
+  Link
 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import CloudinaryVideoUpload from '@/components/CloudinaryVideoUpload';
@@ -28,6 +36,10 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({ shopName: 'VERSHASH', bannerText: 'NOUVEAU DROP', bannerImage: '', orderLink: '' });
+  const [socials, setSocials] = useState<any[]>([
+    { id: '1', name: 'Instagram', icon: 'instagram', url: 'https://instagram.com/', enabled: true },
+    { id: '2', name: 'Telegram', icon: 'telegram', url: 'https://t.me/', enabled: true }
+  ]);
   const [isLoading, setIsLoading] = useState(true);
   const { themeSettings, updateThemeSettings, loadThemeSettings } = useStore();
   
@@ -214,6 +226,17 @@ export default function AdminDashboard() {
             >
               <ImageIcon className="inline mr-2" size={16} />
               BACKGROUND
+            </button>
+            <button
+              onClick={() => setActiveTab('socials')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'socials'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Share2 className="inline mr-2" size={16} />
+              RÉSEAUX
             </button>
           </div>
         </div>
@@ -786,6 +809,177 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* Socials Tab */}
+        {activeTab === 'socials' && (
+          <div>
+            <div className="mb-6 md:mb-8">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2">🌐 RÉSEAUX SOCIAUX</h2>
+              <p className="text-gray-400">Gérez les liens vers vos réseaux sociaux</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              {/* Liste des réseaux */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-black text-white">VOS RÉSEAUX</h3>
+                  <button
+                    onClick={() => {
+                      const newSocial = {
+                        id: Date.now().toString(),
+                        name: '',
+                        icon: 'link',
+                        url: '',
+                        enabled: true
+                      };
+                      setSocials([...socials, newSocial]);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2"
+                  >
+                    <Plus size={20} />
+                    Ajouter
+                  </button>
+                </div>
+
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {socials.map((social, index) => (
+                    <div key={social.id} className="bg-white/10 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <input
+                          type="text"
+                          placeholder="Nom du réseau"
+                          value={social.name}
+                          onChange={(e) => {
+                            const updated = [...socials];
+                            updated[index].name = e.target.value;
+                            setSocials(updated);
+                          }}
+                          className="flex-1 bg-white text-black px-3 py-2 rounded-lg font-bold mr-2"
+                        />
+                        <button
+                          onClick={() => {
+                            const updated = [...socials];
+                            updated[index].enabled = !updated[index].enabled;
+                            setSocials(updated);
+                          }}
+                          className={`px-3 py-2 rounded-lg font-bold transition-colors ${
+                            social.enabled 
+                              ? 'bg-green-600 text-white hover:bg-green-700' 
+                              : 'bg-gray-600 text-white hover:bg-gray-700'
+                          }`}
+                        >
+                          {social.enabled ? 'Actif' : 'Inactif'}
+                        </button>
+                        <button
+                          onClick={() => setSocials(socials.filter(s => s.id !== social.id))}
+                          className="ml-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <select
+                          value={social.icon}
+                          onChange={(e) => {
+                            const updated = [...socials];
+                            updated[index].icon = e.target.value;
+                            setSocials(updated);
+                          }}
+                          className="bg-white text-black px-3 py-2 rounded-lg font-bold"
+                        >
+                          <option value="instagram">📷 Instagram</option>
+                          <option value="telegram">✈️ Telegram</option>
+                          <option value="whatsapp">💬 WhatsApp</option>
+                          <option value="facebook">👤 Facebook</option>
+                          <option value="twitter">🐦 Twitter</option>
+                          <option value="youtube">📺 YouTube</option>
+                          <option value="tiktok">🎵 TikTok</option>
+                          <option value="snapchat">👻 Snapchat</option>
+                          <option value="discord">🎮 Discord</option>
+                          <option value="link">🔗 Autre</option>
+                        </select>
+                        
+                        <input
+                          type="url"
+                          placeholder="URL complète (https://...)"
+                          value={social.url}
+                          onChange={(e) => {
+                            const updated = [...socials];
+                            updated[index].url = e.target.value;
+                            setSocials(updated);
+                          }}
+                          className="flex-1 bg-white text-black px-3 py-2 rounded-lg font-bold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Aperçu */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <h3 className="text-xl font-black text-white mb-6">APERÇU</h3>
+                
+                <div className="bg-gray-900 rounded-lg p-6">
+                  <p className="text-gray-400 text-sm mb-4">Voici comment vos réseaux apparaîtront en bas de page :</p>
+                  
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    {socials.filter(s => s.enabled && s.name && s.url).map(social => (
+                      <a
+                        key={social.id}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-xl transition-all flex items-center gap-2"
+                      >
+                        {social.icon === 'instagram' && <Instagram size={20} />}
+                        {social.icon === 'telegram' && <Send size={20} />}
+                        {social.icon === 'whatsapp' && <MessageCircle size={20} />}
+                        {social.icon === 'facebook' && <Facebook size={20} />}
+                        {social.icon === 'twitter' && <Twitter size={20} />}
+                        {social.icon === 'youtube' && <Youtube size={20} />}
+                        {social.icon === 'link' && <Link size={20} />}
+                        <span className="font-bold">{social.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                  
+                  {socials.filter(s => s.enabled && s.name && s.url).length === 0 && (
+                    <p className="text-center text-gray-500">Aucun réseau social configuré</p>
+                  )}
+                </div>
+
+                <div className="mt-6 p-4 bg-yellow-900/30 rounded-lg border border-yellow-600/50">
+                  <p className="text-yellow-400 text-sm">
+                    💡 Les réseaux sociaux actifs s'afficheront automatiquement dans la navigation en bas de page de votre boutique.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bouton sauvegarder */}
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={async () => {
+                  try {
+                    // Sauvegarder dans localStorage pour l'instant
+                    localStorage.setItem('shop-socials', JSON.stringify(socials));
+                    
+                    // TODO: Sauvegarder via API
+                    alert('✅ Réseaux sociaux sauvegardés !');
+                  } catch (error) {
+                    alert('❌ Erreur lors de la sauvegarde');
+                  }
+                }}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:from-green-700 hover:to-emerald-700 transition-all flex items-center gap-3"
+              >
+                <Save size={24} />
+                SAUVEGARDER LES RÉSEAUX
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Product Modal */}
@@ -1188,18 +1382,7 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
             />
           </div>
 
-          <div>
-            <label className="block text-white font-black text-sm mb-2">
-              SLUG (URL) - Généré automatiquement
-            </label>
-            <input
-              type="text"
-              value={formData.slug}
-              className="w-full bg-gray-200 text-gray-600 px-4 py-3 rounded-lg border-2 border-gray-400 font-bold cursor-not-allowed"
-              readOnly
-              disabled
-            />
-          </div>
+
 
           <div className="grid grid-cols-2 gap-4">
             <div>

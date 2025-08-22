@@ -20,12 +20,18 @@ export default function ModernShop() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [socials, setSocials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { themeSettings, loadThemeSettings } = useStore();
 
   useEffect(() => {
     loadData();
     loadThemeSettings();
+    // Charger les réseaux sociaux depuis localStorage
+    const savedSocials = localStorage.getItem('shop-socials');
+    if (savedSocials) {
+      setSocials(JSON.parse(savedSocials));
+    }
   }, []);
 
   const loadData = async () => {
@@ -198,7 +204,7 @@ export default function ModernShop() {
               NOS CATÉGORIES
             </h2>
             <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-              {/* Catégories principales */}
+              {/* Bouton Tout */}
               <button
                 onClick={() => setSelectedCategory('all')}
                 className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-all shadow-lg ${
@@ -210,27 +216,20 @@ export default function ModernShop() {
                 ✨ TOUT
               </button>
 
-              <button
-                onClick={() => setSelectedCategory('weed')}
-                className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-all shadow-lg ${
-                  selectedCategory === 'weed'
-                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-green-500/30'
-                    : 'bg-gradient-to-r from-gray-900 to-black text-green-400 hover:from-green-900/30 hover:to-green-950/30 shadow-black/50'
-                }`}
-              >
-                🌿 WEED
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('hash')}
-                className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-all shadow-lg ${
-                  selectedCategory === 'hash'
-                    ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-amber-600/30'
-                    : 'bg-gradient-to-r from-gray-900 to-black text-amber-400 hover:from-amber-900/30 hover:to-amber-950/30 shadow-black/50'
-                }`}
-              >
-                🟫 HASH
-              </button>
+              {/* Catégories dynamiques */}
+              {categories && categories.map((category: any) => (
+                <button
+                  key={category._id || category.id}
+                  onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
+                  className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-all shadow-lg ${
+                    selectedCategory === (category.slug || category.value || category.name.toLowerCase())
+                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-green-500/30'
+                      : 'bg-gradient-to-r from-gray-900 to-black text-green-400 hover:from-green-900/30 hover:to-green-950/30 shadow-black/50'
+                  }`}
+                >
+                  {category.icon || '📦'} {category.name.toUpperCase()}
+                </button>
+              ))}
             </div>
           </div>
         </section>
