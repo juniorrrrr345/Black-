@@ -205,10 +205,10 @@ export default function ModernShop() {
               {/* Bouton Tout */}
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-colors shadow-lg ${
+                className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg ${
                   selectedCategory === 'all'
-                    ? 'bg-gradient-to-r from-white to-gray-100 text-black shadow-white/30'
-                    : 'bg-gradient-to-r from-gray-900 to-black text-white hover:from-gray-800 hover:to-gray-900 shadow-black/50'
+                    ? 'bg-white text-black'
+                    : 'bg-gray-900 text-white hover:bg-gray-800'
                 }`}
               >
                 ✨ TOUT
@@ -219,10 +219,10 @@ export default function ModernShop() {
                 <button
                   key={category._id || category.id}
                   onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
-                  className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg transition-colors shadow-lg ${
+                  className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg ${
                     selectedCategory === (category.slug || category.value || category.name.toLowerCase())
-                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-green-500/30'
-                      : 'bg-gradient-to-r from-gray-900 to-black text-green-400 hover:from-green-900/30 hover:to-green-950/30 shadow-black/50'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-900 text-green-400 hover:bg-gray-800'
                   }`}
                 >
                   {category.icon || '📦'} {category.name.toUpperCase()}
@@ -242,7 +242,7 @@ export default function ModernShop() {
               {filteredProducts.map((product, index) => (
                 <div
                   key={product.id || product._id}
-                  className="bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 rounded-xl overflow-hidden group hover:border-white transition-colors duration-300 shadow-xl"
+                  className="bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 rounded-xl overflow-hidden group hover:border-white shadow-xl"
                 >
                   {/* Product Image */}
                   <div className="relative aspect-square bg-white overflow-hidden">
@@ -316,7 +316,7 @@ export default function ModernShop() {
                         const productId = product.id || product._id;
                         router.push(`/products/${productId}`);
                       }}
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:from-blue-700 hover:to-blue-800 transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
                     >
                       <Eye size={16} />
                       <span>VOIR DÉTAILS</span>
