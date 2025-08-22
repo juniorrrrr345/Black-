@@ -21,7 +21,10 @@ export default function ModernShop() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  const [socials, setSocials] = useState<any[]>([]);
+  const [socials, setSocials] = useState<any[]>([
+    { id: '1', name: 'Instagram', icon: 'instagram', url: 'https://instagram.com/', enabled: true },
+    { id: '2', name: 'Telegram', icon: 'telegram', url: 'https://t.me/', enabled: true }
+  ]);
   const [loading, setLoading] = useState(true);
   const { themeSettings, loadThemeSettings } = useStore();
 
