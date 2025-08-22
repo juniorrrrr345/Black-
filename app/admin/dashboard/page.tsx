@@ -883,27 +883,59 @@ export default function AdminDashboard() {
                         </button>
                       </div>
 
-                      <div className="flex gap-2">
-                        <select
-                          value={social.icon}
-                          onChange={(e) => {
-                            const updated = [...socials];
-                            updated[index].icon = e.target.value;
-                            setSocials(updated);
-                          }}
-                          className="bg-white text-black px-3 py-2 rounded-lg font-bold"
-                        >
-                          <option value="instagram">📷 Instagram</option>
-                          <option value="telegram">✈️ Telegram</option>
-                          <option value="whatsapp">💬 WhatsApp</option>
-                          <option value="facebook">👤 Facebook</option>
-                          <option value="twitter">🐦 Twitter</option>
-                          <option value="youtube">📺 YouTube</option>
-                          <option value="tiktok">🎵 TikTok</option>
-                          <option value="snapchat">👻 Snapchat</option>
-                          <option value="discord">🎮 Discord</option>
-                          <option value="link">🔗 Autre</option>
-                        </select>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Emoji (ex: 📷)"
+                            value={social.emoji || ''}
+                            onChange={(e) => {
+                              const updated = [...socials];
+                              updated[index].emoji = e.target.value;
+                              setSocials(updated);
+                            }}
+                            className="w-20 bg-white text-black px-3 py-2 rounded-lg font-bold text-center text-xl"
+                            maxLength={2}
+                          />
+                          
+                          <select
+                            value={social.icon}
+                            onChange={(e) => {
+                              const updated = [...socials];
+                              updated[index].icon = e.target.value;
+                              // Auto-remplir l'emoji si pas déjà défini
+                              if (!updated[index].emoji) {
+                                const emojis: any = {
+                                  'instagram': '📷',
+                                  'telegram': '✈️',
+                                  'whatsapp': '💬',
+                                  'facebook': '👤',
+                                  'twitter': '🐦',
+                                  'youtube': '📺',
+                                  'tiktok': '🎵',
+                                  'snapchat': '👻',
+                                  'discord': '🎮',
+                                  'link': '🔗'
+                                };
+                                updated[index].emoji = emojis[e.target.value] || '🔗';
+                              }
+                              setSocials(updated);
+                            }}
+                            className="flex-1 bg-white text-black px-3 py-2 rounded-lg font-bold"
+                          >
+                            <option value="">Choisir un type...</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="telegram">Telegram</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="snapchat">Snapchat</option>
+                            <option value="discord">Discord</option>
+                            <option value="link">Autre</option>
+                          </select>
+                        </div>
                         
                         <input
                           type="url"
@@ -914,7 +946,7 @@ export default function AdminDashboard() {
                             updated[index].url = e.target.value;
                             setSocials(updated);
                           }}
-                          className="flex-1 bg-white text-black px-3 py-2 rounded-lg font-bold"
+                          className="w-full bg-white text-black px-3 py-2 rounded-lg font-bold"
                         />
                       </div>
                     </div>
