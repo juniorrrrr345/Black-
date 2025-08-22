@@ -384,17 +384,28 @@ export default function AdminDashboard() {
                       <td className="p-4 text-gray-400">{category.slug}</td>
                       <td className="p-4">{category.order}</td>
                       <td className="p-4">
-                        <button
-                          onClick={() => {
-                            setEditingCategory(category);
-                            setShowCategoryModal(true);
+                        <button 
+                          onClick={async () => {
+                            if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`)) {
+                              try {
+                                const res = await fetch(`/api/categories/${category._id || category.id}`, {
+                                  method: 'DELETE',
+                                });
+                                if (res.ok) {
+                                  fetchData(); // Recharger les données
+                                  alert('✅ Catégorie supprimée avec succès');
+                                } else {
+                                  alert('❌ Erreur lors de la suppression');
+                                }
+                              } catch (error) {
+                                alert('❌ Erreur lors de la suppression');
+                              }
+                            }
                           }}
-                          className="mr-2 text-purple-400 hover:text-purple-300"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-bold transition-colors flex items-center gap-1"
                         >
-                          <Edit size={16} />
-                        </button>
-                        <button className="text-red-400 hover:text-red-300">
                           <Trash2 size={16} />
+                          SUPPRIMER
                         </button>
                       </td>
                     </tr>
