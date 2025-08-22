@@ -228,26 +228,6 @@ export default function AdminDashboard() {
               <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white">📦 GESTION DES PRODUITS</h2>
               <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
                 <button
-                  onClick={async () => {
-                    try {
-                      const response = await fetch('/api/populate', { method: 'POST' });
-                      const result = await response.json();
-                      if (result.success) {
-                        alert(`✅ Base peuplée!\n📦 ${result.results.products.created} produits créés\n📁 ${result.results.categories.created} catégories créées`);
-                        fetchData();
-                      } else {
-                        alert('❌ Erreur: ' + result.error);
-                      }
-                    } catch (error) {
-                      alert('❌ Erreur de connexion');
-                    }
-                  }}
-                  className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 rounded-lg transition-colors font-black text-xs md:text-sm lg:text-base border-2 border-green-400"
-                >
-                  <Package size={14} className="md:w-4 md:h-4 lg:w-5 lg:h-5" />
-                  PEUPLER DB
-                </button>
-                <button
                   onClick={() => {
                     setEditingProduct(null);
                     setShowProductModal(true);
@@ -848,14 +828,11 @@ export default function AdminDashboard() {
 function ProductFormModal({ product, categories, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: product?.name || '',
-    origin: product?.origin || '',
     price: product?.price || 0,
     pricing: product?.pricing || [],
-    quantity: product?.quantity || 0,
     category: product?.category || 'weed',
     tag: product?.tag || '',
     tagColor: product?.tagColor || 'green',
-
     description: product?.description || '',
     image: product?.image || '',
     video: product?.video || '',
@@ -977,19 +954,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-white font-black text-sm mb-2">
-                    ORIGINE
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Pays-Bas"
-                    value={formData.origin}
-                    onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                    className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                    required
-                  />
-                </div>
+
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -1006,19 +971,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
                       <option value="hash">🍫 Hash</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-white font-black text-sm mb-2">
-                      STOCK TOTAL
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Ex: 100"
-                      value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                      required
-                    />
-                  </div>
+
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -1142,6 +1095,19 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
 
 // Category Form Modal Component  
 function CategoryFormModal({ category, onClose, onSave }: any) {
+  // Fonction pour générer automatiquement le slug
+  const generateSlug = (name: string) => {
+    return name.toLowerCase()
+      .replace(/[éèêë]/g, 'e')
+      .replace(/[àâä]/g, 'a')
+      .replace(/[îï]/g, 'i')
+      .replace(/[ôö]/g, 'o')
+      .replace(/[ùûü]/g, 'u')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
   const [formData, setFormData] = useState({
     name: category?.name || '',
     slug: category?.slug || '',
@@ -1154,13 +1120,19 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
+      // S'assurer que le slug est bien généré
+      const dataToSend = {
+        ...formData,
+        slug: formData.slug || generateSlug(formData.name)
+      };
+      
       const url = category ? `/api/categories/${category._id}` : '/api/categories';
       const method = category ? 'PUT' : 'POST';
       
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
       
       if (res.ok) {
@@ -1203,7 +1175,14 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
               type="text"
               placeholder="Ex: Weed Premium"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => {
+                const name = e.target.value;
+                setFormData({ 
+                  ...formData, 
+                  name: name,
+                  slug: generateSlug(name)
+                });
+              }}
               className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
               required
             />
@@ -1211,15 +1190,14 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
 
           <div>
             <label className="block text-white font-black text-sm mb-2">
-              SLUG (URL)
+              SLUG (URL) - Généré automatiquement
             </label>
             <input
               type="text"
-              placeholder="Ex: weed-premium"
               value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              required
+              className="w-full bg-gray-200 text-gray-600 px-4 py-3 rounded-lg border-2 border-gray-400 font-bold cursor-not-allowed"
+              readOnly
+              disabled
             />
           </div>
 
