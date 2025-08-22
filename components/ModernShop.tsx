@@ -184,12 +184,9 @@ export default function ModernShop() {
             />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
             <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white">
                 {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
               </h2>
-              <p className="text-lg md:text-xl text-gray-200">
-                Découvrez nos produits premium
-              </p>
             </div>
           </div>
         </header>
