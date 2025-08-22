@@ -37,8 +37,8 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({ shopName: 'VERSHASH', bannerText: 'NOUVEAU DROP', bannerImage: '', orderLink: '' });
   const [socials, setSocials] = useState<any[]>([
-    { id: '1', name: 'Instagram', icon: 'instagram', url: 'https://instagram.com/', enabled: true },
-    { id: '2', name: 'Telegram', icon: 'telegram', url: 'https://t.me/', enabled: true }
+    { id: '1', name: 'Instagram', icon: 'instagram', emoji: '📷', url: 'https://instagram.com/', enabled: true },
+    { id: '2', name: 'Telegram', icon: 'telegram', emoji: '✈️', url: 'https://t.me/', enabled: true }
   ]);
   const [isLoading, setIsLoading] = useState(true);
   const { themeSettings, updateThemeSettings, loadThemeSettings } = useStore();
@@ -981,13 +981,7 @@ export default function AdminDashboard() {
                         rel="noopener noreferrer"
                         className="bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-xl transition-all flex items-center gap-2"
                       >
-                        {social.icon === 'instagram' && <Instagram size={20} />}
-                        {social.icon === 'telegram' && <Send size={20} />}
-                        {social.icon === 'whatsapp' && <MessageCircle size={20} />}
-                        {social.icon === 'facebook' && <Facebook size={20} />}
-                        {social.icon === 'twitter' && <Twitter size={20} />}
-                        {social.icon === 'youtube' && <Youtube size={20} />}
-                        {social.icon === 'link' && <Link size={20} />}
+                        <span className="text-xl">{social.emoji || '🔗'}</span>
                         <span className="font-bold">{social.name}</span>
                       </a>
                     ))}
@@ -1353,10 +1347,8 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: category?.name || '',
     slug: category?.slug || generateSlug(category?.name || ''),
-    order: category?.order || 0,
-    icon: category?.icon || '🌿',
-    description: category?.description || '',
-    visible: category?.visible !== false, // Par défaut visible
+    order: category?.order || 1,
+    icon: category?.icon || '🌿'
   });
 
   const handleSubmit = async (e: any) => {
@@ -1435,7 +1427,7 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-white font-black text-sm mb-2">
-                ICÔNE
+                ICÔNE (EMOJI)
               </label>
               <input
                 type="text"
@@ -1443,45 +1435,27 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
                 value={formData.icon}
                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                 className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold text-center text-2xl"
+                maxLength={2}
               />
+              <p className="text-gray-400 text-xs mt-1">Utilisez un emoji</p>
             </div>
             <div>
               <label className="block text-white font-black text-sm mb-2">
-                ORDRE D'AFFICHAGE
+                POSITION D'AFFICHAGE
               </label>
-              <input
-                type="number"
-                placeholder="Ex: 1"
+              <select
                 value={formData.order}
-                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 1 })}
                 className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              />
+              >
+                <option value="1">1ère position</option>
+                <option value="2">2ème position</option>
+                <option value="3">3ème position</option>
+                <option value="4">4ème position</option>
+                <option value="5">5ème position</option>
+              </select>
+              <p className="text-gray-400 text-xs mt-1">Ordre d'apparition</p>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-white font-black text-sm mb-2">
-              DESCRIPTION
-            </label>
-            <textarea
-              placeholder="Description de la catégorie..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              rows={3}
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.visible}
-                onChange={(e) => setFormData({ ...formData, visible: e.target.checked })}
-                className="w-5 h-5"
-              />
-              <span className="text-white font-black">VISIBLE DANS LA BOUTIQUE</span>
-            </label>
           </div>
 
           <div className="flex gap-4 pt-6 border-t-2 border-white">

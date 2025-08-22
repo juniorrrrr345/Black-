@@ -22,8 +22,8 @@ export default function ModernShop() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [socials, setSocials] = useState<any[]>([
-    { id: '1', name: 'Instagram', icon: 'instagram', url: 'https://instagram.com/', enabled: true },
-    { id: '2', name: 'Telegram', icon: 'telegram', url: 'https://t.me/', enabled: true }
+    { id: '1', name: 'Instagram', icon: 'instagram', emoji: '📷', url: 'https://instagram.com/', enabled: true },
+    { id: '2', name: 'Telegram', icon: 'telegram', emoji: '✈️', url: 'https://t.me/', enabled: true }
   ]);
   const [loading, setLoading] = useState(true);
   const { themeSettings, loadThemeSettings } = useStore();
@@ -363,16 +363,7 @@ export default function ModernShop() {
                   >
                     <div className="relative">
                       <div className="p-2 rounded-lg bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/40 group-hover:to-white/20 transition-all duration-300">
-                        {social.icon === 'instagram' && <Instagram size={20} />}
-                        {social.icon === 'telegram' && <Send size={20} />}
-                        {social.icon === 'whatsapp' && <MessageCircle size={20} />}
-                        {social.icon === 'facebook' && <Facebook size={20} />}
-                        {social.icon === 'twitter' && <Twitter size={20} />}
-                        {social.icon === 'youtube' && <Youtube size={20} />}
-                        {social.icon === 'tiktok' && <Music size={20} />}
-                        {social.icon === 'snapchat' && <Ghost size={20} />}
-                        {social.icon === 'discord' && <Gamepad2 size={20} />}
-                        {(social.icon === 'link' || !social.icon) && <Link size={20} />}
+                        <span className="text-2xl">{social.emoji || '🔗'}</span>
                       </div>
                     </div>
                     <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">{social.name}</span>
