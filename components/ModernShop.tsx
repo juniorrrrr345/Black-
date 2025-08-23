@@ -336,59 +336,57 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Bottom Navigation - Design professionnel et moderne */}
+        {/* Bottom Navigation - Design professionnel et moderne avec emojis iPhone */}
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl z-50">
           <div className="border-t border-gray-700/50">
             <div className="max-w-7xl mx-auto">
-              <div className="flex justify-center items-center gap-4 p-3">
+              <div className="flex justify-center items-center gap-6 p-4">
                 {/* Accueil */}
                 <button
                   onClick={() => router.push('/')}
-                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
+                  className="flex flex-col items-center justify-center py-3 px-6 text-white hover:bg-white/20 rounded-xl transition-all group cursor-pointer"
                 >
                   <div className="relative">
-                    <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
-                      <span className="text-2xl">🏠</span>
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/30 group-hover:from-blue-500/40 group-hover:to-blue-600/50 transition-all shadow-lg">
+                      <span className="text-3xl">🏠</span>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">Accueil</span>
+                  <span className="text-xs font-bold mt-2 opacity-90 group-hover:opacity-100">Accueil</span>
                 </button>
 
-                {/* Réseaux sociaux */}
+                {/* Réseaux sociaux avec emojis iPhone plus visibles */}
                 {socials.filter(s => s.enabled && s.name && s.url).slice(0, 3).map(social => (
                   <a
                     key={social.id}
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
+                    className="flex flex-col items-center justify-center py-3 px-6 text-white hover:bg-white/20 rounded-xl transition-all group cursor-pointer"
                   >
                     <div className="relative">
-                      <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
-                        <span className="text-2xl">{social.emoji || '🔗'}</span>
+                      <div className={`p-3 rounded-xl transition-all shadow-lg ${
+                        social.name === 'Instagram' 
+                          ? 'bg-gradient-to-br from-purple-500/20 to-pink-600/30 group-hover:from-purple-500/40 group-hover:to-pink-600/50'
+                          : social.name === 'Telegram'
+                          ? 'bg-gradient-to-br from-blue-400/20 to-blue-600/30 group-hover:from-blue-400/40 group-hover:to-blue-600/50'
+                          : 'bg-gradient-to-br from-gray-500/20 to-gray-600/30 group-hover:from-gray-500/40 group-hover:to-gray-600/50'
+                      }`}>
+                        <span className="text-3xl">
+                          {social.name === 'Instagram' ? '📸' : 
+                           social.name === 'Telegram' ? '✈️' : 
+                           social.name === 'Facebook' ? '👥' :
+                           social.name === 'Twitter' ? '🐦' :
+                           social.name === 'YouTube' ? '📺' :
+                           social.name === 'TikTok' ? '🎵' :
+                           social.name === 'Snapchat' ? '👻' :
+                           social.name === 'Discord' ? '🎮' :
+                           social.emoji || '🔗'}
+                        </span>
                       </div>
                     </div>
-                    <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">{social.name}</span>
+                    <span className="text-xs font-bold mt-2 opacity-90 group-hover:opacity-100">{social.name}</span>
                   </a>
                 ))}
-
-                {/* Panier - Redirige vers /cart */}
-                <button
-                  onClick={() => router.push('/cart')}
-                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
-                >
-                  <div className="relative">
-                    <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
-                      <span className="text-2xl">🛒</span>
-                      {getTotalItems() > 0 && (
-                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold animate-pulse">
-                          {getTotalItems()}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">Panier</span>
-                </button>
               </div>
             </div>
           </div>
