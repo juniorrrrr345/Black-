@@ -65,7 +65,7 @@ export default function ModernShop() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed'
-        } : { backgroundColor: '#000000' };
+        } : { backgroundColor: 'black' };
       case 'gradient':
         return {
           background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`

@@ -82,7 +82,7 @@ export default function AdminDashboard() {
         // Synchroniser avec le store
         updateThemeSettings({
           backgroundType: settingsData.backgroundType || 'color',
-          backgroundColor: settingsData.backgroundColor || '#000000',
+          backgroundColor: settingsData.backgroundColor || 'black',
           backgroundImage: settingsData.backgroundImage || '',
           gradientFrom: settingsData.gradientFrom || '#000000',
           gradientTo: settingsData.gradientTo || '#111111',

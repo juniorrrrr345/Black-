@@ -63,7 +63,7 @@ const SettingsSchema = new mongoose.Schema({
   },
   backgroundColor: {
     type: String,
-    default: '#000000'
+    default: 'black'
   },
   backgroundImage: {
     type: String,

@@ -13,7 +13,7 @@ export async function GET() {
         bannerText: 'NOUVEAU DROP',
         bannerImage: '',
         backgroundType: 'color',
-        backgroundColor: '#000000',
+        backgroundColor: 'black',
         backgroundImage: '',
         gradientFrom: '#000000',
         gradientTo: '#111111',
