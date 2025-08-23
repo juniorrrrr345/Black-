@@ -644,24 +644,13 @@ export default function AdminDashboard() {
                 
                 <div className="space-y-4 md:space-y-6">
                   <div>
-                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">TEXTE DE LA BANNIÈRE</label>
-                    <input
-                      type="text"
-                      value={settings.bannerText}
-                      onChange={(e) => setSettings({ ...settings, bannerText: e.target.value })}
-                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
-                      placeholder="Ex: NOUVEAU DROP"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">SOUS-TEXTE DE LA BANNIÈRE</label>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">TEXTE DE PRÉSENTATION</label>
                     <input
                       type="text"
                       value={settings.bannerSubtext}
                       onChange={(e) => setSettings({ ...settings, bannerSubtext: e.target.value })}
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
-                      placeholder="Ex: Découvrez nos produits premium"
+                      placeholder="Ex: Découvrez nos produits premium de qualité exceptionnelle"
                     />
                   </div>
 
