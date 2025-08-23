@@ -283,7 +283,7 @@ export default function ModernShop() {
         </section>
 
         {/* Products Section - Plus compact */}
-        <section className="px-4 pb-24">
+        <section className="px-4 pb-32 md:pb-28">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-4">
               <h2 className="text-xl md:text-2xl font-bold">
@@ -394,16 +394,16 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Bottom Navigation - Plus compact */}
+        {/* Bottom Navigation - Plus compact et moins intrusif */}
         <div className="fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xl z-40 border-t border-white/10">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-center items-center gap-4 md:gap-6 py-2">
+            <div className="flex justify-center items-center gap-4 md:gap-6 py-1.5 md:py-2">
               {/* Accueil */}
               <button
                 onClick={() => router.push('/')}
-                className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group"
+                className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group p-1"
               >
-                <span className="text-xl md:text-2xl group-hover:scale-110 transition-transform">🏠</span>
+                <span className="text-lg md:text-xl group-hover:scale-110 transition-transform">🏠</span>
                 <span className="text-[8px] md:text-[9px] font-medium opacity-70 group-hover:opacity-100">Accueil</span>
               </button>
 
@@ -414,9 +414,9 @@ export default function ModernShop() {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group"
+                  className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group p-1"
                 >
-                  <span className="text-xl md:text-2xl group-hover:scale-110 transition-transform">
+                  <span className="text-lg md:text-xl group-hover:scale-110 transition-transform">
                     {social.name === 'Instagram' ? '📸' : 
                      social.name === 'Telegram' ? '✈️' : 
                      social.name === 'Facebook' ? '👥' :
