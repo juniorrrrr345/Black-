@@ -435,19 +435,28 @@ export default function AdminDashboard() {
               <table className="w-full">
                 <thead className="bg-gray-800">
                   <tr>
-                    <th className="text-left p-4">Nom</th>
-                    <th className="text-left p-4">Slug</th>
-                    <th className="text-left p-4">Ordre</th>
-                    <th className="text-left p-4">Actions</th>
+                    <th className="text-left p-4 font-bold">Nom</th>
+                    <th className="text-left p-4 font-bold">Emoji</th>
+                    <th className="text-left p-4 font-bold">Slug</th>
+                    <th className="text-left p-4 font-bold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {categories.map((category) => (
                     <tr key={category._id} className="border-t border-gray-800">
                       <td className="p-4">{category.name}</td>
+                      <td className="p-4 text-2xl">{category.icon || '🌿'}</td>
                       <td className="p-4 text-gray-400">{category.slug}</td>
-                      <td className="p-4">{category.order}</td>
-                      <td className="p-4">
+                      <td className="p-4 flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingCategory(category);
+                            setShowCategoryModal(true);
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg font-bold transition-colors"
+                        >
+                          Modifier
+                        </button>
                         <button 
                           onClick={async () => {
                             if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`)) {
@@ -466,10 +475,9 @@ export default function AdminDashboard() {
                               }
                             }
                           }}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-bold transition-colors flex items-center gap-1"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-bold transition-colors"
                         >
-                          <Trash2 size={16} />
-                          SUPPRIMER
+                          Supprimer
                         </button>
                       </td>
                     </tr>
@@ -531,7 +539,7 @@ export default function AdminDashboard() {
                       type="text"
                       value={settings.burnsLink || ''}
                       onChange={(e) => setSettings({ ...settings, burnsLink: e.target.value })}
-                      placeholder="https://exemple.com/burns"
+                      placeholder="Ex: https://t.me/username ou https://wa.me/33612345678"
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />
                   </div>
@@ -542,7 +550,7 @@ export default function AdminDashboard() {
                       type="text"
                       value={settings.apouLink || ''}
                       onChange={(e) => setSettings({ ...settings, apouLink: e.target.value })}
-                      placeholder="https://exemple.com/apou"
+                      placeholder="Ex: https://t.me/username ou https://wa.me/33612345678"
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />
                   </div>
@@ -553,14 +561,24 @@ export default function AdminDashboard() {
                       type="text"
                       value={settings.moeLink || ''}
                       onChange={(e) => setSettings({ ...settings, moeLink: e.target.value })}
-                      placeholder="https://exemple.com/moe"
+                      placeholder="Ex: https://t.me/username ou https://wa.me/33612345678"
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />
                   </div>
 
-                  <p className="text-gray-300 text-xs md:text-sm mt-2 bg-white/10 rounded-lg p-2 md:p-3">
-                    💡 Ces liens seront affichés dans le panier pour permettre aux clients de commander chez différents commerçants
-                  </p>
+                  <div className="bg-yellow-900/30 rounded-lg p-3 md:p-4 border border-yellow-600/50">
+                    <p className="text-yellow-400 text-xs md:text-sm font-bold mb-2">
+                      📱 FORMATS DE LIENS SUPPORTÉS :
+                    </p>
+                    <ul className="text-gray-300 text-xs md:text-sm space-y-1">
+                      <li>• <span className="text-white font-bold">Telegram :</span> https://t.me/username</li>
+                      <li>• <span className="text-white font-bold">WhatsApp :</span> https://wa.me/33612345678</li>
+                      <li>• <span className="text-white font-bold">Instagram/Facebook :</span> URL du profil (le message sera copié)</li>
+                    </ul>
+                    <p className="text-gray-400 text-xs mt-2">
+                      💡 Le message de commande sera automatiquement ajouté au lien
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -1498,7 +1516,6 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: category?.name || '',
     slug: category?.slug || generateSlug(category?.name || ''),
-    order: category?.order || 1,
     icon: category?.icon || '🌿'
   });
 
@@ -1508,7 +1525,8 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
       // Toujours générer le slug basé sur le nom actuel
       const dataToSend = {
         ...formData,
-        slug: generateSlug(formData.name) // Toujours générer à partir du nom
+        slug: generateSlug(formData.name), // Toujours générer à partir du nom
+        order: 1 // Valeur par défaut, pas besoin de la demander à l'utilisateur
       };
       
       const url = category ? `/api/categories/${category._id || category.id}` : '/api/categories';
@@ -1553,74 +1571,47 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-white font-black text-sm mb-2">
+            <label className="block text-white font-black text-lg mb-3">
               NOM DE LA CATÉGORIE
             </label>
             <input
               type="text"
-              placeholder="Ex: Weed Premium"
               value={formData.name}
-              onChange={(e) => {
-                const name = e.target.value;
-                setFormData({ 
-                  ...formData, 
-                  name: name,
-                  slug: generateSlug(name)
-                });
-              }}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+              placeholder="Ex: WEED, HASH..."
               required
             />
           </div>
 
-
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-white font-black text-sm mb-2">
-                ICÔNE (EMOJI)
-              </label>
-              <input
-                type="text"
-                placeholder="Ex: 🌿"
-                value={formData.icon}
-                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold text-center text-2xl"
-                maxLength={2}
-              />
-              <p className="text-gray-400 text-xs mt-1">Utilisez un emoji</p>
-            </div>
-            <div>
-              <label className="block text-white font-black text-sm mb-2">
-                POSITION D'AFFICHAGE
-              </label>
-              <select
-                value={formData.order}
-                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 1 })}
-                className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              >
-                <option value="1">1ère position</option>
-                <option value="2">2ème position</option>
-                <option value="3">3ème position</option>
-                <option value="4">4ème position</option>
-                <option value="5">5ème position</option>
-              </select>
-              <p className="text-gray-400 text-xs mt-1">Ordre d'apparition</p>
-            </div>
+          <div>
+            <label className="block text-white font-black text-lg mb-3">
+              EMOJI/ICÔNE
+            </label>
+            <input
+              type="text"
+              value={formData.icon}
+              onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold text-2xl text-center"
+              placeholder="Ex: 🌿, 🍫, 🔥..."
+              maxLength={2}
+            />
+            <p className="text-gray-400 text-sm mt-2">
+              Collez un emoji qui représente cette catégorie
+            </p>
           </div>
 
-          <div className="flex gap-4 pt-6 border-t-2 border-white">
+          <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              className="flex-1 bg-white text-black py-4 rounded-lg font-black text-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 bg-white text-black py-3 rounded-lg font-black text-lg hover:bg-gray-200 transition-colors"
             >
-              <Save size={24} />
-              SAUVEGARDER
+              {category ? 'MODIFIER' : 'AJOUTER'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-red-600 text-white py-4 rounded-lg font-black text-lg hover:bg-red-700 transition-colors"
+              className="flex-1 bg-red-600 text-white py-3 rounded-lg font-black text-lg hover:bg-red-700 transition-colors"
             >
               ANNULER
             </button>
