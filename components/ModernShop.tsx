@@ -145,14 +145,14 @@ export default function ModernShop() {
       className="min-h-screen text-white relative"
       style={getBackgroundStyle()}
     >
-      {/* Overlay pour assurer la lisibilité */}
+      {/* Overlay avec effet de flou pour améliorer la lisibilité */}
       {themeSettings.backgroundType === 'image' && themeSettings.backgroundImage && (
-        <div className="absolute inset-0 bg-black/60 z-0"></div>
+        <div className="absolute inset-0 backdrop-blur-sm bg-black/40 z-0"></div>
       )}
 
       <div className="relative z-10">
         {/* Header fixe et moderne */}
-        <header className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-lg z-50 border-b border-white/10">
+        <header className="fixed top-0 left-0 right-0 bg-black/70 backdrop-blur-xl z-50 border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex justify-between items-center">
               <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
@@ -164,7 +164,7 @@ export default function ModernShop() {
                 onClick={() => router.push('/cart')}
                 className="relative group"
               >
-                <div className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-all">
+                <div className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-all backdrop-blur">
                   <ShoppingBag size={20} />
                   <span className="text-sm font-medium">Panier</span>
                   {getTotalItems() > 0 && (
@@ -178,8 +178,8 @@ export default function ModernShop() {
           </div>
         </header>
 
-        {/* Hero Section avec bannière immersive */}
-        <section className="relative h-screen flex items-center justify-center overflow-hidden mt-14">
+        {/* Section combinée Hero + Catégories pour visibilité immédiate */}
+        <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden mt-14 py-10">
           {themeSettings.bannerImage ? (
             <div className="absolute inset-0">
               <img 
@@ -187,18 +187,18 @@ export default function ModernShop() {
                 alt="Bannière"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70 backdrop-blur-[2px]"></div>
             </div>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20"></div>
           )}
           
-          <div className="relative text-center px-4 max-w-4xl mx-auto">
+          <div className="relative text-center px-4 max-w-4xl mx-auto mb-10">
             <motion.h2 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
+              className="text-3xl md:text-5xl lg:text-6xl font-black mb-4 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
             >
               {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
             </motion.h2>
@@ -206,52 +206,36 @@ export default function ModernShop() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-lg md:text-xl text-gray-300 mb-8"
+              className="text-base md:text-lg text-gray-300 mb-6"
             >
               Découvrez nos produits premium de qualité exceptionnelle
             </motion.p>
-            <motion.button
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              onClick={() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-white text-black px-8 py-4 rounded-full font-bold hover:bg-gray-200 transition-all flex items-center gap-2 mx-auto"
-            >
-              Découvrir la collection
-              <ArrowDown size={20} className="animate-bounce" />
-            </motion.button>
           </div>
-        </section>
 
-        {/* Categories Section avec design moderne */}
-        <section id="categories" className="py-20 px-4">
-          <div className="max-w-7xl mx-auto">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Nos Catégories</h2>
-              <p className="text-gray-400">Sélectionnez une catégorie pour filtrer les produits</p>
-            </motion.div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {/* Catégories directement visibles dans la hero section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="relative w-full max-w-6xl mx-auto px-4"
+          >
+            <h3 className="text-xl md:text-2xl font-bold text-center mb-6 text-white/90">Nos Catégories</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {/* Bouton Tout */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setSelectedCategory('all')}
-                className={`relative overflow-hidden rounded-2xl p-6 transition-all ${
+                className={`relative overflow-hidden rounded-xl p-4 transition-all backdrop-blur-md ${
                   selectedCategory === 'all'
-                    ? 'bg-gradient-to-br from-purple-600 to-blue-600 shadow-xl shadow-purple-500/25'
-                    : 'bg-white/5 hover:bg-white/10 backdrop-blur'
+                    ? 'bg-gradient-to-br from-purple-600/80 to-blue-600/80 shadow-xl shadow-purple-500/25'
+                    : 'bg-white/10 hover:bg-white/20'
                 }`}
               >
                 <div className="relative z-10">
-                  <span className="text-3xl mb-2 block">✨</span>
-                  <span className="font-bold text-sm">TOUT</span>
-                  <span className="block text-xs mt-1 opacity-70">
+                  <span className="text-2xl mb-1 block">✨</span>
+                  <span className="font-bold text-xs">TOUT</span>
+                  <span className="block text-[10px] mt-0.5 opacity-80">
                     {products.length} produits
                   </span>
                 </div>
@@ -268,16 +252,16 @@ export default function ModernShop() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
-                    className={`relative overflow-hidden rounded-2xl p-6 transition-all ${
+                    className={`relative overflow-hidden rounded-xl p-4 transition-all backdrop-blur-md ${
                       selectedCategory === (category.slug || category.value || category.name.toLowerCase())
-                        ? 'bg-gradient-to-br from-green-600 to-emerald-600 shadow-xl shadow-green-500/25'
-                        : 'bg-white/5 hover:bg-white/10 backdrop-blur'
+                        ? 'bg-gradient-to-br from-green-600/80 to-emerald-600/80 shadow-xl shadow-green-500/25'
+                        : 'bg-white/10 hover:bg-white/20'
                     }`}
                   >
                     <div className="relative z-10">
-                      <span className="text-3xl mb-2 block">{category.icon || '🌿'}</span>
-                      <span className="font-bold text-sm">{category.name.toUpperCase()}</span>
-                      <span className="block text-xs mt-1 opacity-70">
+                      <span className="text-2xl mb-1 block">{category.icon || '🌿'}</span>
+                      <span className="font-bold text-xs">{category.name.toUpperCase()}</span>
+                      <span className="block text-[10px] mt-0.5 opacity-80">
                         {categoryProducts.length} produits
                       </span>
                     </div>
@@ -285,25 +269,26 @@ export default function ModernShop() {
                 );
               })}
             </div>
-          </div>
+          </motion.div>
         </section>
 
-        {/* Products Section avec grille moderne */}
-        <section className="py-20 px-4 pb-32">
+        {/* Products Section avec grille 2 colonnes sur mobile */}
+        <section className="py-12 px-4 pb-32">
           <div className="max-w-7xl mx-auto">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-center mb-12"
+              className="text-center mb-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold mb-2">
                 {selectedCategory === 'all' ? 'Tous nos produits' : `Catégorie ${selectedCategory.toUpperCase()}`}
               </h2>
-              <p className="text-gray-400">{filteredProducts.length} produits disponibles</p>
+              <p className="text-gray-400 text-sm">{filteredProducts.length} produits disponibles</p>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Grille avec 2 colonnes sur mobile */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               {filteredProducts.map((product, index) => (
                 <motion.div
                   key={product.id || product._id}
@@ -312,9 +297,9 @@ export default function ModernShop() {
                   transition={{ duration: 0.5, delay: index * 0.05 }}
                   className="group"
                 >
-                  <div className="bg-white/5 backdrop-blur rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300 h-full flex flex-col">
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden hover:bg-white/15 transition-all duration-300 h-full flex flex-col border border-white/10">
                     {/* Image avec effet de zoom */}
-                    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
+                    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50">
                       {product.image ? (
                         <img 
                           src={product.image} 
@@ -323,89 +308,79 @@ export default function ModernShop() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package size={60} className="text-gray-600" />
+                          <Package size={40} className="text-gray-500" />
                         </div>
                       )}
 
                       {/* Badges */}
-                      <div className="absolute top-3 left-3 flex flex-col gap-2">
+                      <div className="absolute top-2 left-2 flex flex-col gap-1">
                         {product.tag && (
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg ${
-                            product.tagColor === 'red' ? 'bg-red-500' : 
-                            product.tagColor === 'blue' ? 'bg-blue-500' : 'bg-green-500'
-                          }`}>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-lg ${
+                            product.tagColor === 'red' ? 'bg-red-500/90' : 
+                            product.tagColor === 'blue' ? 'bg-blue-500/90' : 'bg-green-500/90'
+                          } backdrop-blur`}>
                             {product.tag}
                           </span>
                         )}
                         {product.category && (
-                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/70 text-white backdrop-blur">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur">
                             {product.category.toUpperCase()}
                           </span>
                         )}
                       </div>
-
-                      {/* Quick view on hover */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <button
-                          onClick={() => router.push(`/products/${product.id || product._id}`)}
-                          className="bg-white text-black px-4 py-2 rounded-full font-bold transform -translate-y-4 group-hover:translate-y-0 transition-all duration-300"
-                        >
-                          Voir détails
-                        </button>
-                      </div>
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="text-lg font-bold mb-2 line-clamp-1">
+                    <div className="p-3 md:p-4 flex-1 flex flex-col">
+                      <h3 className="text-sm md:text-base font-bold mb-1 line-clamp-1">
                         {product.name}
                       </h3>
-                      <p className="text-sm text-gray-400 mb-3 line-clamp-1">
+                      <p className="text-xs text-gray-400 mb-2 line-clamp-1">
                         {product.origin || 'Premium Quality'}
                       </p>
                       
-                      {/* Rating */}
-                      <div className="flex items-center gap-1 mb-3">
+                      {/* Rating - caché sur mobile */}
+                      <div className="hidden md:flex items-center gap-1 mb-2">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={14} className={i < 4 ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'} />
+                          <Star key={i} size={12} className={i < 4 ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'} />
                         ))}
-                        <span className="text-xs text-gray-400 ml-2">(4.8)</span>
+                        <span className="text-[10px] text-gray-400 ml-1">(4.8)</span>
                       </div>
 
                       {/* Price */}
-                      <div className="mb-4 flex-1">
+                      <div className="mb-3 flex-1">
                         {product.pricing && product.pricing.length > 0 ? (
                           <div>
-                            <span className="text-xs text-gray-400">À partir de</span>
-                            <div className="text-2xl font-bold text-white">
+                            <span className="text-[10px] text-gray-400">À partir de</span>
+                            <div className="text-lg md:text-xl font-bold text-white">
                               {Math.min(...product.pricing.map((p: any) => p.price))}€
                             </div>
                           </div>
                         ) : (
-                          <div className="text-2xl font-bold text-white">
+                          <div className="text-lg md:text-xl font-bold text-white">
                             {product.price}€
                           </div>
                         )}
                       </div>
 
-                      {/* Actions */}
-                      <div className="grid grid-cols-2 gap-2">
+                      {/* Actions - boutons visibles et accessibles */}
+                      <div className="flex flex-col gap-2">
                         <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
                           onClick={() => handleAddToCart(product)}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2.5 rounded-xl font-bold text-sm hover:from-green-600 hover:to-emerald-600 transition-all"
+                          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 rounded-lg font-bold text-xs md:text-sm hover:from-green-600 hover:to-emerald-600 transition-all w-full"
                         >
-                          Ajouter
+                          Ajouter au panier
                         </motion.button>
                         
                         <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
                           onClick={() => router.push(`/products/${product.id || product._id}`)}
-                          className="bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-xl font-bold text-sm transition-all backdrop-blur"
+                          className="bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg font-bold text-xs md:text-sm transition-all backdrop-blur w-full"
                         >
-                          Détails
+                          Voir détails
                         </motion.button>
                       </div>
                     </div>
@@ -425,16 +400,16 @@ export default function ModernShop() {
         </section>
 
         {/* Bottom Navigation - Design minimaliste et moderne */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md z-40">
+        <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-xl z-40 border-t border-white/10">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-center items-center gap-8 py-4">
+            <div className="flex justify-center items-center gap-6 md:gap-8 py-3">
               {/* Accueil */}
               <button
                 onClick={() => router.push('/')}
                 className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group cursor-pointer"
               >
-                <span className="text-3xl group-hover:scale-110 transition-transform">🏠</span>
-                <span className="text-[10px] font-medium mt-1 opacity-70 group-hover:opacity-100">Accueil</span>
+                <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform">🏠</span>
+                <span className="text-[9px] md:text-[10px] font-medium mt-0.5 opacity-70 group-hover:opacity-100">Accueil</span>
               </button>
 
               {/* Réseaux sociaux - design épuré */}
@@ -446,7 +421,7 @@ export default function ModernShop() {
                   rel="noopener noreferrer"
                   className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group cursor-pointer"
                 >
-                  <span className="text-3xl group-hover:scale-110 transition-transform">
+                  <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform">
                     {social.name === 'Instagram' ? '📸' : 
                      social.name === 'Telegram' ? '✈️' : 
                      social.name === 'Facebook' ? '👥' :
@@ -457,7 +432,7 @@ export default function ModernShop() {
                      social.name === 'Discord' ? '🎮' :
                      social.emoji || '🔗'}
                   </span>
-                  <span className="text-[10px] font-medium mt-1 opacity-70 group-hover:opacity-100">{social.name}</span>
+                  <span className="text-[9px] md:text-[10px] font-medium mt-0.5 opacity-70 group-hover:opacity-100">{social.name}</span>
                 </a>
               ))}
             </div>
