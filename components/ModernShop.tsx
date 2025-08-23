@@ -15,8 +15,18 @@ import { useStore } from '@/lib/store';
 
 export default function ModernShop() {
   const router = useRouter();
-  const [cart, setCart] = useState<any[]>([]);
-  const [showCart, setShowCart] = useState(false);
+  // Utilisation du store global au lieu de l'état local
+  const { 
+    cart, 
+    addToCart, 
+    removeFromCart, 
+    updateQuantity, 
+    getTotalItems, 
+    getTotalPrice,
+    themeSettings,
+    loadThemeSettings 
+  } = useStore();
+  
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
@@ -26,7 +36,6 @@ export default function ModernShop() {
     { id: '2', name: 'Telegram', icon: 'telegram', emoji: '✈️', url: 'https://t.me/', enabled: true }
   ]);
   const [loading, setLoading] = useState(true);
-  const { themeSettings, loadThemeSettings } = useStore();
 
   useEffect(() => {
     loadData();
@@ -103,40 +112,24 @@ export default function ModernShop() {
     ? products 
     : products.filter(p => p.category && p.category.toLowerCase() === selectedCategory.toLowerCase());
 
-  const addToCart = (product: any) => {
-    setCart(prev => {
-      const existing = prev.find(item => item._id === product._id);
-      if (existing) {
-        return prev.map(item => 
-          item._id === product._id 
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (productId: string) => {
-    setCart(prev => prev.filter(item => item._id !== productId));
-  };
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
-    setCart(prev => prev.map(item => 
-      item._id === productId ? { ...item, quantity } : item
-    ));
-  };
-
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
+  // Fonction pour ajouter au panier avec le bon format
+  const handleAddToCart = (product: any) => {
+    // Convertir le produit au bon format pour le store
+    const productToAdd = {
+      id: product.id || product._id,
+      name: product.name,
+      origin: product.origin || '',
+      price: product.price,
+      pricing: product.pricing,
+      image: product.image || '',
+      category: product.category || 'weed',
+      tag: product.tag,
+      tagColor: product.tagColor,
+      country: product.country || product.origin || '',
+      countryFlag: product.countryFlag || '',
+      description: product.description
+    };
+    addToCart(productToAdd);
   };
 
   if (loading) {
@@ -167,9 +160,9 @@ export default function ModernShop() {
                   {themeSettings.shopName || 'MA BOUTIQUE'}
                 </h1>
                 
-                {/* Cart Button */}
+                {/* Cart Button - Redirige vers /cart */}
                 <button
-                  onClick={() => setShowCart(true)}
+                  onClick={() => router.push('/cart')}
                   className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-colors font-bold shadow-lg"
                 >
                   <ShoppingBag size={20} />
@@ -315,17 +308,27 @@ export default function ModernShop() {
                       </div>
                     )}
 
-                    {/* Action - Voir détails seulement */}
-                    <button
-                      onClick={() => {
-                        const productId = product.id || product._id;
-                        router.push(`/products/${productId}`);
-                      }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
-                    >
-                      <Eye size={16} />
-                      <span>VOIR DÉTAILS</span>
-                    </button>
+                    {/* Action - Voir détails ET Ajouter au panier */}
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
+                      >
+                        <ShoppingBag size={16} />
+                        <span>AJOUTER AU PANIER</span>
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          const productId = product.id || product._id;
+                          router.push(`/products/${productId}`);
+                        }}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
+                      >
+                        <Eye size={16} />
+                        <span>VOIR DÉTAILS</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -369,9 +372,9 @@ export default function ModernShop() {
                   </a>
                 ))}
 
-                {/* Panier */}
+                {/* Panier - Redirige vers /cart */}
                 <button
-                  onClick={() => setShowCart(true)}
+                  onClick={() => router.push('/cart')}
                   className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
                 >
                   <div className="relative">
@@ -391,175 +394,7 @@ export default function ModernShop() {
           </div>
         </div>
 
-        {/* Cart Modal - Responsive */}
-        <AnimatePresence>
-          {showCart && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-              onClick={() => setShowCart(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-black border-4 border-white rounded-2xl w-full max-w-md md:max-w-lg lg:max-w-2xl max-h-[80vh] overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Cart Header */}
-                <div className="flex justify-between items-center p-4 md:p-6 border-b-2 border-white">
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white">MON PANIER</h3>
-                  <button
-                    onClick={() => setShowCart(false)}
-                    className="bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-
-                {/* Cart Content */}
-                <div className="p-4 md:p-6 max-h-96 overflow-y-auto">
-                  {cart.length === 0 ? (
-                    <div className="text-center py-8 md:py-12">
-                      <ShoppingBag size={64} className="mx-auto text-gray-400 mb-4" />
-                      <p className="text-white font-bold text-xl md:text-2xl mb-2">Votre panier est vide</p>
-                      <p className="text-gray-400 text-sm">Ajoutez des produits pour commencer</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="text-center mb-4">
-                        <p className="text-gray-400 text-sm">
-                          ({getTotalItems()} {getTotalItems() > 1 ? 'articles' : 'article'})
-                        </p>
-                      </div>
-                      
-                      {cart.map((item) => (
-                        <motion.div 
-                          key={item._id} 
-                          className="bg-gradient-to-r from-white/10 to-white/5 p-4 rounded-xl border border-white/20"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 20 }}
-                        >
-                          <div className="flex items-start gap-4">
-                            {/* Product Image */}
-                            <div className="relative">
-                              {item.image ? (
-                                <img 
-                                  src={item.image} 
-                                  alt={item.name}
-                                  className="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover"
-                                />
-                              ) : (
-                                <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-green-500 to-green-700 rounded-lg flex items-center justify-center">
-                                  <Package size={32} className="text-white" />
-                                </div>
-                              )}
-
-                            </div>
-                            
-                            {/* Product Info */}
-                            <div className="flex-1">
-                              <h4 className="font-black text-white text-base md:text-lg mb-1">{item.name}</h4>
-                              {item.origin && (
-                                <p className="text-gray-400 text-xs md:text-sm mb-2">{item.origin}</p>
-                              )}
-                              
-                              {/* Quantity Controls */}
-                              <div className="flex items-center gap-3">
-                                <motion.button
-                                  onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                                  className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.95 }}
-                                >
-                                  <Minus size={18} />
-                                </motion.button>
-                                
-                                <span className="text-white font-bold text-lg min-w-[30px] text-center">
-                                  {item.quantity}
-                                </span>
-                                
-                                <motion.button
-                                  onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                                  className="bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.95 }}
-                                >
-                                  <Plus size={18} />
-                                </motion.button>
-                              </div>
-                            </div>
-                            
-                            {/* Price & Delete */}
-                            <div className="flex flex-col items-end gap-2">
-                              <p className="text-white font-black text-lg md:text-xl">
-                                {(item.price * item.quantity).toFixed(2)}€
-                              </p>
-                              <motion.button
-                                onClick={() => removeFromCart(item._id)}
-                                className="text-red-400 hover:text-red-500 text-xs flex items-center gap-1 transition-colors"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                              >
-                                <Trash2 size={14} />
-                                Supprimer
-                              </motion.button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Cart Footer */}
-                {cart.length > 0 && (
-                  <div className="bg-gradient-to-b from-transparent to-black/50 border-t-2 border-white p-4 md:p-6">
-                    {/* Summary */}
-                    <div className="bg-white/10 rounded-lg p-4 mb-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-400 text-sm">Sous-total</span>
-                        <span className="text-white font-semibold">{getTotalPrice()}€</span>
-                      </div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-gray-400 text-sm">Livraison</span>
-                        <span className="text-green-400 font-semibold">GRATUITE</span>
-                      </div>
-                      <div className="border-t border-white/20 pt-2 mt-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xl md:text-2xl font-black text-white">TOTAL</span>
-                          <span className="text-2xl md:text-3xl font-black text-green-400">{getTotalPrice()}€</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-center text-gray-400 text-xs mb-4">
-                      {getTotalItems()} {getTotalItems() > 1 ? 'articles' : 'article'} dans votre panier
-                    </div>
-                    
-                    <motion.button
-                      onClick={() => {
-                        const message = cart.map(item => `${item.name} x${item.quantity} - ${(item.price * item.quantity).toFixed(2)}€`).join('\n');
-                        const total = getTotalPrice();
-                        const fullMessage = `🛒 Commande VERSHASH\n\n${message}\n\n💰 TOTAL: ${total}€`;
-                        window.open(`https://t.me/VershashBot?text=${encodeURIComponent(fullMessage)}`, '_blank');
-                      }}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-black text-lg md:text-xl hover:from-green-600 hover:to-emerald-700 transition-colors flex items-center justify-center gap-3 shadow-lg"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Send size={24} />
-                      COMMANDER MAINTENANT
-                    </motion.button>
-                  </div>
-                )}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Suppression complète du Cart Modal car on utilise maintenant la page /cart */}
       </div>
     </div>
   );

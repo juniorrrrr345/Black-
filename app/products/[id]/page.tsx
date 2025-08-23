@@ -119,23 +119,37 @@ export default function ProductPage() {
   }
 
   const handleAddToCart = (pricing?: ProductPricing) => {
+    // Créer le produit avec le bon format pour le store
+    let productToAdd: any = {
+      id: product.id || product._id, // S'assurer que l'ID est bien défini
+      name: product.name,
+      origin: product.origin || '',
+      price: product.price,
+      pricing: product.pricing,
+      image: product.image || '',
+      category: product.category || 'weed',
+      tag: product.tag,
+      tagColor: product.tagColor,
+      country: product.country || product.origin || '',
+      countryFlag: product.countryFlag || '',
+      description: product.description
+    };
+    
     if (pricing) {
-      const productWithPricing = {
-        ...product,
+      productToAdd = {
+        ...productToAdd,
         price: pricing.price,
         name: `${product.name} (${pricing.weight})`
       };
-      addToCart(productWithPricing);
     } else if (selectedPricing) {
-      const productWithPricing = {
-        ...product,
+      productToAdd = {
+        ...productToAdd,
         price: selectedPricing.price,
         name: `${product.name} (${selectedPricing.weight})`
       };
-      addToCart(productWithPricing);
-    } else {
-      addToCart(product);
     }
+    
+    addToCart(productToAdd);
     
     // Notification visuelle
     const button = event?.target as HTMLElement;
