@@ -212,13 +212,18 @@ export default function CartPage() {
               </button>
 
               {/* Boutons des Commerçants */}
-              {(settings?.burnsLink || settings?.apouLink || settings?.moeLink) && (
-                <div className="mt-6 space-y-3">
-                  <div className="text-center text-gray-600 font-bold text-sm">
-                    OU COMMANDER CHEZ NOS PARTENAIRES
-                  </div>
-                  
-                  {settings?.burnsLink && (
+              <div className="mt-6 space-y-3">
+                <div className="text-center text-gray-600 font-bold text-sm">
+                  OU COMMANDER CHEZ NOS PARTENAIRES
+                </div>
+                
+                {/* Bouton BURNS - toujours affiché */}
+                <button
+                  onClick={() => {
+                    if (!settings?.burnsLink) {
+                      alert('Le lien pour BURNS n\'est pas encore configuré. Contactez l\'administrateur.');
+                      return;
+                    }
                     <button
                       onClick={() => {
                         // Créer le message de commande
