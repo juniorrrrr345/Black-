@@ -197,7 +197,7 @@ export default function ModernShop() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="text-sm md:text-base text-gray-300"
               >
-                Découvrez nos produits premium de qualité exceptionnelle
+                {themeSettings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle'}
               </motion.p>
             </div>
 

@@ -37,7 +37,8 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({ 
     shopName: 'VERSHASH', 
-    bannerText: 'NOUVEAU DROP', 
+    bannerText: 'NOUVEAU DROP',
+    bannerSubtext: 'Découvrez nos produits premium de qualité exceptionnelle', 
     bannerImage: '', 
     orderLink: '',
     burnsLink: '',
@@ -95,7 +96,19 @@ export default function AdminDashboard() {
       const settingsRes = await fetch('/api/settings');
       if (settingsRes.ok) {
         const settingsData = await settingsRes.json();
-        setSettings(settingsData);
+        setSettings({
+          ...settingsData,
+          backgroundType: settingsData.backgroundType || 'color',
+          backgroundColor: settingsData.backgroundColor || 'black',
+          backgroundImage: settingsData.backgroundImage || '',
+          gradientFrom: settingsData.gradientFrom || '#000000',
+          gradientTo: settingsData.gradientTo || '#111111',
+          shopName: settingsData.shopName || 'VERSHASH',
+          bannerText: settingsData.bannerText || 'NOUVEAU DROP',
+          bannerSubtext: settingsData.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
+          bannerImage: settingsData.bannerImage || '',
+          orderLink: settingsData.orderLink || ''
+        });
         // Synchroniser avec le store
         updateThemeSettings({
           backgroundType: settingsData.backgroundType || 'color',
@@ -138,6 +151,7 @@ export default function AdminDashboard() {
           gradientTo: settings.gradientTo || '#111111',
           shopName: settings.shopName || 'VERSHASH',
           bannerText: settings.bannerText || 'NOUVEAU DROP',
+          bannerSubtext: settings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
           bannerImage: settings.bannerImage || '',
           orderLink: settings.orderLink || ''
         });
@@ -595,6 +609,17 @@ export default function AdminDashboard() {
                       onChange={(e) => setSettings({ ...settings, bannerText: e.target.value })}
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                       placeholder="Ex: NOUVEAU DROP"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">SOUS-TEXTE DE LA BANNIÈRE</label>
+                    <input
+                      type="text"
+                      value={settings.bannerSubtext}
+                      onChange={(e) => setSettings({ ...settings, bannerSubtext: e.target.value })}
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
+                      placeholder="Ex: Découvrez nos produits premium"
                     />
                   </div>
 
