@@ -267,17 +267,37 @@ export default function CartPage() {
 
                       // Créer le message de commande
                       let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                      message += `📦 Articles (${getTotalItems()}):\n`;
-                      message += `------------------------\n`;
+                      message += `📦 Détails de la commande:\n`;
+                      message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
                       
+                      // Grouper les produits par nom de base
+                      const groupedItems: { [key: string]: any[] } = {};
                       cart.forEach(item => {
-                        message += `• ${item.name}\n`;
-                        message += `  Quantité: ${item.quantity}\n`;
-                        message += `  Prix: ${item.price}€\n\n`;
+                        const baseName = item.name.split(' - ')[0];
+                        if (!groupedItems[baseName]) {
+                          groupedItems[baseName] = [];
+                        }
+                        groupedItems[baseName].push(item);
                       });
                       
-                      message += `------------------------\n`;
-                      message += `💰 TOTAL: ${getTotalPrice()}€`;
+                      // Afficher les produits groupés
+                      Object.keys(groupedItems).forEach(baseName => {
+                        message += `📌 ${baseName}\n`;
+                        groupedItems[baseName].forEach(item => {
+                          const option = item.name.includes(' - ') ? item.name.split(' - ')[1] : '';
+                          if (option) {
+                            message += `   • ${option}: ${item.quantity}x ${item.price}€ = ${(item.quantity * item.price).toFixed(2)}€\n`;
+                          } else {
+                            message += `   • Quantité: ${item.quantity}x ${item.price}€ = ${(item.quantity * item.price).toFixed(2)}€\n`;
+                          }
+                        });
+                        message += `\n`;
+                      });
+                      
+                      message += `━━━━━━━━━━━━━━━━━━━━\n`;
+                      message += `💰 TOTAL: ${getTotalPrice()}€\n`;
+                      message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                      message += `📍 Êtes-vous disponible ?`;
 
                       if (settings?.burnsLink) {
                         const orderUrl = settings.burnsLink.includes('{message}') 
@@ -305,17 +325,37 @@ export default function CartPage() {
 
                       // Créer le message de commande
                       let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                      message += `📦 Articles (${getTotalItems()}):\n`;
-                      message += `------------------------\n`;
+                      message += `📦 Détails de la commande:\n`;
+                      message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
                       
+                      // Grouper les produits par nom de base
+                      const groupedItems: { [key: string]: any[] } = {};
                       cart.forEach(item => {
-                        message += `• ${item.name}\n`;
-                        message += `  Quantité: ${item.quantity}\n`;
-                        message += `  Prix: ${item.price}€\n\n`;
+                        const baseName = item.name.split(' - ')[0];
+                        if (!groupedItems[baseName]) {
+                          groupedItems[baseName] = [];
+                        }
+                        groupedItems[baseName].push(item);
                       });
                       
-                      message += `------------------------\n`;
-                      message += `💰 TOTAL: ${getTotalPrice()}€`;
+                      // Afficher les produits groupés
+                      Object.keys(groupedItems).forEach(baseName => {
+                        message += `📌 ${baseName}\n`;
+                        groupedItems[baseName].forEach(item => {
+                          const option = item.name.includes(' - ') ? item.name.split(' - ')[1] : '';
+                          if (option) {
+                            message += `   • ${option}: ${item.quantity}x ${item.price}€ = ${(item.quantity * item.price).toFixed(2)}€\n`;
+                          } else {
+                            message += `   • Quantité: ${item.quantity}x ${item.price}€ = ${(item.quantity * item.price).toFixed(2)}€\n`;
+                          }
+                        });
+                        message += `\n`;
+                      });
+                      
+                      message += `━━━━━━━━━━━━━━━━━━━━\n`;
+                      message += `💰 TOTAL: ${getTotalPrice()}€\n`;
+                      message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                      message += `📍 Êtes-vous disponible ?`;
 
                       if (settings?.apouLink) {
                         const orderUrl = settings.apouLink.includes('{message}') 
@@ -343,17 +383,37 @@ export default function CartPage() {
 
                       // Créer le message de commande
                       let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                      message += `📦 Articles (${getTotalItems()}):\n`;
-                      message += `------------------------\n`;
+                      message += `📦 Détails de la commande:\n`;
+                      message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
                       
+                      // Grouper les produits par nom de base
+                      const groupedItems: { [key: string]: any[] } = {};
                       cart.forEach(item => {
-                        message += `• ${item.name}\n`;
-                        message += `  Quantité: ${item.quantity}\n`;
-                        message += `  Prix: ${item.price}€\n\n`;
+                        const baseName = item.name.split(' - ')[0];
+                        if (!groupedItems[baseName]) {
+                          groupedItems[baseName] = [];
+                        }
+                        groupedItems[baseName].push(item);
                       });
                       
-                      message += `------------------------\n`;
-                      message += `💰 TOTAL: ${getTotalPrice()}€`;
+                      // Afficher les produits groupés
+                      Object.keys(groupedItems).forEach(baseName => {
+                        message += `📌 ${baseName}\n`;
+                        groupedItems[baseName].forEach(item => {
+                          const option = item.name.includes(' - ') ? item.name.split(' - ')[1] : '';
+                          if (option) {
+                            message += `   • ${option}: ${item.quantity}x ${item.price}€ = ${(item.quantity * item.price).toFixed(2)}€\n`;
+                          } else {
+                            message += `   • Quantité: ${item.quantity}x ${item.price}€ = ${(item.quantity * item.price).toFixed(2)}€\n`;
+                          }
+                        });
+                        message += `\n`;
+                      });
+                      
+                      message += `━━━━━━━━━━━━━━━━━━━━\n`;
+                      message += `💰 TOTAL: ${getTotalPrice()}€\n`;
+                      message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                      message += `📍 Êtes-vous disponible ?`;
 
                       if (settings?.moeLink) {
                         const orderUrl = settings.moeLink.includes('{message}') 

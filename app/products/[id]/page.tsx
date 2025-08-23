@@ -16,9 +16,11 @@ export default function ProductPage() {
   const router = useRouter();
   const [product, setProduct] = useState<any | null>(null);
   const [selectedPricing, setSelectedPricing] = useState<ProductPricing | null>(null);
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [showVideo, setShowVideo] = useState(true); // Afficher la vidéo par défaut si elle existe
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [addedToCart, setAddedToCart] = useState<{ [key: string]: boolean }>({});
   const { 
     cart,
     addToCart, 
@@ -118,9 +120,12 @@ export default function ProductPage() {
   }
 
   const handleAddToCart = (pricing?: ProductPricing) => {
+    const key = pricing ? pricing.weight : 'default';
+    const quantity = quantities[key] || 1;
+    
     // Créer le produit avec le bon format pour le store
     let productToAdd: any = {
-      id: product.id || product._id, // S'assurer que l'ID est bien défini
+      id: `${product.id || product._id}-${key}`, // ID unique pour chaque option
       name: product.name,
       origin: product.origin || '',
       price: product.price,
@@ -131,37 +136,42 @@ export default function ProductPage() {
       tagColor: product.tagColor,
       country: product.country || product.origin || '',
       countryFlag: product.countryFlag || '',
-      description: product.description
+      description: product.description,
+      selectedOption: key // Pour identifier l'option sélectionnée
     };
     
     if (pricing) {
       productToAdd = {
         ...productToAdd,
         price: pricing.price,
-        name: `${product.name} (${pricing.weight})`
+        name: `${product.name} - ${pricing.weight}`,
+        basePrice: pricing.price,
+        weight: pricing.weight
       };
     } else if (selectedPricing) {
       productToAdd = {
         ...productToAdd,
         price: selectedPricing.price,
-        name: `${product.name} (${selectedPricing.weight})`
+        name: `${product.name} - ${selectedPricing.weight}`,
+        basePrice: selectedPricing.price,
+        weight: selectedPricing.weight
       };
     }
     
-    addToCart(productToAdd);
-    
-    // Notification visuelle et redirection
-    const button = event?.target as HTMLElement;
-    if (button) {
-      const originalText = button.innerHTML;
-      button.innerHTML = '<span>✅ AJOUTÉ!</span>';
-      button.classList.add('bg-green-600');
-      
-      setTimeout(() => {
-        // Rediriger vers le panier après 1 seconde
-        router.push('/cart');
-      }, 1000);
+    // Ajouter plusieurs fois selon la quantité
+    for (let i = 0; i < quantity; i++) {
+      addToCart(productToAdd);
     }
+    
+    // Notification visuelle
+    setAddedToCart({ ...addedToCart, [key]: true });
+    setTimeout(() => {
+      setAddedToCart({ ...addedToCart, [key]: false });
+    }, 2000);
+  };
+
+  const updateQuantityForOption = (key: string, value: number) => {
+    setQuantities({ ...quantities, [key]: Math.max(1, value) });
   };
 
   const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
@@ -418,31 +428,85 @@ export default function ProductPage() {
 
                 {product.pricing && product.pricing.length > 0 ? (
                   <div className="space-y-3">
-                    {product.pricing.map((pricing: ProductPricing) => (
-                      <motion.div
-                        key={pricing.weight}
-                        className="flex items-center justify-between p-4 rounded-xl bg-black/50 border border-gray-700 hover:border-white/50 transition-all group"
-                        whileHover={{ scale: 1.02 }}
-                      >
-                        <div className="flex items-center gap-6">
-                          <span className="text-xl font-semibold text-white">
-                            {pricing.weight}
-                          </span>
-                          <span className="text-2xl font-bold text-green-400">
-                            {pricing.price}€
-                          </span>
-                        </div>
-                        <motion.button
-                          onClick={() => handleAddToCart(pricing)}
-                          className="flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg font-bold text-sm"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                    {product.pricing.map((pricing: ProductPricing) => {
+                      const key = pricing.weight;
+                      const quantity = quantities[key] || 1;
+                      const isAdded = addedToCart[key];
+                      
+                      return (
+                        <motion.div
+                          key={pricing.weight}
+                          className="p-4 rounded-xl bg-black/50 border border-gray-700 hover:border-white/50 transition-all"
+                          whileHover={{ scale: 1.01 }}
                         >
-                          <ShoppingCart size={20} />
-                          <span>AJOUTER AU PANIER</span>
-                        </motion.button>
-                      </motion.div>
-                    ))}
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                              <span className="text-xl font-semibold text-white">
+                                {pricing.weight}
+                              </span>
+                              <span className="text-2xl font-bold text-green-400">
+                                {pricing.price}€
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 w-full sm:w-auto">
+                              {/* Sélecteur de quantité */}
+                              <div className="flex items-center gap-2 bg-gray-800 rounded-lg">
+                                <button
+                                  onClick={() => updateQuantityForOption(key, quantity - 1)}
+                                  className="p-2 hover:bg-gray-700 rounded-l-lg transition-colors"
+                                >
+                                  <Minus size={16} />
+                                </button>
+                                <span className="px-3 py-1 min-w-[40px] text-center font-bold">
+                                  {quantity}
+                                </span>
+                                <button
+                                  onClick={() => updateQuantityForOption(key, quantity + 1)}
+                                  className="p-2 hover:bg-gray-700 rounded-r-lg transition-colors"
+                                >
+                                  <Plus size={16} />
+                                </button>
+                              </div>
+                              
+                              {/* Bouton ajouter au panier */}
+                              <motion.button
+                                onClick={() => handleAddToCart(pricing)}
+                                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all shadow-lg font-bold text-sm ${
+                                  isAdded 
+                                    ? 'bg-green-600 text-white' 
+                                    : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
+                                }`}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                {isAdded ? (
+                                  <>
+                                    <span>✓</span>
+                                    <span>AJOUTÉ!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <ShoppingCart size={18} />
+                                    <span>AJOUTER</span>
+                                  </>
+                                )}
+                              </motion.button>
+                            </div>
+                          </div>
+                          
+                          {/* Total pour cette option */}
+                          {quantity > 1 && (
+                            <div className="mt-3 pt-3 border-t border-gray-700 text-right">
+                              <span className="text-sm text-gray-400">Total: </span>
+                              <span className="text-lg font-bold text-white">
+                                {(pricing.price * quantity).toFixed(2)}€
+                              </span>
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <motion.div
