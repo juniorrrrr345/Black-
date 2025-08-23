@@ -435,50 +435,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Liens des Commerçants */}
-              <div className="bg-black border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8">
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4 md:mb-6">🛒 LIENS DES COMMERÇANTS</h3>
-                
-                <div className="space-y-4 md:space-y-6">
-                  <div>
-                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🏪 COMMANDER CHEZ BURNS</label>
-                    <input
-                      type="text"
-                      value={settings.burnsLink || ''}
-                      onChange={(e) => setSettings({ ...settings, burnsLink: e.target.value })}
-                      placeholder="https://exemple.com/burns"
-                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🏪 COMMANDER CHEZ APOU</label>
-                    <input
-                      type="text"
-                      value={settings.apouLink || ''}
-                      onChange={(e) => setSettings({ ...settings, apouLink: e.target.value })}
-                      placeholder="https://exemple.com/apou"
-                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🏪 COMMANDER CHEZ MOE</label>
-                    <input
-                      type="text"
-                      value={settings.moeLink || ''}
-                      onChange={(e) => setSettings({ ...settings, moeLink: e.target.value })}
-                      placeholder="https://exemple.com/moe"
-                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
-                    />
-                  </div>
-
-                  <p className="text-gray-300 text-xs md:text-sm mt-2 bg-white/10 rounded-lg p-2 md:p-3">
-                    💡 Ces liens seront affichés dans le panier pour permettre aux clients de commander chez différents commerçants
-                  </p>
-                </div>
-              </div>
-
               {/* Gestion du Thème */}
               <div className="bg-black border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8">
                 <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4 md:mb-6">🎨 THÈME DE LA BOUTIQUE</h3>
