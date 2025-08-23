@@ -129,20 +129,49 @@ export default function ModernShop() {
 
         {/* Hero Banner - Responsive */}
         <section className="relative py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <motion.div
-              className="inline-block bg-black/80 backdrop-blur-sm border-2 border-white rounded-2xl px-6 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 md:mb-4">
-                {themeSettings.bannerText || 'NOUVEAU DROP'}
-              </h2>
-              <p className="text-sm md:text-base lg:text-lg text-gray-300 font-bold">
-                QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
-              </p>
-            </motion.div>
+          <div className="max-w-7xl mx-auto">
+            {themeSettings.bannerImage && (
+              <motion.div
+                className="relative h-48 md:h-64 lg:h-80 mb-6 rounded-2xl overflow-hidden border-4 border-white"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <img 
+                  src={themeSettings.bannerImage} 
+                  alt="Banner" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2">
+                      {themeSettings.bannerText || 'NOUVEAU DROP'}
+                    </h2>
+                    <p className="text-sm md:text-base lg:text-lg text-white font-bold">
+                      QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            
+            {!themeSettings.bannerImage && (
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="inline-block bg-black/80 backdrop-blur-sm border-2 border-white rounded-2xl px-6 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8">
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 md:mb-4">
+                    {themeSettings.bannerText || 'NOUVEAU DROP'}
+                  </h2>
+                  <p className="text-sm md:text-base lg:text-lg text-gray-300 font-bold">
+                    QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
+                  </p>
+                </div>
+              </motion.div>
+            )}
           </div>
         </section>
 
