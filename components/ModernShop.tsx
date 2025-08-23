@@ -145,14 +145,14 @@ export default function ModernShop() {
       className="min-h-screen text-white relative"
       style={getBackgroundStyle()}
     >
-      {/* Overlay avec effet de flou pour améliorer la lisibilité */}
+      {/* Overlay léger avec flou pour la lisibilité */}
       {themeSettings.backgroundType === 'image' && themeSettings.backgroundImage && (
-        <div className="absolute inset-0 backdrop-blur-sm bg-black/40 z-0"></div>
+        <div className="absolute inset-0 backdrop-blur-[1px] bg-black/30 z-0"></div>
       )}
 
       <div className="relative z-10">
         {/* Header fixe et moderne */}
-        <header className="fixed top-0 left-0 right-0 bg-black/70 backdrop-blur-xl z-50 border-b border-white/10">
+        <header className="fixed top-0 left-0 right-0 bg-black/60 backdrop-blur-xl z-50 border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex justify-between items-center">
               <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
@@ -178,210 +178,204 @@ export default function ModernShop() {
           </div>
         </header>
 
-        {/* Section combinée Hero + Catégories pour visibilité immédiate */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden mt-14 py-10">
-          {themeSettings.bannerImage ? (
-            <div className="absolute inset-0">
-              <img 
-                src={themeSettings.bannerImage}
-                alt="Bannière"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70 backdrop-blur-[2px]"></div>
-            </div>
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20"></div>
-          )}
-          
-          <div className="relative text-center px-4 max-w-4xl mx-auto mb-10">
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-3xl md:text-5xl lg:text-6xl font-black mb-4 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
-            >
-              {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-base md:text-lg text-gray-300 mb-6"
-            >
-              Découvrez nos produits premium de qualité exceptionnelle
-            </motion.p>
-          </div>
-
-          {/* Catégories directement visibles dans la hero section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="relative w-full max-w-6xl mx-auto px-4"
-          >
-            <h3 className="text-xl md:text-2xl font-bold text-center mb-6 text-white/90">Nos Catégories</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              {/* Bouton Tout */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory('all')}
-                className={`relative overflow-hidden rounded-xl p-4 transition-all backdrop-blur-md ${
-                  selectedCategory === 'all'
-                    ? 'bg-gradient-to-br from-purple-600/80 to-blue-600/80 shadow-xl shadow-purple-500/25'
-                    : 'bg-white/10 hover:bg-white/20'
-                }`}
-              >
-                <div className="relative z-10">
-                  <span className="text-2xl mb-1 block">✨</span>
-                  <span className="font-bold text-xs">TOUT</span>
-                  <span className="block text-[10px] mt-0.5 opacity-80">
-                    {products.length} produits
-                  </span>
-                </div>
-              </motion.button>
-
-              {/* Catégories dynamiques */}
-              {categories.map((category: any) => {
-                const categoryProducts = products.filter(p => 
-                  p.category && p.category.toLowerCase() === (category.slug || category.value || category.name.toLowerCase())
-                );
-                return (
-                  <motion.button
-                    key={category._id || category.id}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
-                    className={`relative overflow-hidden rounded-xl p-4 transition-all backdrop-blur-md ${
-                      selectedCategory === (category.slug || category.value || category.name.toLowerCase())
-                        ? 'bg-gradient-to-br from-green-600/80 to-emerald-600/80 shadow-xl shadow-green-500/25'
-                        : 'bg-white/10 hover:bg-white/20'
-                    }`}
-                  >
-                    <div className="relative z-10">
-                      <span className="text-2xl mb-1 block">{category.icon || '🌿'}</span>
-                      <span className="font-bold text-xs">{category.name.toUpperCase()}</span>
-                      <span className="block text-[10px] mt-0.5 opacity-80">
-                        {categoryProducts.length} produits
-                      </span>
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* Products Section avec grille 2 colonnes sur mobile */}
-        <section className="py-12 px-4 pb-32">
+        {/* Section principale compacte */}
+        <section className="pt-20 pb-6 px-4">
           <div className="max-w-7xl mx-auto">
+            {/* Titre et sous-titre */}
+            <div className="text-center mb-6">
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-2xl md:text-4xl font-black mb-2 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
+              >
+                {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-sm md:text-base text-gray-300"
+              >
+                Découvrez nos produits premium de qualité exceptionnelle
+              </motion.p>
+            </div>
+
+            {/* Bannière rectangulaire sous le titre */}
+            {themeSettings.bannerImage && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mb-8 rounded-xl overflow-hidden shadow-2xl"
+              >
+                <div className="relative w-full h-[200px] md:h-[300px]">
+                  <img 
+                    src={themeSettings.bannerImage}
+                    alt="Bannière"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Catégories - 3 par ligne */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-8"
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mb-8"
             >
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">
-                {selectedCategory === 'all' ? 'Tous nos produits' : `Catégorie ${selectedCategory.toUpperCase()}`}
-              </h2>
-              <p className="text-gray-400 text-sm">{filteredProducts.length} produits disponibles</p>
-            </motion.div>
+              <h3 className="text-lg md:text-xl font-bold text-center mb-4 text-white/90">Catégories</h3>
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-3">
+                {/* Bouton Tout */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedCategory('all')}
+                  className={`relative overflow-hidden rounded-lg p-3 md:p-4 transition-all backdrop-blur-md ${
+                    selectedCategory === 'all'
+                      ? 'bg-gradient-to-br from-purple-600/70 to-blue-600/70 shadow-lg'
+                      : 'bg-white/10 hover:bg-white/20'
+                  }`}
+                >
+                  <div className="relative z-10 flex flex-col items-center">
+                    <span className="text-xl md:text-2xl mb-1">✨</span>
+                    <span className="font-bold text-[10px] md:text-xs">TOUT</span>
+                    <span className="text-[9px] md:text-[10px] opacity-80">
+                      {products.length}
+                    </span>
+                  </div>
+                </motion.button>
 
-            {/* Grille avec 2 colonnes sur mobile */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+                {/* Catégories dynamiques */}
+                {categories.map((category: any) => {
+                  const categoryProducts = products.filter(p => 
+                    p.category && p.category.toLowerCase() === (category.slug || category.value || category.name.toLowerCase())
+                  );
+                  return (
+                    <motion.button
+                      key={category._id || category.id}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
+                      className={`relative overflow-hidden rounded-lg p-3 md:p-4 transition-all backdrop-blur-md ${
+                        selectedCategory === (category.slug || category.value || category.name.toLowerCase())
+                          ? 'bg-gradient-to-br from-green-600/70 to-emerald-600/70 shadow-lg'
+                          : 'bg-white/10 hover:bg-white/20'
+                      }`}
+                    >
+                      <div className="relative z-10 flex flex-col items-center">
+                        <span className="text-xl md:text-2xl mb-1">{category.icon || '🌿'}</span>
+                        <span className="font-bold text-[10px] md:text-xs">{category.name.toUpperCase()}</span>
+                        <span className="text-[9px] md:text-[10px] opacity-80">
+                          {categoryProducts.length}
+                        </span>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Products Section - Plus compact */}
+        <section className="px-4 pb-24">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-4">
+              <h2 className="text-xl md:text-2xl font-bold">
+                {selectedCategory === 'all' ? 'Tous nos produits' : `${selectedCategory.toUpperCase()}`}
+              </h2>
+              <p className="text-gray-400 text-xs md:text-sm">{filteredProducts.length} disponibles</p>
+            </div>
+
+            {/* Grille de produits 2 colonnes mobile */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4">
               {filteredProducts.map((product, index) => (
                 <motion.div
                   key={product.id || product._id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                  transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
                   className="group"
                 >
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden hover:bg-white/15 transition-all duration-300 h-full flex flex-col border border-white/10">
-                    {/* Image avec effet de zoom */}
-                    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50">
+                  <div className="bg-white/10 backdrop-blur-md rounded-lg overflow-hidden hover:bg-white/15 transition-all duration-300 h-full flex flex-col border border-white/5">
+                    {/* Image produit */}
+                    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-800/30 to-gray-900/30">
                       {product.image ? (
                         <img 
                           src={product.image} 
                           alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package size={40} className="text-gray-500" />
+                          <Package size={32} className="text-gray-500" />
                         </div>
                       )}
 
-                      {/* Badges */}
-                      <div className="absolute top-2 left-2 flex flex-col gap-1">
-                        {product.tag && (
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-lg ${
-                            product.tagColor === 'red' ? 'bg-red-500/90' : 
-                            product.tagColor === 'blue' ? 'bg-blue-500/90' : 'bg-green-500/90'
-                          } backdrop-blur`}>
-                            {product.tag}
-                          </span>
-                        )}
-                        {product.category && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur">
-                            {product.category.toUpperCase()}
-                          </span>
-                        )}
-                      </div>
+                      {/* Badges compacts */}
+                      {(product.tag || product.category) && (
+                        <div className="absolute top-1 left-1 flex flex-wrap gap-1 max-w-[90%]">
+                          {product.tag && (
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white ${
+                              product.tagColor === 'red' ? 'bg-red-500/80' : 
+                              product.tagColor === 'blue' ? 'bg-blue-500/80' : 'bg-green-500/80'
+                            } backdrop-blur`}>
+                              {product.tag}
+                            </span>
+                          )}
+                          {product.category && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/50 text-white backdrop-blur">
+                              {product.category.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Product Info */}
-                    <div className="p-3 md:p-4 flex-1 flex flex-col">
-                      <h3 className="text-sm md:text-base font-bold mb-1 line-clamp-1">
+                    {/* Infos produit compactes */}
+                    <div className="p-2 md:p-3 flex-1 flex flex-col">
+                      <h3 className="text-xs md:text-sm font-bold mb-0.5 line-clamp-1">
                         {product.name}
                       </h3>
-                      <p className="text-xs text-gray-400 mb-2 line-clamp-1">
-                        {product.origin || 'Premium Quality'}
+                      <p className="text-[10px] md:text-xs text-gray-400 mb-1 line-clamp-1">
+                        {product.origin || 'Premium'}
                       </p>
                       
-                      {/* Rating - caché sur mobile */}
-                      <div className="hidden md:flex items-center gap-1 mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} className={i < 4 ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'} />
-                        ))}
-                        <span className="text-[10px] text-gray-400 ml-1">(4.8)</span>
-                      </div>
-
-                      {/* Price */}
-                      <div className="mb-3 flex-1">
+                      {/* Prix */}
+                      <div className="mb-2 flex-1">
                         {product.pricing && product.pricing.length > 0 ? (
                           <div>
-                            <span className="text-[10px] text-gray-400">À partir de</span>
-                            <div className="text-lg md:text-xl font-bold text-white">
+                            <span className="text-[9px] text-gray-400">Dès</span>
+                            <div className="text-base md:text-lg font-bold text-white">
                               {Math.min(...product.pricing.map((p: any) => p.price))}€
                             </div>
                           </div>
                         ) : (
-                          <div className="text-lg md:text-xl font-bold text-white">
+                          <div className="text-base md:text-lg font-bold text-white">
                             {product.price}€
                           </div>
                         )}
                       </div>
 
-                      {/* Actions - boutons visibles et accessibles */}
-                      <div className="flex flex-col gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                      {/* Boutons d'action toujours visibles */}
+                      <div className="space-y-1.5">
+                        <button
                           onClick={() => handleAddToCart(product)}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 rounded-lg font-bold text-xs md:text-sm hover:from-green-600 hover:to-emerald-600 transition-all w-full"
+                          className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-1.5 px-2 rounded-md font-bold text-[10px] md:text-xs hover:from-green-600 hover:to-emerald-600 transition-all"
                         >
-                          Ajouter au panier
-                        </motion.button>
+                          🛒 AJOUTER
+                        </button>
                         
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                        <button
                           onClick={() => router.push(`/products/${product.id || product._id}`)}
-                          className="bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg font-bold text-xs md:text-sm transition-all backdrop-blur w-full"
+                          className="w-full bg-white/20 hover:bg-white/30 text-white py-1.5 px-2 rounded-md font-bold text-[10px] md:text-xs transition-all backdrop-blur"
                         >
-                          Voir détails
-                        </motion.button>
+                          👁️ DÉTAILS
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -390,38 +384,38 @@ export default function ModernShop() {
             </div>
 
             {filteredProducts.length === 0 && (
-              <div className="text-center py-20">
-                <Package size={64} className="mx-auto text-gray-600 mb-4" />
-                <h3 className="text-xl font-bold mb-2">Aucun produit trouvé</h3>
-                <p className="text-gray-400">Essayez une autre catégorie</p>
+              <div className="text-center py-12">
+                <Package size={48} className="mx-auto text-gray-600 mb-3" />
+                <h3 className="text-lg font-bold mb-1">Aucun produit trouvé</h3>
+                <p className="text-gray-400 text-sm">Essayez une autre catégorie</p>
               </div>
             )}
           </div>
         </section>
 
-        {/* Bottom Navigation - Design minimaliste et moderne */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-xl z-40 border-t border-white/10">
+        {/* Bottom Navigation - Plus compact */}
+        <div className="fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xl z-40 border-t border-white/10">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-center items-center gap-6 md:gap-8 py-3">
+            <div className="flex justify-center items-center gap-4 md:gap-6 py-2">
               {/* Accueil */}
               <button
                 onClick={() => router.push('/')}
-                className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group cursor-pointer"
+                className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group"
               >
-                <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform">🏠</span>
-                <span className="text-[9px] md:text-[10px] font-medium mt-0.5 opacity-70 group-hover:opacity-100">Accueil</span>
+                <span className="text-xl md:text-2xl group-hover:scale-110 transition-transform">🏠</span>
+                <span className="text-[8px] md:text-[9px] font-medium opacity-70 group-hover:opacity-100">Accueil</span>
               </button>
 
-              {/* Réseaux sociaux - design épuré */}
+              {/* Réseaux sociaux */}
               {socials.filter(s => s.enabled && s.name && s.url).slice(0, 3).map(social => (
                 <a
                   key={social.id}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group cursor-pointer"
+                  className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group"
                 >
-                  <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform">
+                  <span className="text-xl md:text-2xl group-hover:scale-110 transition-transform">
                     {social.name === 'Instagram' ? '📸' : 
                      social.name === 'Telegram' ? '✈️' : 
                      social.name === 'Facebook' ? '👥' :
@@ -432,14 +426,12 @@ export default function ModernShop() {
                      social.name === 'Discord' ? '🎮' :
                      social.emoji || '🔗'}
                   </span>
-                  <span className="text-[9px] md:text-[10px] font-medium mt-0.5 opacity-70 group-hover:opacity-100">{social.name}</span>
+                  <span className="text-[8px] md:text-[9px] font-medium opacity-70 group-hover:opacity-100">{social.name}</span>
                 </a>
               ))}
             </div>
           </div>
         </div>
-
-        {/* Suppression complète du Cart Modal car on utilise maintenant la page /cart */}
       </div>
     </div>
   );
