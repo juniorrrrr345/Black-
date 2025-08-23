@@ -56,7 +56,7 @@ export const useStore = create<StoreState>((set, get) => ({
   isAuthenticated: false,
   themeSettings: {
     backgroundType: 'color',
-    backgroundColor: 'black',
+    backgroundColor: '#000000',
     backgroundImage: '',
     gradientFrom: '#000000',
     gradientTo: '#111111',
@@ -159,7 +159,7 @@ export const useStore = create<StoreState>((set, get) => ({
         const apiSettings = await response.json();
         const themeSettings = {
           backgroundType: apiSettings.backgroundType || 'color',
-          backgroundColor: apiSettings.backgroundColor || 'black',
+          backgroundColor: apiSettings.backgroundColor || '#000000',
           backgroundImage: apiSettings.backgroundImage || '',
           gradientFrom: apiSettings.gradientFrom || '#000000',
           gradientTo: apiSettings.gradientTo || '#111111',
