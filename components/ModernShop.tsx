@@ -178,48 +178,56 @@ export default function ModernShop() {
           </div>
         </header>
 
-        {/* Hero Section avec bannière immersive */}
-        <section className="relative h-screen flex items-center justify-center overflow-hidden mt-14">
-          {/* Bannière en fond plein écran */}
-          {themeSettings.bannerImage ? (
-            <div className="absolute inset-0">
-              <img 
-                src={themeSettings.bannerImage}
-                alt="Bannière"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60 backdrop-blur-[1px]"></div>
+        {/* Section principale avec bannière rectangulaire */}
+        <section className="pt-20 pb-8 px-4">
+          <div className="max-w-7xl mx-auto">
+            {/* Titre et sous-titre */}
+            <div className="text-center mb-6">
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-2xl md:text-4xl font-black mb-2 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
+              >
+                {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-sm md:text-base text-gray-300"
+              >
+                {themeSettings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle'}
+              </motion.p>
             </div>
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20"></div>
-          )}
-          
-          <div className="relative text-center px-4 max-w-4xl mx-auto">
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-3xl md:text-5xl lg:text-6xl font-black mb-4 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
-            >
-              {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-base md:text-lg text-gray-300 mb-8"
-            >
-              {themeSettings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle'}
-            </motion.p>
-            
-            {/* Catégories directement dans la hero section */}
+
+            {/* Bannière rectangulaire sous le titre */}
+            {themeSettings.bannerImage && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mb-8 rounded-xl overflow-hidden shadow-2xl bg-black/20"
+              >
+                <div className="relative w-full h-[200px] md:h-[300px] lg:h-[400px] flex items-center justify-center">
+                  <img 
+                    src={themeSettings.bannerImage}
+                    alt="Bannière"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {/* Catégories - 3 par ligne */}
             <motion.div 
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="max-w-3xl mx-auto"
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mb-8"
             >
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
+              <h3 className="text-lg md:text-xl font-bold text-center mb-4 text-white/90">Catégories</h3>
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-3">
                 {/* Bouton Tout */}
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -272,10 +280,10 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Products Section avec beaucoup plus d'espace en bas */}
-        <section className="px-4 pb-48 md:pb-44">
+        {/* Products Section avec ÉNORME espace en bas pour éviter que la navigation cache les boutons */}
+        <section className="px-4" style={{ paddingBottom: '220px' }}>
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
               <h2 className="text-xl md:text-2xl font-bold">
                 {selectedCategory === 'all' ? 'Tous nos produits' : `${selectedCategory.toUpperCase()}`}
               </h2>
