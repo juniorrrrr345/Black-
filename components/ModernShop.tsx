@@ -209,13 +209,14 @@ export default function ModernShop() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="mb-8 rounded-xl overflow-hidden shadow-2xl"
               >
-                <div className="relative w-full h-[200px] md:h-[300px]">
+                <div className="relative w-full h-[200px] md:h-[300px] lg:h-[350px]">
                   <img 
                     src={themeSettings.bannerImage}
                     alt="Bannière"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
+                    style={{ objectFit: 'cover' }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
               </motion.div>
             )}
@@ -301,7 +302,7 @@ export default function ModernShop() {
                   transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
                   className="group"
                 >
-                  <div className="bg-white/10 backdrop-blur-md rounded-lg overflow-hidden hover:bg-white/15 transition-all duration-300 h-full flex flex-col border border-white/5">
+                  <div className="bg-black/40 backdrop-blur-md rounded-lg overflow-hidden hover:bg-black/50 transition-all duration-300 h-full flex flex-col border border-white/10">
                     {/* Image produit */}
                     <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-800/30 to-gray-900/30">
                       {product.image ? (
@@ -320,15 +321,15 @@ export default function ModernShop() {
                       {(product.tag || product.category) && (
                         <div className="absolute top-1 left-1 flex flex-wrap gap-1 max-w-[90%]">
                           {product.tag && (
-                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold text-white ${
-                              product.tagColor === 'red' ? 'bg-red-500/80' : 
-                              product.tagColor === 'blue' ? 'bg-blue-500/80' : 'bg-green-500/80'
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold text-white shadow-lg ${
+                              product.tagColor === 'red' ? 'bg-red-500/90' : 
+                              product.tagColor === 'blue' ? 'bg-blue-500/90' : 'bg-green-500/90'
                             } backdrop-blur`}>
                               {product.tag}
                             </span>
                           )}
                           {product.category && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/50 text-white backdrop-blur">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-black/70 text-white backdrop-blur shadow-lg">
                               {product.category.toUpperCase()}
                             </span>
                           )}
@@ -336,43 +337,43 @@ export default function ModernShop() {
                       )}
                     </div>
 
-                    {/* Infos produit compactes */}
-                    <div className="p-2 md:p-3 flex-1 flex flex-col">
-                      <h3 className="text-xs md:text-sm font-bold mb-0.5 line-clamp-1">
+                    {/* Infos produit avec meilleure lisibilité */}
+                    <div className="p-3 md:p-3.5 flex-1 flex flex-col">
+                      <h3 className="text-sm md:text-base font-bold mb-1 line-clamp-1 text-white">
                         {product.name}
                       </h3>
-                      <p className="text-[10px] md:text-xs text-gray-400 mb-1 line-clamp-1">
+                      <p className="text-xs md:text-sm text-gray-300 mb-2 line-clamp-1 font-medium">
                         {product.origin || 'Premium'}
                       </p>
                       
-                      {/* Prix */}
-                      <div className="mb-2 flex-1">
+                      {/* Prix avec meilleure visibilité */}
+                      <div className="mb-3 flex-1">
                         {product.pricing && product.pricing.length > 0 ? (
                           <div>
-                            <span className="text-[9px] text-gray-400">Dès</span>
-                            <div className="text-base md:text-lg font-bold text-white">
+                            <span className="text-[11px] md:text-xs text-gray-300 font-medium">Dès</span>
+                            <div className="text-xl md:text-2xl font-bold text-white">
                               {Math.min(...product.pricing.map((p: any) => p.price))}€
                             </div>
                           </div>
                         ) : (
-                          <div className="text-base md:text-lg font-bold text-white">
+                          <div className="text-xl md:text-2xl font-bold text-white">
                             {product.price}€
                           </div>
                         )}
                       </div>
 
-                      {/* Boutons d'action toujours visibles */}
-                      <div className="space-y-1.5">
+                      {/* Boutons d'action plus visibles */}
+                      <div className="space-y-2">
                         <button
                           onClick={() => handleAddToCart(product)}
-                          className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-1.5 px-2 rounded-md font-bold text-[10px] md:text-xs hover:from-green-600 hover:to-emerald-600 transition-all"
+                          className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-2 rounded-md font-bold text-xs md:text-sm hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg"
                         >
                           🛒 AJOUTER
                         </button>
                         
                         <button
                           onClick={() => router.push(`/products/${product.id || product._id}`)}
-                          className="w-full bg-white/20 hover:bg-white/30 text-white py-1.5 px-2 rounded-md font-bold text-[10px] md:text-xs transition-all backdrop-blur"
+                          className="w-full bg-white/25 hover:bg-white/35 text-white py-2 px-2 rounded-md font-bold text-xs md:text-sm transition-all backdrop-blur shadow-lg"
                         >
                           👁️ DÉTAILS
                         </button>
