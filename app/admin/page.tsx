@@ -162,21 +162,6 @@ export default function AdminLogin() {
               )}
             </motion.button>
           </motion.form>
-
-          {/* Help text */}
-          <motion.div 
-            className="mt-6 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <p className="text-xs text-gray-500">
-              Identifiants de test
-            </p>
-            <div className="mt-2 inline-flex flex-col text-xs bg-white/5 rounded-lg px-3 py-2 border border-white/10">
-              <span className="text-gray-400">admin / vershash2024</span>
-            </div>
-          </motion.div>
         </div>
       </motion.div>
 
