@@ -336,58 +336,42 @@ export default function ModernShop() {
           </div>
         </section>
 
-        {/* Bottom Navigation - Design professionnel et moderne avec emojis iPhone */}
-        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl z-50">
-          <div className="border-t border-gray-700/50">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex justify-center items-center gap-6 p-4">
-                {/* Accueil */}
-                <button
-                  onClick={() => router.push('/')}
-                  className="flex flex-col items-center justify-center py-3 px-6 text-white hover:bg-white/20 rounded-xl transition-all group cursor-pointer"
-                >
-                  <div className="relative">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/30 group-hover:from-blue-500/40 group-hover:to-blue-600/50 transition-all shadow-lg">
-                      <span className="text-3xl">🏠</span>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold mt-2 opacity-90 group-hover:opacity-100">Accueil</span>
-                </button>
+        {/* Bottom Navigation - Design minimaliste et moderne */}
+        <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md z-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-center items-center gap-8 py-4">
+              {/* Accueil */}
+              <button
+                onClick={() => router.push('/')}
+                className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group cursor-pointer"
+              >
+                <span className="text-3xl group-hover:scale-110 transition-transform">🏠</span>
+                <span className="text-[10px] font-medium mt-1 opacity-70 group-hover:opacity-100">Accueil</span>
+              </button>
 
-                {/* Réseaux sociaux avec emojis iPhone plus visibles */}
-                {socials.filter(s => s.enabled && s.name && s.url).slice(0, 3).map(social => (
-                  <a
-                    key={social.id}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center justify-center py-3 px-6 text-white hover:bg-white/20 rounded-xl transition-all group cursor-pointer"
-                  >
-                    <div className="relative">
-                      <div className={`p-3 rounded-xl transition-all shadow-lg ${
-                        social.name === 'Instagram' 
-                          ? 'bg-gradient-to-br from-purple-500/20 to-pink-600/30 group-hover:from-purple-500/40 group-hover:to-pink-600/50'
-                          : social.name === 'Telegram'
-                          ? 'bg-gradient-to-br from-blue-400/20 to-blue-600/30 group-hover:from-blue-400/40 group-hover:to-blue-600/50'
-                          : 'bg-gradient-to-br from-gray-500/20 to-gray-600/30 group-hover:from-gray-500/40 group-hover:to-gray-600/50'
-                      }`}>
-                        <span className="text-3xl">
-                          {social.name === 'Instagram' ? '📸' : 
-                           social.name === 'Telegram' ? '✈️' : 
-                           social.name === 'Facebook' ? '👥' :
-                           social.name === 'Twitter' ? '🐦' :
-                           social.name === 'YouTube' ? '📺' :
-                           social.name === 'TikTok' ? '🎵' :
-                           social.name === 'Snapchat' ? '👻' :
-                           social.name === 'Discord' ? '🎮' :
-                           social.emoji || '🔗'}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold mt-2 opacity-90 group-hover:opacity-100">{social.name}</span>
-                  </a>
-                ))}
-              </div>
+              {/* Réseaux sociaux - design épuré */}
+              {socials.filter(s => s.enabled && s.name && s.url).slice(0, 3).map(social => (
+                <a
+                  key={social.id}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group cursor-pointer"
+                >
+                  <span className="text-3xl group-hover:scale-110 transition-transform">
+                    {social.name === 'Instagram' ? '📸' : 
+                     social.name === 'Telegram' ? '✈️' : 
+                     social.name === 'Facebook' ? '👥' :
+                     social.name === 'Twitter' ? '🐦' :
+                     social.name === 'YouTube' ? '📺' :
+                     social.name === 'TikTok' ? '🎵' :
+                     social.name === 'Snapchat' ? '👻' :
+                     social.name === 'Discord' ? '🎮' :
+                     social.emoji || '🔗'}
+                  </span>
+                  <span className="text-[10px] font-medium mt-1 opacity-70 group-hover:opacity-100">{social.name}</span>
+                </a>
+              ))}
             </div>
           </div>
         </div>

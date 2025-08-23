@@ -82,289 +82,296 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <div className="bg-black border-b-4 border-white p-6">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="bg-white text-black p-3 rounded-full hover:bg-gray-200 transition-colors"
-          >
-            <ArrowLeft size={24} />
-          </button>
-          
-          <div className="text-center">
-            <h1 className="text-3xl font-black">PANIER</h1>
-            <p className="text-gray-300">({getTotalItems()} articles)</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      {/* Header moderne et minimaliste */}
+      <div className="sticky top-0 z-10 bg-black/50 backdrop-blur-lg border-b border-gray-800">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => router.back()}
+              className="p-2 hover:bg-white/10 rounded-lg transition-all"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            
+            <div className="text-center">
+              <h1 className="text-xl font-bold">MON PANIER</h1>
+              <p className="text-xs text-gray-400 mt-1">{getTotalItems()} article{getTotalItems() > 1 ? 's' : ''}</p>
+            </div>
 
-          <button
-            onClick={clearCart}
-            className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition-colors"
-          >
-            <Trash2 size={24} />
-          </button>
+            <button
+              onClick={() => router.push('/')}
+              className="p-2 hover:bg-white/10 rounded-lg transition-all"
+            >
+              <Home size={20} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Cart Content */}
-      <div className="max-w-lg mx-auto p-6 pb-32">
-        {cart.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="bg-white/10 rounded-full p-8 w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-              <ShoppingCart size={64} className="text-white/50" />
-            </div>
-            <h2 className="text-2xl font-black text-white mb-4">PANIER VIDE</h2>
-            <p className="text-gray-400 mb-8">Ajoutez des produits pour commencer</p>
-            <button
-              onClick={() => router.push('/')}
-              className="bg-white text-black px-8 py-4 rounded-lg font-black hover:bg-gray-200 transition-colors"
-            >
-              RETOUR À LA BOUTIQUE
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Cart Items */}
-            <div className="space-y-4">
-              {cart.map((item) => (
-                <div key={`${item.id}-${item.name}`} className="bg-black border-4 border-white rounded-2xl p-6">
-                  <div className="flex items-start gap-4">
-                    {/* Product Image */}
-                    <div className="w-20 h-20 bg-white rounded-lg overflow-hidden border-2 border-black flex-shrink-0">
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-2xl">🌿</span>
-                        </div>
-                      )}
-                    </div>
+      {/* Contenu principal */}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Liste des produits */}
+          <div className="lg:col-span-2 space-y-4">
+            {cart.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20"
+              >
+                <ShoppingCart size={64} className="mx-auto text-gray-600 mb-4" />
+                <h2 className="text-2xl font-bold mb-2">Votre panier est vide</h2>
+                <p className="text-gray-400 mb-6">Découvrez nos produits et ajoutez-les à votre panier</p>
+                <button
+                  onClick={() => router.push('/')}
+                  className="bg-white text-black px-6 py-3 rounded-lg font-bold hover:bg-gray-200 transition-all"
+                >
+                  Continuer mes achats
+                </button>
+              </motion.div>
+            ) : (
+              <>
+                {cart.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-gray-900/50 backdrop-blur rounded-xl p-4 hover:bg-gray-900/70 transition-all"
+                  >
+                    <div className="flex gap-4">
+                      {/* Image produit */}
+                      <div className="w-24 h-24 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
+                        {item.image ? (
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ShoppingCart size={32} className="text-gray-600" />
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Product Info */}
-                    <div className="flex-1">
-                      <h3 className="text-lg font-black text-white mb-1">{item.name}</h3>
-                      <p className="text-gray-300 text-sm mb-3">{item.origin}</p>
-                      
-                      {/* Quantity Controls */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => decreaseQuantity(item.id)}
-                            className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center font-black hover:bg-gray-200 transition-colors"
-                            disabled={item.quantity <= 1}
-                          >
-                            <Minus size={16} />
-                          </button>
-                          
-                          <span className="text-2xl font-black text-white w-12 text-center">
-                            {item.quantity}
-                          </span>
-                          
-                          <button
-                            onClick={() => increaseQuantity(item.id)}
-                            className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center font-black hover:bg-gray-200 transition-colors"
-                          >
-                            <Plus size={16} />
-                          </button>
-                        </div>
-
-                        <div className="text-right">
-                          <div className="text-2xl font-black text-white">
-                            {(item.price * item.quantity).toLocaleString()}€
+                      {/* Infos produit */}
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-bold text-lg">{item.name}</h3>
+                            {item.origin && (
+                              <p className="text-sm text-gray-400">{item.origin}</p>
+                            )}
                           </div>
                           <button
                             onClick={() => removeFromCart(item.id)}
-                            className="text-red-400 hover:text-red-300 text-sm mt-1"
+                            className="text-red-400 hover:text-red-300 p-1 hover:bg-red-500/10 rounded transition-all"
                           >
-                            Supprimer
+                            <Trash2 size={18} />
                           </button>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          {/* Contrôles de quantité */}
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => decreaseQuantity(item.id)}
+                              className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all"
+                            >
+                              <Minus size={16} />
+                            </button>
+                            <span className="w-12 text-center font-bold">{item.quantity}</span>
+                            <button
+                              onClick={() => increaseQuantity(item.id)}
+                              className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </div>
+
+                          {/* Prix */}
+                          <div className="text-right">
+                            <p className="text-xl font-bold">{(item.price * item.quantity).toFixed(2)}€</p>
+                            <p className="text-xs text-gray-400">{item.price}€ / unité</p>
+                          </div>
                         </div>
                       </div>
                     </div>
+                  </motion.div>
+                ))}
+
+                {/* Bouton vider le panier */}
+                <div className="text-center pt-4">
+                  <button
+                    onClick={() => {
+                      if (confirm('Êtes-vous sûr de vouloir vider votre panier ?')) {
+                        clearCart();
+                      }
+                    }}
+                    className="text-gray-400 hover:text-red-400 text-sm transition-all"
+                  >
+                    Vider le panier
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Résumé de commande */}
+          {cart.length > 0 && (
+            <div className="lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gray-900/50 backdrop-blur rounded-xl p-6 sticky top-24"
+              >
+                <h2 className="text-xl font-bold mb-6">Résumé de la commande</h2>
+                
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Sous-total</span>
+                    <span>{getTotalPrice()}€</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Livraison</span>
+                    <span className="text-green-400">GRATUITE</span>
+                  </div>
+                  <div className="h-px bg-gray-700"></div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold">TOTAL</span>
+                    <span className="text-2xl font-bold text-green-400">{getTotalPrice()}€</span>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Total */}
-            <div className="bg-white text-black rounded-2xl p-6 border-4 border-black">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-black">TOTAL</span>
-                <span className="text-3xl font-black">{getTotalPrice().toLocaleString()}€</span>
-              </div>
-              
-              <div className="text-sm text-gray-600 mb-6">
-                {getTotalItems()} article{getTotalItems() > 1 ? 's' : ''} dans votre panier
-              </div>
-
-              {/* Trois boutons de commande */}
-              <div className="space-y-3">
-                <div className="text-center text-gray-600 font-bold text-lg mb-3">
-                  CHOISISSEZ VOTRE VENDEUR
+                <div className="text-xs text-gray-400 text-center mb-6">
+                  {getTotalItems()} article{getTotalItems() > 1 ? 's' : ''} dans votre panier
                 </div>
-                
-                {/* Bouton BURNS */}
-                <button
-                  onClick={() => {
-                    if (cart.length === 0) {
-                      alert('Votre panier est vide');
-                      return;
-                    }
 
-                    // Créer le message de commande
-                    let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                    message += `📦 Articles (${getTotalItems()}):\n`;
-                    message += `------------------------\n`;
-                    
-                    cart.forEach(item => {
-                      message += `• ${item.name}\n`;
-                      message += `  Quantité: ${item.quantity}\n`;
-                      message += `  Prix: ${item.price}€\n\n`;
-                    });
-                    
-                    message += `------------------------\n`;
-                    message += `💰 TOTAL: ${getTotalPrice()}€`;
+                {/* Trois boutons de commande modernes */}
+                <div className="space-y-3">
+                  <p className="text-center text-sm text-gray-400 font-medium mb-4">
+                    CHOISISSEZ VOTRE VENDEUR
+                  </p>
+                  
+                  {/* Bouton BURNS */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      if (cart.length === 0) {
+                        alert('Votre panier est vide');
+                        return;
+                      }
 
-                    if (settings?.burnsLink) {
-                      const orderUrl = settings.burnsLink.includes('{message}') 
-                        ? settings.burnsLink.replace('{message}', encodeURIComponent(message))
-                        : settings.burnsLink;
-                      window.open(orderUrl, '_blank');
-                    } else {
-                      alert('Le lien pour BURNS n\'est pas encore configuré. Contactez l\'administrateur.');
-                    }
-                  }}
-                  className="w-full bg-orange-600 text-white py-3 rounded-lg font-black text-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  🏪 COMMANDER CHEZ BURNS
-                </button>
+                      // Créer le message de commande
+                      let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                      message += `📦 Articles (${getTotalItems()}):\n`;
+                      message += `------------------------\n`;
+                      
+                      cart.forEach(item => {
+                        message += `• ${item.name}\n`;
+                        message += `  Quantité: ${item.quantity}\n`;
+                        message += `  Prix: ${item.price}€\n\n`;
+                      });
+                      
+                      message += `------------------------\n`;
+                      message += `💰 TOTAL: ${getTotalPrice()}€`;
 
-                {/* Bouton APOU */}
-                <button
-                  onClick={() => {
-                    if (cart.length === 0) {
-                      alert('Votre panier est vide');
-                      return;
-                    }
+                      if (settings?.burnsLink) {
+                        const orderUrl = settings.burnsLink.includes('{message}') 
+                          ? settings.burnsLink.replace('{message}', encodeURIComponent(message))
+                          : settings.burnsLink;
+                        window.open(orderUrl, '_blank');
+                      } else {
+                        alert('Le lien pour BURNS n\'est pas encore configuré. Contactez l\'administrateur.');
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-lg font-bold hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg"
+                  >
+                    🔥 COMMANDER CHEZ BURNS
+                  </motion.button>
 
-                    // Créer le message de commande
-                    let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                    message += `📦 Articles (${getTotalItems()}):\n`;
-                    message += `------------------------\n`;
-                    
-                    cart.forEach(item => {
-                      message += `• ${item.name}\n`;
-                      message += `  Quantité: ${item.quantity}\n`;
-                      message += `  Prix: ${item.price}€\n\n`;
-                    });
-                    
-                    message += `------------------------\n`;
-                    message += `💰 TOTAL: ${getTotalPrice()}€`;
+                  {/* Bouton APOU */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      if (cart.length === 0) {
+                        alert('Votre panier est vide');
+                        return;
+                      }
 
-                    if (settings?.apouLink) {
-                      const orderUrl = settings.apouLink.includes('{message}') 
-                        ? settings.apouLink.replace('{message}', encodeURIComponent(message))
-                        : settings.apouLink;
-                      window.open(orderUrl, '_blank');
-                    } else {
-                      alert('Le lien pour APOU n\'est pas encore configuré. Contactez l\'administrateur.');
-                    }
-                  }}
-                  className="w-full bg-green-600 text-white py-3 rounded-lg font-black text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  🏪 COMMANDER CHEZ APOU
-                </button>
+                      // Créer le message de commande
+                      let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                      message += `📦 Articles (${getTotalItems()}):\n`;
+                      message += `------------------------\n`;
+                      
+                      cart.forEach(item => {
+                        message += `• ${item.name}\n`;
+                        message += `  Quantité: ${item.quantity}\n`;
+                        message += `  Prix: ${item.price}€\n\n`;
+                      });
+                      
+                      message += `------------------------\n`;
+                      message += `💰 TOTAL: ${getTotalPrice()}€`;
 
-                {/* Bouton MOE */}
-                <button
-                  onClick={() => {
-                    if (cart.length === 0) {
-                      alert('Votre panier est vide');
-                      return;
-                    }
+                      if (settings?.apouLink) {
+                        const orderUrl = settings.apouLink.includes('{message}') 
+                          ? settings.apouLink.replace('{message}', encodeURIComponent(message))
+                          : settings.apouLink;
+                        window.open(orderUrl, '_blank');
+                      } else {
+                        alert('Le lien pour APOU n\'est pas encore configuré. Contactez l\'administrateur.');
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-bold hover:from-green-600 hover:to-green-700 transition-all shadow-lg"
+                  >
+                    🍀 COMMANDER CHEZ APOU
+                  </motion.button>
 
-                    // Créer le message de commande
-                    let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                    message += `📦 Articles (${getTotalItems()}):\n`;
-                    message += `------------------------\n`;
-                    
-                    cart.forEach(item => {
-                      message += `• ${item.name}\n`;
-                      message += `  Quantité: ${item.quantity}\n`;
-                      message += `  Prix: ${item.price}€\n\n`;
-                    });
-                    
-                    message += `------------------------\n`;
-                    message += `💰 TOTAL: ${getTotalPrice()}€`;
+                  {/* Bouton MOE */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      if (cart.length === 0) {
+                        alert('Votre panier est vide');
+                        return;
+                      }
 
-                    if (settings?.moeLink) {
-                      const orderUrl = settings.moeLink.includes('{message}') 
-                        ? settings.moeLink.replace('{message}', encodeURIComponent(message))
-                        : settings.moeLink;
-                      window.open(orderUrl, '_blank');
-                    } else {
-                      alert('Le lien pour MOE n\'est pas encore configuré. Contactez l\'administrateur.');
-                    }
-                  }}
-                  className="w-full bg-purple-600 text-white py-3 rounded-lg font-black text-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  🏪 COMMANDER CHEZ MOE
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+                      // Créer le message de commande
+                      let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                      message += `📦 Articles (${getTotalItems()}):\n`;
+                      message += `------------------------\n`;
+                      
+                      cart.forEach(item => {
+                        message += `• ${item.name}\n`;
+                        message += `  Quantité: ${item.quantity}\n`;
+                        message += `  Prix: ${item.price}€\n\n`;
+                      });
+                      
+                      message += `------------------------\n`;
+                      message += `💰 TOTAL: ${getTotalPrice()}€`;
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white">
-        <div className="max-w-lg mx-auto flex justify-around py-6">
-          <motion.button
-            onClick={() => router.push('/')}
-            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Home size={28} />
-            <span className="text-xs">ACCUEIL</span>
-          </motion.button>
-
-          <motion.button
-            onClick={() => window.open('https://instagram.com/vershash', '_blank')}
-            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Instagram size={28} />
-            <span className="text-xs">INSTAGRAM</span>
-          </motion.button>
-
-          <motion.button
-            onClick={() => window.open('https://t.me/VershashBot', '_blank')}
-            className="flex flex-col items-center gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-3 border-2 border-white font-black"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <MessageCircle size={28} />
-            <span className="text-xs">TELEGRAM</span>
-          </motion.button>
-
-          <div className="flex flex-col items-center gap-2 text-black bg-white rounded-xl p-3 border-2 border-white font-black">
-            <div className="relative">
-              <ShoppingCart size={28} />
-              {getTotalItems() > 0 && (
-                <div className="absolute -top-3 -right-3 bg-black text-white text-sm rounded-full w-7 h-7 flex items-center justify-center font-black border-2 border-white">
-                  {getTotalItems()}
+                      if (settings?.moeLink) {
+                        const orderUrl = settings.moeLink.includes('{message}') 
+                          ? settings.moeLink.replace('{message}', encodeURIComponent(message))
+                          : settings.moeLink;
+                        window.open(orderUrl, '_blank');
+                      } else {
+                        alert('Le lien pour MOE n\'est pas encore configuré. Contactez l\'administrateur.');
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 rounded-lg font-bold hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg"
+                  >
+                    💜 COMMANDER CHEZ MOE
+                  </motion.button>
                 </div>
-              )}
+              </motion.div>
             </div>
-            <span className="text-xs">PANIER ({getTotalItems()})</span>
-          </div>
+          )}
         </div>
       </div>
     </div>
