@@ -385,16 +385,16 @@ export default function ModernShop() {
         </section>
 
         {/* Bottom Navigation - Plus compact et moins intrusif */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-lg z-30 border-t border-white/10">
+        <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-lg z-30 border-t border-white/20">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-center items-center gap-3 md:gap-5 py-1 md:py-1.5">
+            <div className="flex justify-center items-center gap-3 md:gap-5 py-1.5 md:py-2">
               {/* Accueil */}
               <button
                 onClick={() => router.push('/')}
                 className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group p-0.5"
               >
-                <span className="text-base md:text-lg group-hover:scale-110 transition-transform">🏠</span>
-                <span className="text-[7px] md:text-[8px] font-medium opacity-70 group-hover:opacity-100">Accueil</span>
+                <span className="text-lg md:text-xl group-hover:scale-110 transition-transform">🏠</span>
+                <span className="text-[10px] md:text-xs font-bold opacity-90 group-hover:opacity-100">Accueil</span>
               </button>
 
               {/* Réseaux sociaux */}
@@ -406,7 +406,7 @@ export default function ModernShop() {
                   rel="noopener noreferrer"
                   className="flex flex-col items-center justify-center text-white hover:text-gray-300 transition-all group p-0.5"
                 >
-                  <span className="text-base md:text-lg group-hover:scale-110 transition-transform">
+                  <span className="text-lg md:text-xl group-hover:scale-110 transition-transform">
                     {social.name === 'Instagram' ? '📸' : 
                      social.name === 'Telegram' ? '✈️' : 
                      social.name === 'Facebook' ? '👥' :
@@ -417,7 +417,7 @@ export default function ModernShop() {
                      social.name === 'Discord' ? '🎮' :
                      social.emoji || '🔗'}
                   </span>
-                  <span className="text-[7px] md:text-[8px] font-medium opacity-70 group-hover:opacity-100">{social.name}</span>
+                  <span className="text-[10px] md:text-xs font-bold opacity-90 group-hover:opacity-100">{social.name}</span>
                 </a>
               ))}
             </div>
