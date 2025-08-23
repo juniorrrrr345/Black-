@@ -187,15 +187,15 @@ export default function ModernShop() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-2xl md:text-4xl font-black mb-2 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
+                className="text-3xl md:text-5xl font-black mb-2 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
               >
-                {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
+                {themeSettings.bannerText || 'NOUVEAU DROP'}
               </motion.h2>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-sm md:text-base text-gray-300"
+                className="text-base md:text-lg text-gray-300"
               >
                 {themeSettings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle'}
               </motion.p>
