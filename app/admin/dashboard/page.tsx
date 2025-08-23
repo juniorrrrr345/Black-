@@ -16,7 +16,15 @@ import {
   Tag,
   Eye,
   DollarSign,
-  Weight
+  Weight,
+  Share2,
+  Instagram,
+  Send,
+  MessageCircle,
+  Facebook,
+  Twitter,
+  Youtube,
+  Link
 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import CloudinaryVideoUpload from '@/components/CloudinaryVideoUpload';
@@ -36,6 +44,10 @@ export default function AdminDashboard() {
     apouLink: '',
     moeLink: ''
   });
+  const [socials, setSocials] = useState<any[]>([
+    { id: '1', name: 'Instagram', icon: 'instagram', emoji: '📷', url: 'https://instagram.com/', enabled: true },
+    { id: '2', name: 'Telegram', icon: 'telegram', emoji: '✈️', url: 'https://t.me/', enabled: true }
+  ]);
   const [isLoading, setIsLoading] = useState(true);
   const { themeSettings, updateThemeSettings, loadThemeSettings } = useStore();
   
@@ -49,6 +61,11 @@ export default function AdminDashboard() {
     checkAuth();
     fetchData();
     loadThemeSettings();
+    // Charger les réseaux sociaux depuis localStorage
+    const savedSocials = localStorage.getItem('shop-socials');
+    if (savedSocials) {
+      setSocials(JSON.parse(savedSocials));
+    }
   }, []);
 
   const checkAuth = () => {
@@ -212,6 +229,28 @@ export default function AdminDashboard() {
               <Settings className="inline mr-2" size={16} />
               PARAMÈTRES
             </button>
+            <button
+              onClick={() => setActiveTab('background')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'background'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <ImageIcon className="inline mr-2" size={16} />
+              BACKGROUND
+            </button>
+            <button
+              onClick={() => setActiveTab('socials')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'socials'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Share2 className="inline mr-2" size={16} />
+              RÉSEAUX
+            </button>
           </div>
         </div>
       </div>
@@ -224,26 +263,6 @@ export default function AdminDashboard() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 lg:mb-12 gap-4">
               <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white">📦 GESTION DES PRODUITS</h2>
               <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
-                <button
-                  onClick={async () => {
-                    try {
-                      const response = await fetch('/api/populate', { method: 'POST' });
-                      const result = await response.json();
-                      if (result.success) {
-                        alert(`✅ Base peuplée!\n📦 ${result.results.products.created} produits créés\n📁 ${result.results.categories.created} catégories créées`);
-                        fetchData();
-                      } else {
-                        alert('❌ Erreur: ' + result.error);
-                      }
-                    } catch (error) {
-                      alert('❌ Erreur de connexion');
-                    }
-                  }}
-                  className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 rounded-lg transition-colors font-black text-xs md:text-sm lg:text-base border-2 border-green-400"
-                >
-                  <Package size={14} className="md:w-4 md:h-4 lg:w-5 lg:h-5" />
-                  PEUPLER DB
-                </button>
                 <button
                   onClick={() => {
                     setEditingProduct(null);
@@ -271,9 +290,8 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="flex items-start justify-between">
+                    <div>
                       <h3 className="font-black text-white text-lg">{product.name}</h3>
-                      <span className="text-2xl">{product.countryFlag}</span>
                     </div>
                     
                     <div className="flex items-center gap-2">
@@ -374,17 +392,28 @@ export default function AdminDashboard() {
                       <td className="p-4 text-gray-400">{category.slug}</td>
                       <td className="p-4">{category.order}</td>
                       <td className="p-4">
-                        <button
-                          onClick={() => {
-                            setEditingCategory(category);
-                            setShowCategoryModal(true);
+                        <button 
+                          onClick={async () => {
+                            if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`)) {
+                              try {
+                                const res = await fetch(`/api/categories/${category._id || category.id}`, {
+                                  method: 'DELETE',
+                                });
+                                if (res.ok) {
+                                  fetchData(); // Recharger les données
+                                  alert('✅ Catégorie supprimée avec succès');
+                                } else {
+                                  alert('❌ Erreur lors de la suppression');
+                                }
+                              } catch (error) {
+                                alert('❌ Erreur lors de la suppression');
+                              }
+                            }
                           }}
-                          className="mr-2 text-purple-400 hover:text-purple-300"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-bold transition-colors flex items-center gap-1"
                         >
-                          <Edit size={16} />
-                        </button>
-                        <button className="text-red-400 hover:text-red-300">
                           <Trash2 size={16} />
+                          SUPPRIMER
                         </button>
                       </td>
                     </tr>
@@ -432,6 +461,50 @@ export default function AdminDashboard() {
                       💡 Utilisez <span className="font-bold text-white">{'{message}'}</span> pour insérer automatiquement le message de commande
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* Liens des Commerçants */}
+              <div className="bg-black border-4 border-white rounded-2xl p-4 md:p-6 lg:p-8">
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4 md:mb-6">🛒 LIENS DES COMMERÇANTS</h3>
+                
+                <div className="space-y-4 md:space-y-6">
+                  <div>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🏪 COMMANDER CHEZ BURNS</label>
+                    <input
+                      type="text"
+                      value={settings.burnsLink || ''}
+                      onChange={(e) => setSettings({ ...settings, burnsLink: e.target.value })}
+                      placeholder="https://exemple.com/burns"
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🏪 COMMANDER CHEZ APOU</label>
+                    <input
+                      type="text"
+                      value={settings.apouLink || ''}
+                      onChange={(e) => setSettings({ ...settings, apouLink: e.target.value })}
+                      placeholder="https://exemple.com/apou"
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🏪 COMMANDER CHEZ MOE</label>
+                    <input
+                      type="text"
+                      value={settings.moeLink || ''}
+                      onChange={(e) => setSettings({ ...settings, moeLink: e.target.value })}
+                      placeholder="https://exemple.com/moe"
+                      className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
+                    />
+                  </div>
+
+                  <p className="text-gray-300 text-xs md:text-sm mt-2 bg-white/10 rounded-lg p-2 md:p-3">
+                    💡 Ces liens seront affichés dans le panier pour permettre aux clients de commander chez différents commerçants
+                  </p>
                 </div>
               </div>
 
@@ -580,6 +653,427 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* Background Tab */}
+        {activeTab === 'background' && (
+          <div>
+            <div className="mb-6 md:mb-8">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2">🎨 PERSONNALISATION DU FOND</h2>
+              <p className="text-gray-400">Personnalisez l'apparence de votre boutique</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              {/* Type de fond */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <h3 className="text-xl font-black text-white mb-6">TYPE DE FOND</h3>
+                
+                <div className="space-y-4">
+                  {/* Sélecteur de type */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => setSettings({ ...settings, backgroundType: 'color' })}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        settings.backgroundType === 'color' 
+                          ? 'bg-white text-black border-white' 
+                          : 'bg-black text-white border-gray-600 hover:border-white'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">🎨</div>
+                      <div className="font-bold text-sm">Couleur</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({ ...settings, backgroundType: 'gradient' })}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        settings.backgroundType === 'gradient' 
+                          ? 'bg-white text-black border-white' 
+                          : 'bg-black text-white border-gray-600 hover:border-white'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">🌈</div>
+                      <div className="font-bold text-sm">Dégradé</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({ ...settings, backgroundType: 'image' })}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        settings.backgroundType === 'image' 
+                          ? 'bg-white text-black border-white' 
+                          : 'bg-black text-white border-gray-600 hover:border-white'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">🖼️</div>
+                      <div className="font-bold text-sm">Image</div>
+                    </button>
+                  </div>
+
+                  {/* Options selon le type */}
+                  {settings.backgroundType === 'color' && (
+                    <div>
+                      <label className="block text-white font-bold mb-3">Couleur de fond</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={settings.backgroundColor}
+                          onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                          className="w-20 h-12 rounded cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={settings.backgroundColor}
+                          onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                          className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-mono font-bold"
+                          placeholder="#000000"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {settings.backgroundType === 'gradient' && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-white font-bold mb-3">Couleur de départ</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.gradientFrom}
+                            onChange={(e) => setSettings({ ...settings, gradientFrom: e.target.value })}
+                            className="w-20 h-12 rounded cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.gradientFrom}
+                            onChange={(e) => setSettings({ ...settings, gradientFrom: e.target.value })}
+                            className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-mono font-bold"
+                            placeholder="#000000"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-white font-bold mb-3">Couleur de fin</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.gradientTo}
+                            onChange={(e) => setSettings({ ...settings, gradientTo: e.target.value })}
+                            className="w-20 h-12 rounded cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.gradientTo}
+                            onChange={(e) => setSettings({ ...settings, gradientTo: e.target.value })}
+                            className="flex-1 bg-white text-black px-4 py-2 rounded-lg font-mono font-bold"
+                            placeholder="#111111"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {settings.backgroundType === 'image' && (
+                    <div>
+                      <label className="block text-white font-bold mb-3">Image de fond</label>
+                      <CloudinaryUpload
+                        currentImage={settings.backgroundImage}
+                        onUpload={(url) => setSettings({ ...settings, backgroundImage: url })}
+                        onRemove={() => setSettings({ ...settings, backgroundImage: '' })}
+                      />
+                      <p className="text-gray-400 text-sm mt-3">
+                        💡 L'image sera affichée en plein écran avec un overlay sombre pour la lisibilité
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Aperçu */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <h3 className="text-xl font-black text-white mb-6">APERÇU EN DIRECT</h3>
+                
+                <div 
+                  className="h-96 rounded-lg border-2 border-gray-600 overflow-hidden relative"
+                  style={
+                    settings.backgroundType === 'color' 
+                      ? { backgroundColor: settings.backgroundColor }
+                      : settings.backgroundType === 'gradient'
+                      ? { background: `linear-gradient(135deg, ${settings.gradientFrom}, ${settings.gradientTo})` }
+                      : settings.backgroundImage 
+                      ? { 
+                          backgroundImage: `url(${settings.backgroundImage})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }
+                      : { backgroundColor: 'black' }
+                  }
+                >
+                  {settings.backgroundType === 'image' && settings.backgroundImage && (
+                    <div className="absolute inset-0 bg-black/50"></div>
+                  )}
+                  
+                  <div className="relative z-10 p-6 text-white">
+                    <h4 className="text-2xl font-black mb-4">{settings.shopName || 'MA BOUTIQUE'}</h4>
+                    <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+                      <p className="font-semibold mb-2">Exemple de contenu</p>
+                      <p className="text-sm text-gray-200">
+                        Voici comment votre contenu apparaîtra avec ce fond
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Presets */}
+                <div className="mt-6">
+                  <h4 className="text-white font-bold mb-3">Thèmes prédéfinis</h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => setSettings({
+                        ...settings,
+                        backgroundType: 'color',
+                        backgroundColor: '#000000'
+                      })}
+                      className="p-3 bg-black border-2 border-gray-600 rounded-lg hover:border-white transition-colors"
+                    >
+                      <div className="text-xs font-bold text-white">Noir</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({
+                        ...settings,
+                        backgroundType: 'gradient',
+                        gradientFrom: '#1a1a2e',
+                        gradientTo: '#16213e'
+                      })}
+                      className="p-3 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border-2 border-gray-600 rounded-lg hover:border-white transition-colors"
+                    >
+                      <div className="text-xs font-bold text-white">Nuit</div>
+                    </button>
+                    
+                    <button
+                      onClick={() => setSettings({
+                        ...settings,
+                        backgroundType: 'gradient',
+                        gradientFrom: '#0f3443',
+                        gradientTo: '#34e89e'
+                      })}
+                      className="p-3 bg-gradient-to-br from-[#0f3443] to-[#34e89e] border-2 border-gray-600 rounded-lg hover:border-white transition-colors"
+                    >
+                      <div className="text-xs font-bold text-white">Ocean</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bouton sauvegarder */}
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={handleSaveSettings}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:from-green-700 hover:to-emerald-700 transition-all flex items-center gap-3"
+              >
+                <Save size={24} />
+                SAUVEGARDER LES CHANGEMENTS
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Socials Tab */}
+        {activeTab === 'socials' && (
+          <div>
+            <div className="mb-6 md:mb-8">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2">🌐 RÉSEAUX SOCIAUX</h2>
+              <p className="text-gray-400">Gérez les liens vers vos réseaux sociaux</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              {/* Liste des réseaux */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-black text-white">VOS RÉSEAUX</h3>
+                  <button
+                    onClick={() => {
+                      const newSocial = {
+                        id: Date.now().toString(),
+                        name: '',
+                        icon: 'link',
+                        url: '',
+                        enabled: true
+                      };
+                      setSocials([...socials, newSocial]);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2"
+                  >
+                    <Plus size={20} />
+                    Ajouter
+                  </button>
+                </div>
+
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {socials.map((social, index) => (
+                    <div key={social.id} className="bg-white/10 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <input
+                          type="text"
+                          placeholder="Nom du réseau"
+                          value={social.name}
+                          onChange={(e) => {
+                            const updated = [...socials];
+                            updated[index].name = e.target.value;
+                            setSocials(updated);
+                          }}
+                          className="flex-1 bg-white text-black px-3 py-2 rounded-lg font-bold mr-2"
+                        />
+                        <button
+                          onClick={() => {
+                            const updated = [...socials];
+                            updated[index].enabled = !updated[index].enabled;
+                            setSocials(updated);
+                          }}
+                          className={`px-3 py-2 rounded-lg font-bold transition-colors ${
+                            social.enabled 
+                              ? 'bg-green-600 text-white hover:bg-green-700' 
+                              : 'bg-gray-600 text-white hover:bg-gray-700'
+                          }`}
+                        >
+                          {social.enabled ? 'Actif' : 'Inactif'}
+                        </button>
+                        <button
+                          onClick={() => setSocials(socials.filter(s => s.id !== social.id))}
+                          className="ml-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Emoji (ex: 📷)"
+                            value={social.emoji || ''}
+                            onChange={(e) => {
+                              const updated = [...socials];
+                              updated[index].emoji = e.target.value;
+                              setSocials(updated);
+                            }}
+                            className="w-20 bg-white text-black px-3 py-2 rounded-lg font-bold text-center text-xl"
+                            maxLength={2}
+                          />
+                          
+                          <select
+                            value={social.icon}
+                            onChange={(e) => {
+                              const updated = [...socials];
+                              updated[index].icon = e.target.value;
+                              // Auto-remplir l'emoji si pas déjà défini
+                              if (!updated[index].emoji) {
+                                const emojis: any = {
+                                  'instagram': '📷',
+                                  'telegram': '✈️',
+                                  'whatsapp': '💬',
+                                  'facebook': '👤',
+                                  'twitter': '🐦',
+                                  'youtube': '📺',
+                                  'tiktok': '🎵',
+                                  'snapchat': '👻',
+                                  'discord': '🎮',
+                                  'link': '🔗'
+                                };
+                                updated[index].emoji = emojis[e.target.value] || '🔗';
+                              }
+                              setSocials(updated);
+                            }}
+                            className="flex-1 bg-white text-black px-3 py-2 rounded-lg font-bold"
+                          >
+                            <option value="">Choisir un type...</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="telegram">Telegram</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="snapchat">Snapchat</option>
+                            <option value="discord">Discord</option>
+                            <option value="link">Autre</option>
+                          </select>
+                        </div>
+                        
+                        <input
+                          type="url"
+                          placeholder="URL complète (https://...)"
+                          value={social.url}
+                          onChange={(e) => {
+                            const updated = [...socials];
+                            updated[index].url = e.target.value;
+                            setSocials(updated);
+                          }}
+                          className="w-full bg-white text-black px-3 py-2 rounded-lg font-bold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Aperçu */}
+              <div className="bg-black border-4 border-white rounded-2xl p-6">
+                <h3 className="text-xl font-black text-white mb-6">APERÇU</h3>
+                
+                <div className="bg-gray-900 rounded-lg p-6">
+                  <p className="text-gray-400 text-sm mb-4">Voici comment vos réseaux apparaîtront en bas de page :</p>
+                  
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    {socials.filter(s => s.enabled && s.name && s.url).map(social => (
+                      <a
+                        key={social.id}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-xl transition-all flex items-center gap-2"
+                      >
+                        <span className="text-xl">{social.emoji || '🔗'}</span>
+                        <span className="font-bold">{social.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                  
+                  {socials.filter(s => s.enabled && s.name && s.url).length === 0 && (
+                    <p className="text-center text-gray-500">Aucun réseau social configuré</p>
+                  )}
+                </div>
+
+                <div className="mt-6 p-4 bg-yellow-900/30 rounded-lg border border-yellow-600/50">
+                  <p className="text-yellow-400 text-sm">
+                    💡 Les réseaux sociaux actifs s'afficheront automatiquement dans la navigation en bas de page de votre boutique.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bouton sauvegarder */}
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={async () => {
+                  try {
+                    // Sauvegarder dans localStorage pour l'instant
+                    localStorage.setItem('shop-socials', JSON.stringify(socials));
+                    
+                    // TODO: Sauvegarder via API
+                    alert('✅ Réseaux sociaux sauvegardés !');
+                  } catch (error) {
+                    alert('❌ Erreur lors de la sauvegarde');
+                  }
+                }}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:from-green-700 hover:to-emerald-700 transition-all flex items-center gap-3"
+              >
+                <Save size={24} />
+                SAUVEGARDER LES RÉSEAUX
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Product Modal */}
@@ -622,15 +1116,11 @@ export default function AdminDashboard() {
 function ProductFormModal({ product, categories, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: product?.name || '',
-    origin: product?.origin || '',
     price: product?.price || 0,
     pricing: product?.pricing || [],
-    quantity: product?.quantity || 0,
     category: product?.category || 'weed',
     tag: product?.tag || '',
     tagColor: product?.tagColor || 'green',
-    country: product?.country || '',
-    countryFlag: product?.countryFlag || '',
     description: product?.description || '',
     image: product?.image || '',
     video: product?.video || '',
@@ -752,46 +1242,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-white font-black text-sm mb-2">
-                    ORIGINE
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Pays-Bas"
-                    value={formData.origin}
-                    onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                    className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                    required
-                  />
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-white font-black text-sm mb-2">
-                      PAYS (CODE)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: NL"
-                      value={formData.country}
-                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-white font-black text-sm mb-2">
-                      DRAPEAU
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: 🇳🇱"
-                      value={formData.countryFlag}
-                      onChange={(e) => setFormData({ ...formData, countryFlag: e.target.value })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                    />
-                  </div>
-                </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -808,19 +1259,7 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
                       <option value="hash">🍫 Hash</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-white font-black text-sm mb-2">
-                      STOCK TOTAL
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Ex: 100"
-                      value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })}
-                      className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-                      required
-                    />
-                  </div>
+
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -944,25 +1383,42 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
 
 // Category Form Modal Component  
 function CategoryFormModal({ category, onClose, onSave }: any) {
+  // Fonction pour générer automatiquement le slug
+  const generateSlug = (name: string) => {
+    return name.toLowerCase()
+      .replace(/[éèêë]/g, 'e')
+      .replace(/[àâä]/g, 'a')
+      .replace(/[îï]/g, 'i')
+      .replace(/[ôö]/g, 'o')
+      .replace(/[ùûü]/g, 'u')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
   const [formData, setFormData] = useState({
     name: category?.name || '',
-    slug: category?.slug || '',
-    order: category?.order || 0,
-    icon: category?.icon || '🌿',
-    description: category?.description || '',
-    visible: category?.visible !== false, // Par défaut visible
+    slug: category?.slug || generateSlug(category?.name || ''),
+    order: category?.order || 1,
+    icon: category?.icon || '🌿'
   });
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      const url = category ? `/api/categories/${category._id}` : '/api/categories';
+      // Toujours générer le slug basé sur le nom actuel
+      const dataToSend = {
+        ...formData,
+        slug: generateSlug(formData.name) // Toujours générer à partir du nom
+      };
+      
+      const url = category ? `/api/categories/${category._id || category.id}` : '/api/categories';
       const method = category ? 'PUT' : 'POST';
       
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
       
       if (res.ok) {
@@ -1005,30 +1461,25 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
               type="text"
               placeholder="Ex: Weed Premium"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => {
+                const name = e.target.value;
+                setFormData({ 
+                  ...formData, 
+                  name: name,
+                  slug: generateSlug(name)
+                });
+              }}
               className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-white font-black text-sm mb-2">
-              SLUG (URL)
-            </label>
-            <input
-              type="text"
-              placeholder="Ex: weed-premium"
-              value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              required
-            />
-          </div>
+
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-white font-black text-sm mb-2">
-                ICÔNE
+                ICÔNE (EMOJI)
               </label>
               <input
                 type="text"
@@ -1036,45 +1487,27 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
                 value={formData.icon}
                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                 className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold text-center text-2xl"
+                maxLength={2}
               />
+              <p className="text-gray-400 text-xs mt-1">Utilisez un emoji</p>
             </div>
             <div>
               <label className="block text-white font-black text-sm mb-2">
-                ORDRE D'AFFICHAGE
+                POSITION D'AFFICHAGE
               </label>
-              <input
-                type="number"
-                placeholder="Ex: 1"
+              <select
                 value={formData.order}
-                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 1 })}
                 className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              />
+              >
+                <option value="1">1ère position</option>
+                <option value="2">2ème position</option>
+                <option value="3">3ème position</option>
+                <option value="4">4ème position</option>
+                <option value="5">5ème position</option>
+              </select>
+              <p className="text-gray-400 text-xs mt-1">Ordre d'apparition</p>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-white font-black text-sm mb-2">
-              DESCRIPTION
-            </label>
-            <textarea
-              placeholder="Description de la catégorie..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              rows={3}
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.visible}
-                onChange={(e) => setFormData({ ...formData, visible: e.target.checked })}
-                className="w-5 h-5"
-              />
-              <span className="text-white font-black">VISIBLE DANS LA BOUTIQUE</span>
-            </label>
           </div>
 
           <div className="flex gap-4 pt-6 border-t-2 border-white">

@@ -6,7 +6,8 @@ import {
   ShoppingBag, Home, Instagram, Send, MessageCircle, 
   Star, TrendingUp, Package, Clock, Shield, 
   Plus, Minus, X, Trash2, ChevronRight, Sparkles,
-  ChevronLeft, ChevronDown
+  ChevronLeft, ChevronDown, Video, Eye,
+  Facebook, Twitter, Youtube, Music, Ghost, Gamepad2, Link
 } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
@@ -16,40 +17,63 @@ export default function ModernShop() {
   const router = useRouter();
   const [cart, setCart] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [socials, setSocials] = useState<any[]>([
+    { id: '1', name: 'Instagram', icon: 'instagram', emoji: '📷', url: 'https://instagram.com/', enabled: true },
+    { id: '2', name: 'Telegram', icon: 'telegram', emoji: '✈️', url: 'https://t.me/', enabled: true }
+  ]);
   const [loading, setLoading] = useState(true);
   const { themeSettings, loadThemeSettings } = useStore();
 
   useEffect(() => {
     loadData();
     loadThemeSettings();
+    // Charger les réseaux sociaux depuis localStorage
+    const savedSocials = localStorage.getItem('shop-socials');
+    if (savedSocials) {
+      setSocials(JSON.parse(savedSocials));
+    }
   }, []);
 
   const loadData = async () => {
     try {
       setLoading(true);
       
-      // Charger les produits depuis l'API
-      const productsRes = await fetch('/api/products');
-      if (productsRes.ok) {
-        const productsData = await productsRes.json();
-        setProducts(productsData);
-      }
+      // Charger d'abord les produits statiques
+      const { products: staticProducts } = await import('@/lib/products');
+      setProducts(staticProducts.map(p => ({ ...p, _id: p.id, quantity: 50, available: true })));
+      
+      // Créer des catégories par défaut
+      setCategories([
+        { _id: '1', name: 'WEED', slug: 'weed' },
+        { _id: '2', name: 'HASH', slug: 'hash' }
+      ]);
+      
+      // Essayer de charger depuis l'API (optionnel)
+      try {
+        const productsRes = await fetch('/api/products');
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          if (productsData && productsData.length > 0) {
+            setProducts(productsData);
+          }
+        }
 
-      // Charger les catégories depuis l'API
-      const categoriesRes = await fetch('/api/categories');
-      if (categoriesRes.ok) {
-        const categoriesData = await categoriesRes.json();
-        setCategories(categoriesData);
-      }
+        const categoriesRes = await fetch('/api/categories');
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          if (categoriesData && categoriesData.length > 0) {
+            setCategories(categoriesData);
+          }
+        }
+              } catch (apiError) {
+          // Using static products data as fallback
+        }
     } catch (error) {
       console.error('Error loading data:', error);
-      // Fallback vers les produits statiques si l'API échoue
-      const { products: fallbackProducts } = await import('@/lib/products');
-      setProducts(fallbackProducts.map(p => ({ ...p, _id: p.id, quantity: 50, available: true })));
     } finally {
       setLoading(false);
     }
@@ -77,7 +101,7 @@ export default function ModernShop() {
 
   const filteredProducts = selectedCategory === 'all' 
     ? products 
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter(p => p.category && p.category.toLowerCase() === selectedCategory.toLowerCase());
 
   const addToCart = (product: any) => {
     setCart(prev => {
@@ -135,215 +159,235 @@ export default function ModernShop() {
 
       <div className="relative z-10">
         {/* Header - Responsive */}
-        <header className="border-b-2 border-white p-4 md:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center">
-              <motion.h1 
-                className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-wider"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
-                {themeSettings.shopName || 'VERSHASH'}
-              </motion.h1>
-              
-              {/* Cart Button */}
-              <motion.button
-                onClick={() => router.push('/cart')}
-                className="relative bg-white text-black border-2 border-white rounded-lg px-4 py-2 md:px-6 md:py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ShoppingBag size={20} />
-                <span className="hidden md:inline text-sm font-bold">PANIER</span>
-                {getTotalItems() > 0 && (
-                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
-                    {getTotalItems()}
-                  </div>
-                )}
-              </motion.button>
+        <header className="border-b-2 border-white">
+          <div className="p-4 md:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-wider">
+                  {themeSettings.shopName || 'MA BOUTIQUE'}
+                </h1>
+                
+                {/* Cart Button */}
+                <button
+                  onClick={() => setShowCart(true)}
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-colors font-bold shadow-lg"
+                >
+                  <ShoppingBag size={20} />
+                  <span className="text-sm md:text-base font-bold">Voir le panier</span>
+                  {getTotalItems() > 0 && (
+                    <span className="bg-white text-green-600 text-sm rounded-full min-w-[24px] h-6 px-2 flex items-center justify-center font-bold ml-2">
+                      {getTotalItems()}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Image principale sous le nom de la boutique */}
+          <div className="relative h-64 md:h-80 lg:h-96 w-full overflow-hidden">
+            <img 
+              src={themeSettings.bannerImage || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&h=600&fit=crop"}
+              alt="Boutique"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white">
+                {themeSettings.bannerText || 'COLLECTION EXCLUSIVE'}
+              </h2>
             </div>
           </div>
         </header>
 
-        {/* Hero Banner - Responsive */}
-        <section className="relative py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <motion.div
-              className="inline-block bg-black/80 backdrop-blur-sm border-2 border-white rounded-2xl px-6 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 md:mb-4">
-                {themeSettings.bannerText || 'NOUVEAU DROP'}
-              </h2>
-              <p className="text-sm md:text-base lg:text-lg text-gray-300 font-bold">
-                QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
-              </p>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Categories - Responsive */}
-        <section className="px-4 md:px-6 lg:px-8 mb-8 md:mb-12">
+        {/* Categories - Directement après l'image */}
+        <section className="px-4 md:px-6 lg:px-8 py-8 md:py-10">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-              {['all', 'weed', 'hash'].map((category) => (
-                <motion.button
-                  key={category}
-                  onClick={() => setSelectedCategory(category as any)}
-                  className={`px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-sm md:text-base lg:text-lg transition-all border-2 ${
-                    selectedCategory === category
-                      ? 'bg-white text-black border-white'
-                      : 'bg-black/50 text-white border-white hover:bg-white hover:text-black'
+            <h2 className="text-2xl md:text-3xl font-black text-white text-center mb-8">
+              NOS CATÉGORIES
+            </h2>
+            <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+              {/* Bouton Tout */}
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg ${
+                  selectedCategory === 'all'
+                    ? 'bg-white text-black'
+                    : 'bg-gray-900 text-white hover:bg-gray-800'
+                }`}
+              >
+                ✨ TOUT
+              </button>
+
+              {/* Catégories dynamiques */}
+              {categories && categories.map((category: any) => (
+                <button
+                  key={category._id || category.id}
+                  onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
+                  className={`px-6 py-3 md:px-8 md:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg ${
+                    selectedCategory === (category.slug || category.value || category.name.toLowerCase())
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-900 text-green-400 hover:bg-gray-800'
                   }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
-                  {category === 'all' ? 'TOUT' : category.toUpperCase()}
-                </motion.button>
+                  {category.icon || '📦'} {category.name.toUpperCase()}
+                </button>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Products Grid - Responsive */}
-        <section className="px-4 md:px-6 lg:px-8 pb-24 md:pb-32">
+        {/* Products Grid - Responsive - 2 colonnes sur mobile */}
+        <section className="px-4 md:px-6 lg:px-8 pb-24">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
+              Nos Produits Premium
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6 min-h-[400px]">
               {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product._id || product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-black border-4 border-white rounded-2xl overflow-hidden group hover:border-gray-300 transition-all duration-300"
+                <div
+                  key={product.id || product._id}
+                  className="bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 rounded-xl overflow-hidden group hover:border-white shadow-xl"
                 >
                   {/* Product Image */}
-                  <div className="relative h-48 md:h-56 lg:h-64 bg-white overflow-hidden">
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
-                      {product.image && product.image.startsWith('http') ? (
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="text-6xl md:text-7xl lg:text-8xl opacity-60">🌿</div>
-                      )}
-                    </div>
-
-                    {/* Tag */}
-                    {product.tag && (
-                      <div className={`absolute top-3 left-3 px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs md:text-sm font-black text-white ${
-                        product.tagColor === 'red' ? 'bg-red-500' : 'bg-green-500'
-                      }`}>
-                        {product.tag}
+                  <div className="relative aspect-square bg-white overflow-hidden">
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                        <Package size={50} className="text-gray-500" />
                       </div>
                     )}
 
-                    {/* Country Flag */}
-                    <div className="absolute top-3 right-3 text-xl md:text-2xl">
-                      {product.countryFlag}
+                    {/* Tags et badges */}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      {product.tag && (
+                        <div className={`px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold text-white shadow-lg ${
+                          product.tagColor === 'red' ? 'bg-red-500' : 
+                          product.tagColor === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                        }`}>
+                          {product.tag}
+                        </div>
+                      )}
+                      {product.category && (
+                        <div className="px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold bg-black/80 text-white backdrop-blur">
+                          {product.category}
+                        </div>
+                      )}
                     </div>
+
+
+
+
+
+                    {/* Video indicator */}
+                    {product.video && (
+                      <div className="absolute bottom-2 right-2 bg-black/80 text-white p-1.5 rounded-full">
+                        <Video size={14} />
+                      </div>
+                    )}
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-4 md:p-6">
-                    <h3 className="text-lg md:text-xl lg:text-2xl font-black text-white mb-2">{product.name}</h3>
-                    <p className="text-sm md:text-base text-white/80 mb-2">{product.origin}</p>
+                  <div className="p-3 sm:p-4">
+                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white mb-1 line-clamp-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-400 mb-2 line-clamp-1">
+                      {product.origin}
+                    </p>
                     
                     {/* Price Display */}
                     {product.pricing && product.pricing.length > 0 ? (
-                      <div className="mb-4">
-                        <div className="text-xs md:text-sm text-white/60 mb-2">À partir de:</div>
-                        <div className="text-xl md:text-2xl lg:text-3xl font-black text-white">
+                      <div className="mb-3">
+                        <div className="text-[10px] sm:text-xs text-gray-500 mb-1">À partir de</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                           {Math.min(...product.pricing.map((p: any) => p.price))}€
                         </div>
                       </div>
                     ) : (
-                      <div className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-4">
+                      <div className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3">
                         {product.price}€
                       </div>
                     )}
 
-                    {/* Actions */}
-                    <div className="space-y-2 md:space-y-3">
-                      <motion.button
-                        onClick={() => router.push(`/products/${product._id || product.id}`)}
-                        className="w-full bg-white text-black py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-gray-200 transition-colors"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        VOIR DÉTAILS
-                      </motion.button>
-                      
-                      <motion.button
-                        onClick={() => addToCart(product)}
-                        className="w-full bg-black border-2 border-white text-white py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-white hover:text-black transition-all"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <ShoppingBag className="inline mr-2" size={16} />
-                        AJOUTER
-                      </motion.button>
-                    </div>
+                    {/* Action - Voir détails seulement */}
+                    <button
+                      onClick={() => {
+                        const productId = product.id || product._id;
+                        router.push(`/products/${productId}`);
+                      }}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
+                    >
+                      <Eye size={16} />
+                      <span>VOIR DÉTAILS</span>
+                    </button>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Bottom Navigation - Responsive */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black border-t-4 border-white z-50">
-          <div className="max-w-7xl mx-auto flex justify-around py-3 md:py-4 lg:py-6 px-2">
-            <motion.button
-              onClick={() => router.push('/')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Home size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">ACCUEIL</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => window.open('https://instagram.com/vershash', '_blank')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Instagram size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">INSTAGRAM</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => window.open('https://t.me/VershashBot', '_blank')}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <MessageCircle size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-              <span className="text-xs md:text-sm">TELEGRAM</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => setShowCart(true)}
-              className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black relative"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <div className="relative">
-                <ShoppingBag size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
-                {getTotalItems() > 0 && (
-                  <div className="absolute -top-2 -right-2 bg-white text-black text-xs rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center font-black border-2 border-black">
-                    {getTotalItems()}
+        {/* Bottom Navigation - Design professionnel et moderne */}
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black via-gray-900 to-transparent backdrop-blur-xl z-50">
+          <div className="border-t border-gray-700/50">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex justify-center items-center gap-4 p-3">
+                {/* Accueil */}
+                <button
+                  onClick={() => router.push('/')}
+                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
+                >
+                  <div className="relative">
+                    <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
+                      <span className="text-2xl">🏠</span>
+                    </div>
                   </div>
-                )}
+                  <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">Accueil</span>
+                </button>
+
+                {/* Réseaux sociaux */}
+                {socials.filter(s => s.enabled && s.name && s.url).slice(0, 3).map(social => (
+                  <a
+                    key={social.id}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
+                  >
+                    <div className="relative">
+                      <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
+                        <span className="text-2xl">{social.emoji || '🔗'}</span>
+                      </div>
+                    </div>
+                    <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">{social.name}</span>
+                  </a>
+                ))}
+
+                {/* Panier */}
+                <button
+                  onClick={() => setShowCart(true)}
+                  className="flex flex-col items-center justify-center py-2 px-4 text-white hover:bg-white/20 rounded-xl transition-colors group cursor-pointer"
+                >
+                  <div className="relative">
+                    <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/30 transition-colors">
+                      <span className="text-2xl">🛒</span>
+                      {getTotalItems() > 0 && (
+                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold animate-pulse">
+                          {getTotalItems()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-xs font-semibold mt-1 opacity-80 group-hover:opacity-100">Panier</span>
+                </button>
               </div>
-              <span className="text-xs md:text-sm">PANIER</span>
-            </motion.button>
+            </div>
           </div>
         </div>
 
@@ -379,47 +423,93 @@ export default function ModernShop() {
                 <div className="p-4 md:p-6 max-h-96 overflow-y-auto">
                   {cart.length === 0 ? (
                     <div className="text-center py-8 md:py-12">
-                      <ShoppingBag size={48} className="mx-auto text-gray-500 mb-4" />
-                      <p className="text-white font-bold text-lg md:text-xl">Votre panier est vide</p>
+                      <ShoppingBag size={64} className="mx-auto text-gray-400 mb-4" />
+                      <p className="text-white font-bold text-xl md:text-2xl mb-2">Votre panier est vide</p>
+                      <p className="text-gray-400 text-sm">Ajoutez des produits pour commencer</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
+                      <div className="text-center mb-4">
+                        <p className="text-gray-400 text-sm">
+                          ({getTotalItems()} {getTotalItems() > 1 ? 'articles' : 'article'})
+                        </p>
+                      </div>
+                      
                       {cart.map((item) => (
-                        <div key={item._id} className="flex items-center gap-4 bg-white/10 p-3 md:p-4 rounded-lg">
-                          <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg flex items-center justify-center">
-                            <span className="text-2xl md:text-3xl">🌿</span>
-                          </div>
-                          
-                          <div className="flex-1">
-                            <h4 className="font-black text-white text-sm md:text-base">{item.name}</h4>
-                            <p className="text-gray-300 text-xs md:text-sm">{item.price}€</p>
-                          </div>
+                        <motion.div 
+                          key={item._id} 
+                          className="bg-gradient-to-r from-white/10 to-white/5 p-4 rounded-xl border border-white/20"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                        >
+                          <div className="flex items-start gap-4">
+                            {/* Product Image */}
+                            <div className="relative">
+                              {item.image ? (
+                                <img 
+                                  src={item.image} 
+                                  alt={item.name}
+                                  className="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover"
+                                />
+                              ) : (
+                                <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-green-500 to-green-700 rounded-lg flex items-center justify-center">
+                                  <Package size={32} className="text-white" />
+                                </div>
+                              )}
 
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                              className="bg-white text-black w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-black hover:bg-gray-200"
-                            >
-                              <Minus size={16} />
-                            </button>
-                            <span className="text-white font-black text-lg md:text-xl w-8 md:w-10 text-center">
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                              className="bg-white text-black w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-black hover:bg-gray-200"
-                            >
-                              <Plus size={16} />
-                            </button>
+                            </div>
+                            
+                            {/* Product Info */}
+                            <div className="flex-1">
+                              <h4 className="font-black text-white text-base md:text-lg mb-1">{item.name}</h4>
+                              {item.origin && (
+                                <p className="text-gray-400 text-xs md:text-sm mb-2">{item.origin}</p>
+                              )}
+                              
+                              {/* Quantity Controls */}
+                              <div className="flex items-center gap-3">
+                                <motion.button
+                                  onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                                  className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.95 }}
+                                >
+                                  <Minus size={18} />
+                                </motion.button>
+                                
+                                <span className="text-white font-bold text-lg min-w-[30px] text-center">
+                                  {item.quantity}
+                                </span>
+                                
+                                <motion.button
+                                  onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                                  className="bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.95 }}
+                                >
+                                  <Plus size={18} />
+                                </motion.button>
+                              </div>
+                            </div>
+                            
+                            {/* Price & Delete */}
+                            <div className="flex flex-col items-end gap-2">
+                              <p className="text-white font-black text-lg md:text-xl">
+                                {(item.price * item.quantity).toFixed(2)}€
+                              </p>
+                              <motion.button
+                                onClick={() => removeFromCart(item._id)}
+                                className="text-red-400 hover:text-red-500 text-xs flex items-center gap-1 transition-colors"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                <Trash2 size={14} />
+                                Supprimer
+                              </motion.button>
+                            </div>
                           </div>
-
-                          <button
-                            onClick={() => removeFromCart(item._id)}
-                            className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   )}
@@ -427,25 +517,42 @@ export default function ModernShop() {
 
                 {/* Cart Footer */}
                 {cart.length > 0 && (
-                  <div className="border-t-2 border-white p-4 md:p-6">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-xl md:text-2xl font-black text-white">TOTAL:</span>
-                      <span className="text-2xl md:text-3xl font-black text-white">{getTotalPrice()}€</span>
+                  <div className="bg-gradient-to-b from-transparent to-black/50 border-t-2 border-white p-4 md:p-6">
+                    {/* Summary */}
+                    <div className="bg-white/10 rounded-lg p-4 mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-400 text-sm">Sous-total</span>
+                        <span className="text-white font-semibold">{getTotalPrice()}€</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-400 text-sm">Livraison</span>
+                        <span className="text-green-400 font-semibold">GRATUITE</span>
+                      </div>
+                      <div className="border-t border-white/20 pt-2 mt-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xl md:text-2xl font-black text-white">TOTAL</span>
+                          <span className="text-2xl md:text-3xl font-black text-green-400">{getTotalPrice()}€</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center text-gray-400 text-xs mb-4">
+                      {getTotalItems()} {getTotalItems() > 1 ? 'articles' : 'article'} dans votre panier
                     </div>
                     
                     <motion.button
                       onClick={() => {
-                        const message = cart.map(item => `${item.name} x${item.quantity} - ${item.price * item.quantity}€`).join('\n');
+                        const message = cart.map(item => `${item.name} x${item.quantity} - ${(item.price * item.quantity).toFixed(2)}€`).join('\n');
                         const total = getTotalPrice();
-                        const fullMessage = `Commande VERSHASH:\n\n${message}\n\nTOTAL: ${total}€`;
+                        const fullMessage = `🛒 Commande VERSHASH\n\n${message}\n\n💰 TOTAL: ${total}€`;
                         window.open(`https://t.me/VershashBot?text=${encodeURIComponent(fullMessage)}`, '_blank');
                       }}
-                      className="w-full bg-white text-black py-3 md:py-4 rounded-lg font-black text-lg md:text-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-black text-lg md:text-xl hover:from-green-600 hover:to-emerald-700 transition-colors flex items-center justify-center gap-3 shadow-lg"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Send size={20} />
-                      COMMANDER VIA TELEGRAM
+                      <Send size={24} />
+                      COMMANDER MAINTENANT
                     </motion.button>
                   </div>
                 )}
