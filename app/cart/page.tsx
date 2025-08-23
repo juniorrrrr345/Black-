@@ -202,115 +202,105 @@ export default function CartPage() {
                 {getTotalItems()} article{getTotalItems() > 1 ? 's' : ''} dans votre panier
               </div>
 
-              {/* Order Button */}
-              <button
-                onClick={handleOrder}
-                className="w-full bg-black text-white py-4 rounded-lg font-black text-xl hover:bg-gray-800 transition-colors flex items-center justify-center gap-3 border-2 border-black"
-              >
-                <Send size={28} />
-                COMMANDER MAINTENANT
-              </button>
-
               {/* Boutons des Commerçants */}
-              <div className="mt-6 space-y-3">
-                <div className="text-center text-gray-600 font-bold text-sm">
-                  OU COMMANDER CHEZ NOS PARTENAIRES
+              <div className="space-y-3">
+                <div className="text-center text-gray-600 font-bold text-sm mb-2">
+                  COMMANDER CHEZ
                 </div>
                 
-                {/* Bouton BURNS - toujours affiché */}
+                {/* Bouton BURNS */}
                 <button
                   onClick={() => {
-                    if (!settings?.burnsLink) {
+                    // Créer le message de commande
+                    let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                    message += `📦 Articles (${getTotalItems()}):\n`;
+                    message += `------------------------\n`;
+                    
+                    cart.forEach(item => {
+                      message += `• ${item.name}\n`;
+                      message += `  Quantité: ${item.quantity}\n`;
+                      message += `  Prix: ${item.price}€\n\n`;
+                    });
+                    
+                    message += `------------------------\n`;
+                    message += `💰 TOTAL: ${getTotalPrice()}€`;
+
+                    if (settings?.burnsLink) {
+                      const orderUrl = settings.burnsLink.includes('{message}') 
+                        ? settings.burnsLink.replace('{message}', encodeURIComponent(message))
+                        : settings.burnsLink;
+                      window.open(orderUrl, '_blank');
+                    } else {
                       alert('Le lien pour BURNS n\'est pas encore configuré. Contactez l\'administrateur.');
-                      return;
                     }
-                    <button
-                      onClick={() => {
-                        // Créer le message de commande
-                        let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                        message += `📦 Articles (${getTotalItems()}):\n`;
-                        message += `------------------------\n`;
-                        
-                        cart.forEach(item => {
-                          message += `• ${item.name}\n`;
-                          message += `  Quantité: ${item.quantity}\n`;
-                          message += `  Prix: ${item.price}€\n\n`;
-                        });
-                        
-                        message += `------------------------\n`;
-                        message += `💰 TOTAL: ${getTotalPrice()}€`;
+                  }}
+                  className="w-full bg-orange-600 text-white py-3 rounded-lg font-black text-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-3 border-2 border-orange-800"
+                >
+                  🏪 COMMANDER CHEZ BURNS
+                </button>
 
-                        // Remplacer le placeholder dans le lien si nécessaire
-                        const orderUrl = settings.burnsLink.includes('{message}') 
-                          ? settings.burnsLink.replace('{message}', encodeURIComponent(message))
-                          : settings.burnsLink;
-                        window.open(orderUrl, '_blank');
-                      }}
-                      className="w-full bg-orange-600 text-white py-3 rounded-lg font-black text-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-3 border-2 border-orange-800"
-                    >
-                      🏪 COMMANDER CHEZ BURNS
-                    </button>
-                  )}
+                {/* Bouton APOU */}
+                <button
+                  onClick={() => {
+                    // Créer le message de commande
+                    let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                    message += `📦 Articles (${getTotalItems()}):\n`;
+                    message += `------------------------\n`;
+                    
+                    cart.forEach(item => {
+                      message += `• ${item.name}\n`;
+                      message += `  Quantité: ${item.quantity}\n`;
+                      message += `  Prix: ${item.price}€\n\n`;
+                    });
+                    
+                    message += `------------------------\n`;
+                    message += `💰 TOTAL: ${getTotalPrice()}€`;
 
-                  {settings?.apouLink && (
-                    <button
-                      onClick={() => {
-                        // Créer le message de commande
-                        let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                        message += `📦 Articles (${getTotalItems()}):\n`;
-                        message += `------------------------\n`;
-                        
-                        cart.forEach(item => {
-                          message += `• ${item.name}\n`;
-                          message += `  Quantité: ${item.quantity}\n`;
-                          message += `  Prix: ${item.price}€\n\n`;
-                        });
-                        
-                        message += `------------------------\n`;
-                        message += `💰 TOTAL: ${getTotalPrice()}€`;
+                    if (settings?.apouLink) {
+                      const orderUrl = settings.apouLink.includes('{message}') 
+                        ? settings.apouLink.replace('{message}', encodeURIComponent(message))
+                        : settings.apouLink;
+                      window.open(orderUrl, '_blank');
+                    } else {
+                      alert('Le lien pour APOU n\'est pas encore configuré. Contactez l\'administrateur.');
+                    }
+                  }}
+                  className="w-full bg-green-600 text-white py-3 rounded-lg font-black text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-3 border-2 border-green-800"
+                >
+                  🏪 COMMANDER CHEZ APOU
+                </button>
 
-                        // Remplacer le placeholder dans le lien si nécessaire
-                        const orderUrl = settings.apouLink.includes('{message}') 
-                          ? settings.apouLink.replace('{message}', encodeURIComponent(message))
-                          : settings.apouLink;
-                        window.open(orderUrl, '_blank');
-                      }}
-                      className="w-full bg-green-600 text-white py-3 rounded-lg font-black text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-3 border-2 border-green-800"
-                    >
-                      🏪 COMMANDER CHEZ APOU
-                    </button>
-                  )}
+                {/* Bouton MOE */}
+                <button
+                  onClick={() => {
+                    // Créer le message de commande
+                    let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                    message += `📦 Articles (${getTotalItems()}):\n`;
+                    message += `------------------------\n`;
+                    
+                    cart.forEach(item => {
+                      message += `• ${item.name}\n`;
+                      message += `  Quantité: ${item.quantity}\n`;
+                      message += `  Prix: ${item.price}€\n\n`;
+                    });
+                    
+                    message += `------------------------\n`;
+                    message += `💰 TOTAL: ${getTotalPrice()}€`;
 
-                  {settings?.moeLink && (
-                    <button
-                      onClick={() => {
-                        // Créer le message de commande
-                        let message = `🛒 NOUVELLE COMMANDE\n\n`;
-                        message += `📦 Articles (${getTotalItems()}):\n`;
-                        message += `------------------------\n`;
-                        
-                        cart.forEach(item => {
-                          message += `• ${item.name}\n`;
-                          message += `  Quantité: ${item.quantity}\n`;
-                          message += `  Prix: ${item.price}€\n\n`;
-                        });
-                        
-                        message += `------------------------\n`;
-                        message += `💰 TOTAL: ${getTotalPrice()}€`;
-
-                        // Remplacer le placeholder dans le lien si nécessaire
-                        const orderUrl = settings.moeLink.includes('{message}') 
-                          ? settings.moeLink.replace('{message}', encodeURIComponent(message))
-                          : settings.moeLink;
-                        window.open(orderUrl, '_blank');
-                      }}
-                      className="w-full bg-purple-600 text-white py-3 rounded-lg font-black text-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-3 border-2 border-purple-800"
-                    >
-                      🏪 COMMANDER CHEZ MOE
-                    </button>
-                  )}
-                </div>
-              )}
+                    if (settings?.moeLink) {
+                      const orderUrl = settings.moeLink.includes('{message}') 
+                        ? settings.moeLink.replace('{message}', encodeURIComponent(message))
+                        : settings.moeLink;
+                      window.open(orderUrl, '_blank');
+                    } else {
+                      alert('Le lien pour MOE n\'est pas encore configuré. Contactez l\'administrateur.');
+                    }
+                  }}
+                  className="w-full bg-purple-600 text-white py-3 rounded-lg font-black text-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-3 border-2 border-purple-800"
+                >
+                  🏪 COMMANDER CHEZ MOE
+                </button>
+              </div>
             </div>
           </div>
         )}
