@@ -1,26 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
-import { cacheHelpers } from '@/lib/cache';
+import { products as staticProducts } from '@/lib/products';
 
 export async function GET() {
   try {
-    // Try to get from cache first
-    const cachedProducts = cacheHelpers.getProducts();
-    if (cachedProducts) {
-      return NextResponse.json(cachedProducts);
-    }
-
     await dbConnect();
     const products = await Product.find({}).sort({ createdAt: -1 });
     
-    // Cache the results
-    cacheHelpers.setProducts(products);
+    // Si pas de produits dans MongoDB, utiliser les produits statiques
+    if (products.length === 0) {
+      console.log('No products in MongoDB, using static products');
+      return NextResponse.json(staticProducts.map(p => ({
+        ...p,
+        _id: p.id,
+        quantity: 50,
+        available: true
+      })));
+    }
     
     return NextResponse.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    // En cas d'erreur MongoDB, retourner les produits statiques
+    return NextResponse.json(staticProducts.map(p => ({
+      ...p,
+      _id: p.id,
+      quantity: 50,
+      available: true
+    })));
   }
 }
 
@@ -29,30 +37,15 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     const body = await request.json();
     
-    // Create the product
+    console.log('Creating product:', body);
+    
     const product = await Product.create(body);
-    
-    // Invalidate cache and sync
-    cacheHelpers.invalidateProducts();
-    
-    // Trigger sync for real-time updates
-    try {
-      await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'products',
-          action: 'create',
-          data: product
-        })
-      });
-    } catch (syncError) {
-      console.warn('Sync failed:', syncError);
-    }
-    
     return NextResponse.json(product, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating product:', error);
-    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Failed to create product' },
+      { status: 500 }
+    );
   }
 }

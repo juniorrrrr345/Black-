@@ -1256,8 +1256,12 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
         pricing: pricingOptions.filter((p: any) => p.weight && p.price > 0)
       };
 
-      const url = product ? `/api/products/${product._id}` : '/api/products';
+      // Utiliser le bon ID (soit _id soit id)
+      const productId = product?._id || product?.id;
+      const url = productId ? `/api/products/${productId}` : '/api/products';
       const method = product ? 'PUT' : 'POST';
+      
+      console.log('Submitting:', { url, method, submitData });
       
       const res = await fetch(url, {
         method,
@@ -1266,14 +1270,18 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
       });
       
       if (res.ok) {
+        const updatedProduct = await res.json();
+        console.log('Product saved successfully:', updatedProduct);
+        alert('✅ Produit sauvegardé avec succès !');
         onSave();
       } else {
         const errorData = await res.json();
-        alert('Erreur: ' + (errorData.error || 'Erreur lors de la sauvegarde'));
+        console.error('Error response:', errorData);
+        alert('❌ Erreur: ' + (errorData.error || 'Erreur lors de la sauvegarde'));
       }
     } catch (error) {
       console.error('Erreur:', error);
-      alert('Erreur lors de la sauvegarde');
+      alert('❌ Erreur lors de la sauvegarde: ' + error);
     }
   };
 
