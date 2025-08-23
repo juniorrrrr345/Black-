@@ -122,10 +122,7 @@ export default function AdminDashboard() {
           shopName: settings.shopName || 'VERSHASH',
           bannerText: settings.bannerText || 'NOUVEAU DROP',
           bannerImage: settings.bannerImage || '',
-          orderLink: settings.orderLink || '',
-          burnsLink: settings.burnsLink || '',
-          apouLink: settings.apouLink || '',
-          moeLink: settings.moeLink || ''
+          orderLink: settings.orderLink || ''
         });
         alert('✅ Paramètres sauvegardés avec succès !');
       }
