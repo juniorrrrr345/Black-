@@ -234,10 +234,6 @@ export default function CartPage() {
                     <span className="text-gray-400">Sous-total</span>
                     <span>{getTotalPrice()}€</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Livraison</span>
-                    <span className="text-green-400">GRATUITE</span>
-                  </div>
                   <div className="h-px bg-gray-700"></div>
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold">TOTAL</span>
@@ -300,9 +296,33 @@ export default function CartPage() {
                       message += `📍 Êtes-vous disponible ?`;
 
                       if (settings?.burnsLink) {
-                        const orderUrl = settings.burnsLink.includes('{message}') 
-                          ? settings.burnsLink.replace('{message}', encodeURIComponent(message))
-                          : settings.burnsLink;
+                        let orderUrl = settings.burnsLink;
+                        
+                        // Gérer différents types de liens
+                        if (orderUrl.includes('t.me') || orderUrl.includes('telegram')) {
+                          // Lien Telegram - utiliser l'API pour pré-remplir le message
+                          if (!orderUrl.includes('?text=')) {
+                            orderUrl += `?text=${encodeURIComponent(message)}`;
+                          } else {
+                            orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                          }
+                        } else if (orderUrl.includes('wa.me') || orderUrl.includes('whatsapp')) {
+                          // WhatsApp
+                          if (!orderUrl.includes('?text=')) {
+                            orderUrl += `?text=${encodeURIComponent(message)}`;
+                          } else {
+                            orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                          }
+                        } else if (orderUrl.includes('instagram') || orderUrl.includes('facebook')) {
+                          // Pour Instagram/Facebook, on copie le message dans le presse-papier
+                          navigator.clipboard.writeText(message).then(() => {
+                            alert('Message copié ! Collez-le dans votre conversation.');
+                          });
+                        } else if (orderUrl.includes('{message}')) {
+                          // Lien générique avec placeholder
+                          orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                        }
+                        
                         window.open(orderUrl, '_blank');
                       } else {
                         alert('Le lien pour BURNS n\'est pas encore configuré. Contactez l\'administrateur.');
@@ -358,9 +378,33 @@ export default function CartPage() {
                       message += `📍 Êtes-vous disponible ?`;
 
                       if (settings?.apouLink) {
-                        const orderUrl = settings.apouLink.includes('{message}') 
-                          ? settings.apouLink.replace('{message}', encodeURIComponent(message))
-                          : settings.apouLink;
+                        let orderUrl = settings.apouLink;
+                        
+                        // Gérer différents types de liens
+                        if (orderUrl.includes('t.me') || orderUrl.includes('telegram')) {
+                          // Lien Telegram - utiliser l'API pour pré-remplir le message
+                          if (!orderUrl.includes('?text=')) {
+                            orderUrl += `?text=${encodeURIComponent(message)}`;
+                          } else {
+                            orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                          }
+                        } else if (orderUrl.includes('wa.me') || orderUrl.includes('whatsapp')) {
+                          // WhatsApp
+                          if (!orderUrl.includes('?text=')) {
+                            orderUrl += `?text=${encodeURIComponent(message)}`;
+                          } else {
+                            orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                          }
+                        } else if (orderUrl.includes('instagram') || orderUrl.includes('facebook')) {
+                          // Pour Instagram/Facebook, on copie le message dans le presse-papier
+                          navigator.clipboard.writeText(message).then(() => {
+                            alert('Message copié ! Collez-le dans votre conversation.');
+                          });
+                        } else if (orderUrl.includes('{message}')) {
+                          // Lien générique avec placeholder
+                          orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                        }
+                        
                         window.open(orderUrl, '_blank');
                       } else {
                         alert('Le lien pour APOU n\'est pas encore configuré. Contactez l\'administrateur.');
@@ -416,9 +460,33 @@ export default function CartPage() {
                       message += `📍 Êtes-vous disponible ?`;
 
                       if (settings?.moeLink) {
-                        const orderUrl = settings.moeLink.includes('{message}') 
-                          ? settings.moeLink.replace('{message}', encodeURIComponent(message))
-                          : settings.moeLink;
+                        let orderUrl = settings.moeLink;
+                        
+                        // Gérer différents types de liens
+                        if (orderUrl.includes('t.me') || orderUrl.includes('telegram')) {
+                          // Lien Telegram - utiliser l'API pour pré-remplir le message
+                          if (!orderUrl.includes('?text=')) {
+                            orderUrl += `?text=${encodeURIComponent(message)}`;
+                          } else {
+                            orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                          }
+                        } else if (orderUrl.includes('wa.me') || orderUrl.includes('whatsapp')) {
+                          // WhatsApp
+                          if (!orderUrl.includes('?text=')) {
+                            orderUrl += `?text=${encodeURIComponent(message)}`;
+                          } else {
+                            orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                          }
+                        } else if (orderUrl.includes('instagram') || orderUrl.includes('facebook')) {
+                          // Pour Instagram/Facebook, on copie le message dans le presse-papier
+                          navigator.clipboard.writeText(message).then(() => {
+                            alert('Message copié ! Collez-le dans votre conversation.');
+                          });
+                        } else if (orderUrl.includes('{message}')) {
+                          // Lien générique avec placeholder
+                          orderUrl = orderUrl.replace('{message}', encodeURIComponent(message));
+                        }
+                        
                         window.open(orderUrl, '_blank');
                       } else {
                         alert('Le lien pour MOE n\'est pas encore configuré. Contactez l\'administrateur.');
