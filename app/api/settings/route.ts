@@ -17,7 +17,10 @@ export async function GET() {
         backgroundImage: '',
         gradientFrom: '#000000',
         gradientTo: '#111111',
-        orderLink: ''
+        orderLink: '',
+        burnsLink: '',
+        apouLink: '',
+        moeLink: ''
       });
     }
     

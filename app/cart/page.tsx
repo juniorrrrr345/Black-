@@ -210,6 +210,102 @@ export default function CartPage() {
                 <Send size={28} />
                 COMMANDER MAINTENANT
               </button>
+
+              {/* Boutons des Commerçants */}
+              {(settings?.burnsLink || settings?.apouLink || settings?.moeLink) && (
+                <div className="mt-6 space-y-3">
+                  <div className="text-center text-gray-600 font-bold text-sm">
+                    OU COMMANDER CHEZ NOS PARTENAIRES
+                  </div>
+                  
+                  {settings?.burnsLink && (
+                    <button
+                      onClick={() => {
+                        // Créer le message de commande
+                        let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                        message += `📦 Articles (${getTotalItems()}):\n`;
+                        message += `------------------------\n`;
+                        
+                        cart.forEach(item => {
+                          message += `• ${item.name}\n`;
+                          message += `  Quantité: ${item.quantity}\n`;
+                          message += `  Prix: ${item.price}€\n\n`;
+                        });
+                        
+                        message += `------------------------\n`;
+                        message += `💰 TOTAL: ${getTotalPrice()}€`;
+
+                        // Remplacer le placeholder dans le lien si nécessaire
+                        const orderUrl = settings.burnsLink.includes('{message}') 
+                          ? settings.burnsLink.replace('{message}', encodeURIComponent(message))
+                          : settings.burnsLink;
+                        window.open(orderUrl, '_blank');
+                      }}
+                      className="w-full bg-orange-600 text-white py-3 rounded-lg font-black text-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-3 border-2 border-orange-800"
+                    >
+                      🏪 COMMANDER CHEZ BURNS
+                    </button>
+                  )}
+
+                  {settings?.apouLink && (
+                    <button
+                      onClick={() => {
+                        // Créer le message de commande
+                        let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                        message += `📦 Articles (${getTotalItems()}):\n`;
+                        message += `------------------------\n`;
+                        
+                        cart.forEach(item => {
+                          message += `• ${item.name}\n`;
+                          message += `  Quantité: ${item.quantity}\n`;
+                          message += `  Prix: ${item.price}€\n\n`;
+                        });
+                        
+                        message += `------------------------\n`;
+                        message += `💰 TOTAL: ${getTotalPrice()}€`;
+
+                        // Remplacer le placeholder dans le lien si nécessaire
+                        const orderUrl = settings.apouLink.includes('{message}') 
+                          ? settings.apouLink.replace('{message}', encodeURIComponent(message))
+                          : settings.apouLink;
+                        window.open(orderUrl, '_blank');
+                      }}
+                      className="w-full bg-green-600 text-white py-3 rounded-lg font-black text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-3 border-2 border-green-800"
+                    >
+                      🏪 COMMANDER CHEZ APOU
+                    </button>
+                  )}
+
+                  {settings?.moeLink && (
+                    <button
+                      onClick={() => {
+                        // Créer le message de commande
+                        let message = `🛒 NOUVELLE COMMANDE\n\n`;
+                        message += `📦 Articles (${getTotalItems()}):\n`;
+                        message += `------------------------\n`;
+                        
+                        cart.forEach(item => {
+                          message += `• ${item.name}\n`;
+                          message += `  Quantité: ${item.quantity}\n`;
+                          message += `  Prix: ${item.price}€\n\n`;
+                        });
+                        
+                        message += `------------------------\n`;
+                        message += `💰 TOTAL: ${getTotalPrice()}€`;
+
+                        // Remplacer le placeholder dans le lien si nécessaire
+                        const orderUrl = settings.moeLink.includes('{message}') 
+                          ? settings.moeLink.replace('{message}', encodeURIComponent(message))
+                          : settings.moeLink;
+                        window.open(orderUrl, '_blank');
+                      }}
+                      className="w-full bg-purple-600 text-white py-3 rounded-lg font-black text-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-3 border-2 border-purple-800"
+                    >
+                      🏪 COMMANDER CHEZ MOE
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
