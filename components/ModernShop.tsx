@@ -182,13 +182,21 @@ export default function ModernShop() {
         {/* Section principale avec bannière rectangulaire */}
         <section className="pt-20 pb-8 px-4">
           <div className="max-w-7xl mx-auto">
-            {/* Sous-titre seulement */}
-            <div className="text-center mb-6">
-              <motion.p 
+            {/* Titre et sous-titre */}
+            <div className="text-center mb-8">
+              <motion.h2 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-base md:text-lg text-gray-300"
+                className="text-3xl md:text-5xl font-black mb-3 bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent"
+              >
+                {themeSettings.shopName || 'MA BOUTIQUE'}
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-lg md:text-xl text-gray-200 font-medium"
               >
                 {themeSettings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle'}
               </motion.p>
