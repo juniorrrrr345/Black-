@@ -63,12 +63,49 @@ export default function AdminDashboard() {
     checkAuth();
     fetchData();
     loadThemeSettings();
+    
     // Charger les réseaux sociaux depuis localStorage
     const savedSocials = localStorage.getItem('shop-socials');
     if (savedSocials) {
-      setSocials(JSON.parse(savedSocials));
+      try {
+        setSocials(JSON.parse(savedSocials));
+      } catch (e) {
+        console.error('Error loading socials:', e);
+      }
+    }
+    
+    // Vérifier si on doit éditer un produit (après un délai pour laisser charger les produits)
+    setTimeout(() => {
+      const editProductId = localStorage.getItem('editProductId');
+      if (editProductId) {
+        // On va attendre que fetchData charge les produits
+        // Le prochain useEffect avec products en dépendance s'en occupera
+        localStorage.setItem('pendingEditProductId', editProductId);
+        localStorage.removeItem('editProductId');
+      }
+    }, 100);
+    
+    // Vérifier l'onglet dans l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
     }
   }, []);
+  
+  // UseEffect séparé pour gérer l'édition quand les produits sont chargés
+  useEffect(() => {
+    const pendingEditId = localStorage.getItem('pendingEditProductId');
+    if (pendingEditId && products.length > 0) {
+      const productToEdit = products.find(p => p._id === pendingEditId || p.id === pendingEditId);
+      if (productToEdit) {
+        setEditingProduct(productToEdit);
+        setShowProductModal(true);
+        setActiveTab('products');
+      }
+      localStorage.removeItem('pendingEditProductId');
+    }
+  }, [products]);
 
   const checkAuth = () => {
     const token = localStorage.getItem('auth-token');
