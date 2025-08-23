@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, User, AlertCircle } from 'lucide-react';
+import { Lock, User, AlertCircle, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AdminLogin() {
@@ -42,136 +42,169 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      {/* Background decorative elements */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-4">
+      {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-white/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-56 md:h-56 lg:w-72 lg:h-72 bg-white/5 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
       <motion.div 
-        className="relative bg-black border-4 border-white rounded-2xl p-6 sm:p-8 lg:p-12 w-full max-w-sm sm:max-w-md lg:max-w-lg"
+        className="relative w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Header */}
-        <div className="text-center mb-8 lg:mb-12">
+        {/* Glass card */}
+        <div className="backdrop-blur-xl bg-white/10 rounded-3xl shadow-2xl border border-white/20 p-8">
+          {/* Logo */}
           <motion.div 
-            className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-full mb-4 lg:mb-6"
+            className="flex justify-center mb-8"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring' }}
           >
-            <Lock size={32} className="text-black sm:w-8 sm:h-8 lg:w-10 lg:h-10" />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-75"></div>
+              <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-2xl">
+                <ShieldCheck size={40} className="text-white" />
+              </div>
+            </div>
           </motion.div>
-          
-          <motion.h1 
-            className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-2 lg:mb-4 tracking-wider"
+
+          {/* Title */}
+          <motion.div 
+            className="text-center mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            VERSHASH ADMIN
-          </motion.h1>
-          
-          <motion.p 
-            className="text-gray-400 text-sm sm:text-base lg:text-lg font-bold"
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Espace Admin
+            </h1>
+            <p className="text-gray-400 text-sm">
+              Connectez-vous pour continuer
+            </p>
+          </motion.div>
+
+          {/* Form */}
+          <motion.form 
+            onSubmit={handleSubmit} 
+            className="space-y-5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Connectez-vous pour gérer la boutique
-          </motion.p>
-        </div>
-
-        <motion.form 
-          onSubmit={handleSubmit} 
-          className="space-y-6 lg:space-y-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {/* Username Field */}
-          <div>
-            <label className="block text-sm sm:text-base lg:text-lg font-black text-white mb-2 lg:mb-3">
-              NOM D'UTILISATEUR
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-white text-black pl-10 lg:pl-12 pr-4 py-3 lg:py-4 rounded-lg border-2 border-black font-bold text-sm sm:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-white"
-                placeholder="admin"
-                required
-              />
+            {/* Username */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Nom d'utilisateur
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 text-white pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all placeholder-gray-500"
+                  placeholder="Entrez votre nom"
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Password Field */}
-          <div>
-            <label className="block text-sm sm:text-base lg:text-lg font-black text-white mb-2 lg:mb-3">
-              MOT DE PASSE
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white text-black pl-10 lg:pl-12 pr-4 py-3 lg:py-4 rounded-lg border-2 border-black font-bold text-sm sm:text-base lg:text-lg focus:outline-none focus:ring-2 focus:ring-white"
-                placeholder="••••••••"
-                required
-              />
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Mot de passe
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 text-white pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all placeholder-gray-500"
+                  placeholder="Entrez votre mot de passe"
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Error Message */}
-          {error && (
-            <motion.div 
-              className="flex items-center gap-2 text-white bg-red-600 p-3 lg:p-4 rounded-lg border-2 border-white"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+            {/* Error */}
+            {error && (
+              <motion.div 
+                className="flex items-center gap-2 text-red-400 bg-red-500/10 p-3 rounded-xl border border-red-500/20"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <AlertCircle size={18} />
+                <span className="text-sm">{error}</span>
+              </motion.div>
+            )}
+
+            {/* Submit */}
+            <motion.button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              whileHover={!loading ? { scale: 1.02 } : {}}
+              whileTap={!loading ? { scale: 0.98 } : {}}
             >
-              <AlertCircle size={20} />
-              <span className="text-sm sm:text-base font-bold">{error}</span>
-            </motion.div>
-          )}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Connexion...
+                </span>
+              ) : (
+                'Se connecter'
+              )}
+            </motion.button>
+          </motion.form>
 
-          {/* Submit Button */}
-          <motion.button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-white text-black font-black py-3 lg:py-4 rounded-lg text-sm sm:text-base lg:text-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white"
-            whileHover={!loading ? { scale: 1.02 } : {}}
-            whileTap={!loading ? { scale: 0.98 } : {}}
+          {/* Help text */}
+          <motion.div 
+            className="mt-6 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
           >
-            {loading ? 'CONNEXION...' : 'SE CONNECTER'}
-          </motion.button>
-        </motion.form>
-
-        {/* Credentials Info */}
-        <motion.div 
-          className="mt-6 lg:mt-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-        >
-          <div className="bg-white/10 rounded-lg p-3 lg:p-4 border-2 border-white/20">
-            <p className="text-gray-300 text-xs sm:text-sm lg:text-base font-bold">
-              🔑 IDENTIFIANTS DE TEST
+            <p className="text-xs text-gray-500">
+              Identifiants de test
             </p>
-            <p className="text-white text-xs sm:text-sm lg:text-base font-black mt-2">
-              Username: <span className="text-gray-300">admin</span>
-            </p>
-            <p className="text-white text-xs sm:text-sm lg:text-base font-black">
-              Password: <span className="text-gray-300">vershash2024</span>
-            </p>
-          </div>
-        </motion.div>
+            <div className="mt-2 inline-flex flex-col text-xs bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+              <span className="text-gray-400">admin / vershash2024</span>
+            </div>
+          </motion.div>
+        </div>
       </motion.div>
+
+      <style jsx>{`
+        @keyframes blob {
+          0% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </div>
   );
 }
