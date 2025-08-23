@@ -202,15 +202,20 @@ export default function CartPage() {
                 {getTotalItems()} article{getTotalItems() > 1 ? 's' : ''} dans votre panier
               </div>
 
-              {/* Boutons des Commerçants */}
+              {/* Trois boutons de commande */}
               <div className="space-y-3">
-                <div className="text-center text-gray-600 font-bold text-sm mb-2">
-                  COMMANDER CHEZ
+                <div className="text-center text-gray-600 font-bold text-lg mb-3">
+                  CHOISISSEZ VOTRE VENDEUR
                 </div>
                 
                 {/* Bouton BURNS */}
                 <button
                   onClick={() => {
+                    if (cart.length === 0) {
+                      alert('Votre panier est vide');
+                      return;
+                    }
+
                     // Créer le message de commande
                     let message = `🛒 NOUVELLE COMMANDE\n\n`;
                     message += `📦 Articles (${getTotalItems()}):\n`;
@@ -234,7 +239,7 @@ export default function CartPage() {
                       alert('Le lien pour BURNS n\'est pas encore configuré. Contactez l\'administrateur.');
                     }
                   }}
-                  className="w-full bg-orange-600 text-white py-3 rounded-lg font-black text-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-3 border-2 border-orange-800"
+                  className="w-full bg-orange-600 text-white py-3 rounded-lg font-black text-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
                 >
                   🏪 COMMANDER CHEZ BURNS
                 </button>
@@ -242,6 +247,11 @@ export default function CartPage() {
                 {/* Bouton APOU */}
                 <button
                   onClick={() => {
+                    if (cart.length === 0) {
+                      alert('Votre panier est vide');
+                      return;
+                    }
+
                     // Créer le message de commande
                     let message = `🛒 NOUVELLE COMMANDE\n\n`;
                     message += `📦 Articles (${getTotalItems()}):\n`;
@@ -265,7 +275,7 @@ export default function CartPage() {
                       alert('Le lien pour APOU n\'est pas encore configuré. Contactez l\'administrateur.');
                     }
                   }}
-                  className="w-full bg-green-600 text-white py-3 rounded-lg font-black text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-3 border-2 border-green-800"
+                  className="w-full bg-green-600 text-white py-3 rounded-lg font-black text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                 >
                   🏪 COMMANDER CHEZ APOU
                 </button>
@@ -273,6 +283,11 @@ export default function CartPage() {
                 {/* Bouton MOE */}
                 <button
                   onClick={() => {
+                    if (cart.length === 0) {
+                      alert('Votre panier est vide');
+                      return;
+                    }
+
                     // Créer le message de commande
                     let message = `🛒 NOUVELLE COMMANDE\n\n`;
                     message += `📦 Articles (${getTotalItems()}):\n`;
@@ -296,7 +311,7 @@ export default function CartPage() {
                       alert('Le lien pour MOE n\'est pas encore configuré. Contactez l\'administrateur.');
                     }
                   }}
-                  className="w-full bg-purple-600 text-white py-3 rounded-lg font-black text-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-3 border-2 border-purple-800"
+                  className="w-full bg-purple-600 text-white py-3 rounded-lg font-black text-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
                 >
                   🏪 COMMANDER CHEZ MOE
                 </button>
