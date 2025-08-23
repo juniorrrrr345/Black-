@@ -2,6 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
 
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    await dbConnect();
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json(product);
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
