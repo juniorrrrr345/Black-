@@ -11,18 +11,15 @@ import {
 
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
-import Footer from '@/components/Footer';
 
 export default function ModernShop() {
   const router = useRouter();
-  const [cart, setCart] = useState<any[]>([]);
-  const [showCart, setShowCart] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { themeSettings, loadThemeSettings } = useStore();
+  const { cart, addToCart, removeFromCart, updateQuantity, getTotalItems, getTotalPrice, themeSettings, loadThemeSettings } = useStore();
 
   useEffect(() => {
     loadData();
@@ -149,13 +146,13 @@ export default function ModernShop() {
               
               {/* Cart Button */}
               <motion.button
-                onClick={() => setShowCart(true)}
+                onClick={() => router.push('/cart')}
                 className="relative bg-white text-black border-2 border-white rounded-lg px-4 py-2 md:px-6 md:py-3 flex items-center gap-2 hover:bg-black hover:text-white transition-all font-bold"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <ShoppingBag size={20} />
-                <span className="hidden md:inline text-sm font-bold">PANIER</span>
+                <span className="hidden md:inline text-sm font-bold">VOIR LE PANIER</span>
                 {getTotalItems() > 0 && (
                   <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
                     {getTotalItems()}
@@ -330,7 +327,7 @@ export default function ModernShop() {
             </motion.button>
 
             <motion.button
-              onClick={() => setShowCart(true)}
+              onClick={() => router.push('/cart')}
               className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black relative"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -343,7 +340,7 @@ export default function ModernShop() {
                   </div>
                 )}
               </div>
-              <span className="text-xs md:text-sm">PANIER</span>
+              <span className="text-xs md:text-sm">VOIR PANIER</span>
             </motion.button>
           </div>
         </div>
@@ -455,9 +452,6 @@ export default function ModernShop() {
           )}
         </AnimatePresence>
       </div>
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
