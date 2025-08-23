@@ -57,8 +57,8 @@ export default function ModernShop() {
       
       // Créer des catégories par défaut
       setCategories([
-        { _id: '1', name: 'WEED', slug: 'weed' },
-        { _id: '2', name: 'HASH', slug: 'hash' }
+        { _id: '1', name: 'WEED', slug: 'weed', icon: '🌿' },
+        { _id: '2', name: 'HASH', slug: 'hash', icon: '🍫' }
       ]);
       
       // Essayer de charger depuis l'API (optionnel)
@@ -80,6 +80,7 @@ export default function ModernShop() {
         }
       } catch (apiError) {
         // Using static products data as fallback
+        console.log('Using static data as fallback');
       }
     } catch (error) {
       console.error('Error loading data:', error);
