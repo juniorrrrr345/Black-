@@ -15,7 +15,6 @@ import Footer from '@/components/Footer';
 
 export default function ModernShop() {
   const router = useRouter();
-
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
@@ -78,16 +77,6 @@ export default function ModernShop() {
   const filteredProducts = selectedCategory === 'all' 
     ? products 
     : products.filter(p => p.category === selectedCategory);
-
-  // Adapter la fonction addToCart pour utiliser l'ID correct
-  const handleAddToCart = (product: any) => {
-    // Convertir _id en id pour le store
-    const productForCart = {
-      ...product,
-      id: product._id || product.id
-    };
-    addToCart(productForCart);
-  };
 
   if (loading) {
     return (
@@ -253,7 +242,7 @@ export default function ModernShop() {
                       </motion.button>
                       
                       <motion.button
-                        onClick={() => handleAddToCart(product)}
+                        onClick={() => addToCart(product)}
                         className="w-full bg-black border-2 border-white text-white py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-white hover:text-black transition-all"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -321,11 +310,18 @@ export default function ModernShop() {
           </div>
         </div>
 
+        {/* Cart Modal - Responsive */}
+        <AnimatePresence>
+          {/* This modal is now managed by the global cart state in the store */}
+          {/* The cart.showCart state is not directly managed here */}
+          {/* The cart.cart state is managed by the store */}
+          {/* The cart.removeFromCart, cart.updateQuantity, cart.getTotalItems, cart.getTotalPrice are managed by the store */}
+          {/* The cart.setShowCart is managed by the store */}
+        </AnimatePresence>
 
+        {/* Footer */}
+        <Footer />
       </div>
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
