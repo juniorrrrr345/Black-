@@ -24,7 +24,9 @@ import {
   Facebook,
   Twitter,
   Youtube,
-  Link
+  Link,
+  Menu,
+  ChevronRight
 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import CloudinaryVideoUpload from '@/components/CloudinaryVideoUpload';
@@ -33,6 +35,7 @@ import { useStore } from '@/lib/store';
 export default function AdminDashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('products');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({ 
@@ -231,182 +234,223 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header - Responsive */}
-      <header className="bg-gray-900 border-b border-gray-800">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            VERSHASH ADMIN DASHBOARD
-          </h1>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg transition-colors font-black text-sm md:text-base lg:text-lg"
-          >
-            <LogOut size={16} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
-            DÉCONNEXION
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+      {/* Header - Mobile First */}
+      <header className="bg-black/50 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex justify-between items-center">
+            {/* Logo & Menu Toggle */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <Menu size={24} />
+              </button>
+              <h1 className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                ADMIN
+              </h1>
+            </div>
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-2">
+              {[
+                { id: 'products', label: 'Produits', icon: Package },
+                { id: 'categories', label: 'Catégories', icon: Tag },
+                { id: 'settings', label: 'Paramètres', icon: Settings },
+                { id: 'background', label: 'Fond', icon: ImageIcon },
+                { id: 'socials', label: 'Réseaux', icon: Share2 }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                    activeTab === tab.id
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <tab.icon size={18} />
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
 
-      {/* Tabs - Responsive */}
-      <div className="bg-gray-900 border-b border-gray-800 overflow-x-auto">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex gap-2 md:gap-4 min-w-max">
+            {/* Logout Button */}
             <button
-              onClick={() => setActiveTab('products')}
-              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
-                activeTab === 'products'
-                  ? 'text-white border-b-2 border-white bg-white/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 border border-red-600 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
             >
-              <Package className="inline mr-2" size={16} />
-              PRODUITS
-            </button>
-            <button
-              onClick={() => setActiveTab('categories')}
-              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
-                activeTab === 'categories'
-                  ? 'text-white border-b-2 border-white bg-white/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Tag className="inline mr-2" size={16} />
-              CATÉGORIES
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
-                activeTab === 'settings'
-                  ? 'text-white border-b-2 border-white bg-white/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Settings className="inline mr-2" size={16} />
-              PARAMÈTRES
-            </button>
-            <button
-              onClick={() => setActiveTab('background')}
-              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
-                activeTab === 'background'
-                  ? 'text-white border-b-2 border-white bg-white/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <ImageIcon className="inline mr-2" size={16} />
-              BACKGROUND
-            </button>
-            <button
-              onClick={() => setActiveTab('socials')}
-              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
-                activeTab === 'socials'
-                  ? 'text-white border-b-2 border-white bg-white/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Share2 className="inline mr-2" size={16} />
-              RÉSEAUX
+              <LogOut size={18} />
+              <span className="hidden sm:inline">Déconnexion</span>
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Content - Responsive */}
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-white/10 bg-black/50 backdrop-blur-xl">
+            <div className="container mx-auto px-4 py-2">
+              {[
+                { id: 'products', label: 'Produits', icon: Package, emoji: '📦' },
+                { id: 'categories', label: 'Catégories', icon: Tag, emoji: '🏷️' },
+                { id: 'settings', label: 'Paramètres', icon: Settings, emoji: '⚙️' },
+                { id: 'background', label: 'Personnalisation', icon: ImageIcon, emoji: '🎨' },
+                { id: 'socials', label: 'Réseaux sociaux', icon: Share2, emoji: '🌐' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
+                    activeTab === tab.id
+                      ? 'bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-white border-l-4 border-purple-500'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{tab.emoji}</span>
+                    <span className="font-medium">{tab.label}</span>
+                  </div>
+                  {activeTab === tab.id && <ChevronRight size={18} />}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Main Content - Responsive Padding */}
+      <main className="container mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
         {/* Products Tab */}
         {activeTab === 'products' && (
           <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 lg:mb-12 gap-4">
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white">📦 GESTION DES PRODUITS</h2>
-              <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
-                <button
-                  onClick={() => {
-                    setEditingProduct(null);
-                    setShowProductModal(true);
-                  }}
-                  className="flex items-center gap-2 bg-white text-black hover:bg-gray-200 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg transition-colors font-black text-sm md:text-base lg:text-lg border-2 border-white"
-                >
-                  <Plus size={16} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
-                  AJOUTER UN PRODUIT
-                </button>
+            {/* Header avec bouton ajouter */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Produits</h2>
+                <p className="text-gray-400 text-sm mt-1">Gérez vos produits</p>
               </div>
+              <button
+                onClick={() => {
+                  setEditingProduct(null);
+                  setShowProductModal(true);
+                }}
+                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2 shadow-lg"
+              >
+                <Plus size={20} />
+                Ajouter un produit
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            {/* Liste des produits - Version mobile */}
+            <div className="block md:hidden space-y-4">
               {products.map((product) => (
-                <div key={product._id} className="bg-black border-4 border-white rounded-2xl p-6">
-                  <div className="aspect-square bg-white rounded-2xl mb-4 overflow-hidden border-2 border-black">
-                    {product.image ? (
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                        <ImageIcon size={48} className="text-gray-400" />
+                <div key={product._id} className="bg-gray-900/50 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
+                  <div className="flex gap-4 p-4">
+                    {/* Image */}
+                    <div className="w-24 h-24 flex-shrink-0">
+                      {product.image ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-800 rounded-lg flex items-center justify-center">
+                          <Package size={32} className="text-gray-600" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-white truncate">{product.name}</h3>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {product.category} • {product.tag || 'Sans tag'}
+                      </p>
+                      <div className="flex gap-2 mt-3">
+                        <button 
+                          onClick={() => {
+                            setEditingProduct(product);
+                            setShowProductModal(true);
+                          }}
+                          className="flex-1 bg-blue-600/20 border border-blue-600 text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-600/30 transition-colors"
+                        >
+                          Modifier
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteProduct(product._id)}
+                          className="flex-1 bg-red-600/20 border border-red-600 text-red-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-red-600/30 transition-colors"
+                        >
+                          Supprimer
+                        </button>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Grille des produits - Version desktop */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <div key={product._id} className="bg-gray-900/50 backdrop-blur rounded-xl border border-white/10 overflow-hidden hover:border-purple-500/50 transition-all">
+                  {/* Image */}
+                  <div className="aspect-square relative">
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                        <Package size={48} className="text-gray-600" />
+                      </div>
+                    )}
+                    {product.tag && (
+                      <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold ${
+                        product.tagColor === 'red' ? 'bg-red-600' :
+                        product.tagColor === 'green' ? 'bg-green-600' :
+                        product.tagColor === 'blue' ? 'bg-blue-600' :
+                        product.tagColor === 'yellow' ? 'bg-yellow-600' :
+                        product.tagColor === 'purple' ? 'bg-purple-600' :
+                        'bg-gray-600'
+                      }`}>
+                        {product.tag}
+                      </span>
                     )}
                   </div>
                   
-                  <div className="space-y-3">
-                    <div>
-                      <h3 className="font-black text-white text-lg">{product.name}</h3>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-black ${
-                        product.tagColor === 'red' ? 'bg-red-500' : 'bg-green-500'
-                      } text-white`}>
-                        {product.tag}
-                      </span>
-                      <span className="text-gray-300 text-sm">{product.category}</span>
-                    </div>
-
-                    {product.pricing && product.pricing.length > 0 ? (
-                      <div className="space-y-2">
-                        <p className="text-white font-bold text-sm">OPTIONS DE PRIX:</p>
-                        {product.pricing.map((pricing: any, index: number) => (
-                          <div key={index} className="flex justify-between text-sm bg-white/10 rounded-lg px-3 py-2">
-                            <span className="text-white font-bold">{pricing.weight}</span>
-                            <span className="text-white font-black">{pricing.price}€</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-white font-black text-xl">{product.price}€</p>
-                    )}
-                    
-                    <p className="text-gray-300 text-sm">
-                      <span className="font-bold">Stock:</span> {product.quantity} unités
+                  {/* Content */}
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg text-white mb-2">{product.name}</h3>
+                    <p className="text-sm text-gray-400 mb-4">
+                      Catégorie: {product.category}
                     </p>
                     
-                    {product.description && (
-                      <p className="text-gray-400 text-xs line-clamp-2">{product.description}</p>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2 mt-4 pt-4 border-t-2 border-white">
-                    <button
-                      onClick={() => router.push(`/products/${product.id}`)}
-                      className="flex-1 bg-white text-black py-2 rounded-lg font-black hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"
-                    >
-                      <Eye size={16} />
-                      VOIR
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingProduct(product);
-                        setShowProductModal(true);
-                      }}
-                      className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-black hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
-                    >
-                      <Edit size={16} />
-                      EDIT
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteProduct(product._id)}
-                      className="flex-1 bg-red-600 text-white py-2 rounded-lg font-black hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
-                    >
-                      <Trash2 size={16} />
-                      SUP
-                    </button>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => {
+                          setEditingProduct(product);
+                          setShowProductModal(true);
+                        }}
+                        className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <Edit size={16} />
+                        Modifier
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteProduct(product._id)}
+                        className="flex-1 bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <Trash2 size={16} />
+                        Suppr.
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -417,21 +461,61 @@ export default function AdminDashboard() {
         {/* Categories Tab */}
         {activeTab === 'categories' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <h2 className="text-xl font-bold">Gestion des Catégories</h2>
               <button
                 onClick={() => {
                   setEditingCategory(null);
                   setShowCategoryModal(true);
                 }}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
               >
                 <Plus size={20} />
                 Ajouter une catégorie
               </button>
             </div>
 
-            <div className="bg-gray-900 rounded-lg overflow-hidden">
+            {/* Version mobile - Cards */}
+            <div className="block md:hidden space-y-4">
+              {categories.map((category) => (
+                <div key={category._id} className="bg-gray-900 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{category.icon || '🌿'}</span>
+                      <div>
+                        <div className="font-bold">{category.name}</div>
+                        <div className="text-sm text-gray-400">{category.slug}</div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={async () => {
+                        if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`)) {
+                          try {
+                            const res = await fetch(`/api/categories/${category._id || category.id}`, {
+                              method: 'DELETE',
+                            });
+                            if (res.ok) {
+                              fetchData(); // Recharger les données
+                              alert('✅ Catégorie supprimée avec succès');
+                            } else {
+                              alert('❌ Erreur lors de la suppression');
+                            }
+                          } catch (error) {
+                            alert('❌ Erreur lors de la suppression');
+                          }
+                        }
+                      }}
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-bold transition-colors text-sm"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Version desktop - Table */}
+            <div className="hidden md:block bg-gray-900 rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-800">
                   <tr>
@@ -447,16 +531,7 @@ export default function AdminDashboard() {
                       <td className="p-4">{category.name}</td>
                       <td className="p-4 text-2xl">{category.icon || '🌿'}</td>
                       <td className="p-4 text-gray-400">{category.slug}</td>
-                      <td className="p-4 flex gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingCategory(category);
-                            setShowCategoryModal(true);
-                          }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg font-bold transition-colors"
-                        >
-                          Modifier
-                        </button>
+                      <td className="p-4">
                         <button 
                           onClick={async () => {
                             if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`)) {
@@ -1183,7 +1258,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
-      </div>
+      </main>
 
       {/* Product Modal */}
       {showProductModal && (
