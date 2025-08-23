@@ -14,12 +14,14 @@ import { useStore } from '@/lib/store';
 
 export default function ModernShop() {
   const router = useRouter();
+  const [cart, setCart] = useState<any[]>([]);
+  const [showCart, setShowCart] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'weed' | 'hash'>('all');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { cart, addToCart, removeFromCart, updateQuantity, getTotalItems, getTotalPrice, themeSettings, loadThemeSettings } = useStore();
+  const { themeSettings, loadThemeSettings } = useStore();
 
   useEffect(() => {
     loadData();
@@ -77,6 +79,42 @@ export default function ModernShop() {
     ? products 
     : products.filter(p => p.category === selectedCategory);
 
+  const addToCart = (product: any) => {
+    setCart(prev => {
+      const existing = prev.find(item => item._id === product._id);
+      if (existing) {
+        return prev.map(item => 
+          item._id === product._id 
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart(prev => prev.filter(item => item._id !== productId));
+  };
+
+  const updateQuantity = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    setCart(prev => prev.map(item => 
+      item._id === productId ? { ...item, quantity } : item
+    ));
+  };
+
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -116,7 +154,7 @@ export default function ModernShop() {
                 whileTap={{ scale: 0.95 }}
               >
                 <ShoppingBag size={20} />
-                <span className="hidden md:inline text-sm font-bold">VOIR LE PANIER</span>
+                <span className="hidden md:inline text-sm font-bold">PANIER</span>
                 {getTotalItems() > 0 && (
                   <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
                     {getTotalItems()}
@@ -129,49 +167,20 @@ export default function ModernShop() {
 
         {/* Hero Banner - Responsive */}
         <section className="relative py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            {themeSettings.bannerImage && (
-              <motion.div
-                className="relative h-48 md:h-64 lg:h-80 mb-6 rounded-2xl overflow-hidden border-4 border-white"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <img 
-                  src={themeSettings.bannerImage} 
-                  alt="Banner" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="text-center">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2">
-                      {themeSettings.bannerText || 'NOUVEAU DROP'}
-                    </h2>
-                    <p className="text-sm md:text-base lg:text-lg text-white font-bold">
-                      QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-            
-            {!themeSettings.bannerImage && (
-              <motion.div
-                className="text-center"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <div className="inline-block bg-black/80 backdrop-blur-sm border-2 border-white rounded-2xl px-6 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8">
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 md:mb-4">
-                    {themeSettings.bannerText || 'NOUVEAU DROP'}
-                  </h2>
-                  <p className="text-sm md:text-base lg:text-lg text-gray-300 font-bold">
-                    QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
-                  </p>
-                </div>
-              </motion.div>
-            )}
+          <div className="max-w-7xl mx-auto text-center">
+            <motion.div
+              className="inline-block bg-black/80 backdrop-blur-sm border-2 border-white rounded-2xl px-6 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-2 md:mb-4">
+                {themeSettings.bannerText || 'NOUVEAU DROP'}
+              </h2>
+              <p className="text-sm md:text-base lg:text-lg text-gray-300 font-bold">
+                QUALITÉ PREMIUM • LIVRAISON RAPIDE • SERVICE CLIENT 24/7
+              </p>
+            </motion.div>
           </div>
         </section>
 
@@ -270,13 +279,7 @@ export default function ModernShop() {
                       </motion.button>
                       
                       <motion.button
-                        onClick={() => {
-                          const productForCart = {
-                            ...product,
-                            id: product._id || product.id
-                          };
-                          addToCart(productForCart);
-                        }}
+                        onClick={() => addToCart(product)}
                         className="w-full bg-black border-2 border-white text-white py-2 md:py-3 lg:py-4 rounded-lg font-black text-sm md:text-base lg:text-lg hover:bg-white hover:text-black transition-all"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -326,7 +329,7 @@ export default function ModernShop() {
             </motion.button>
 
             <motion.button
-              onClick={() => router.push('/cart')}
+              onClick={() => setShowCart(true)}
               className="flex flex-col items-center gap-1 md:gap-2 text-white hover:bg-white hover:text-black transition-all rounded-xl p-2 md:p-3 border-2 border-white font-black relative"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -339,12 +342,117 @@ export default function ModernShop() {
                   </div>
                 )}
               </div>
-              <span className="text-xs md:text-sm">VOIR PANIER</span>
+              <span className="text-xs md:text-sm">PANIER</span>
             </motion.button>
           </div>
         </div>
 
+        {/* Cart Modal - Responsive */}
+        <AnimatePresence>
+          {showCart && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              onClick={() => setShowCart(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-black border-4 border-white rounded-2xl w-full max-w-md md:max-w-lg lg:max-w-2xl max-h-[80vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Cart Header */}
+                <div className="flex justify-between items-center p-4 md:p-6 border-b-2 border-white">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white">MON PANIER</h3>
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
 
+                {/* Cart Content */}
+                <div className="p-4 md:p-6 max-h-96 overflow-y-auto">
+                  {cart.length === 0 ? (
+                    <div className="text-center py-8 md:py-12">
+                      <ShoppingBag size={48} className="mx-auto text-gray-500 mb-4" />
+                      <p className="text-white font-bold text-lg md:text-xl">Votre panier est vide</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {cart.map((item) => (
+                        <div key={item._id} className="flex items-center gap-4 bg-white/10 p-3 md:p-4 rounded-lg">
+                          <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg flex items-center justify-center">
+                            <span className="text-2xl md:text-3xl">🌿</span>
+                          </div>
+                          
+                          <div className="flex-1">
+                            <h4 className="font-black text-white text-sm md:text-base">{item.name}</h4>
+                            <p className="text-gray-300 text-xs md:text-sm">{item.price}€</p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                              className="bg-white text-black w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-black hover:bg-gray-200"
+                            >
+                              <Minus size={16} />
+                            </button>
+                            <span className="text-white font-black text-lg md:text-xl w-8 md:w-10 text-center">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                              className="bg-white text-black w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-black hover:bg-gray-200"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => removeFromCart(item._id)}
+                            className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Cart Footer */}
+                {cart.length > 0 && (
+                  <div className="border-t-2 border-white p-4 md:p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-xl md:text-2xl font-black text-white">TOTAL:</span>
+                      <span className="text-2xl md:text-3xl font-black text-white">{getTotalPrice()}€</span>
+                    </div>
+                    
+                    <motion.button
+                      onClick={() => {
+                        const message = cart.map(item => `${item.name} x${item.quantity} - ${item.price * item.quantity}€`).join('\n');
+                        const total = getTotalPrice();
+                        const fullMessage = `Commande VERSHASH:\n\n${message}\n\nTOTAL: ${total}€`;
+                        window.open(`https://t.me/VershashBot?text=${encodeURIComponent(fullMessage)}`, '_blank');
+                      }}
+                      className="w-full bg-white text-black py-3 md:py-4 rounded-lg font-black text-lg md:text-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Send size={20} />
+                      COMMANDER VIA TELEGRAM
+                    </motion.button>
+                  </div>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
