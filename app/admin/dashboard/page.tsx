@@ -39,7 +39,8 @@ export default function AdminDashboard() {
     shopName: 'VERSHASH', 
     bannerText: 'NOUVEAU DROP',
     bannerSubtext: 'Découvrez nos produits premium de qualité exceptionnelle', 
-    bannerImage: '', 
+    bannerImage: '',
+    bannerImageFit: 'contain', // Nouveau champ pour le mode d'affichage
     orderLink: '',
     burnsLink: '',
     apouLink: '',
@@ -107,6 +108,7 @@ export default function AdminDashboard() {
           bannerText: settingsData.bannerText || 'NOUVEAU DROP',
           bannerSubtext: settingsData.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
           bannerImage: settingsData.bannerImage || '',
+          bannerImageFit: settingsData.bannerImageFit || 'contain',
           orderLink: settingsData.orderLink || ''
         });
         // Synchroniser avec le store
@@ -118,7 +120,9 @@ export default function AdminDashboard() {
           gradientTo: settingsData.gradientTo || '#111111',
           shopName: settingsData.shopName || 'VERSHASH',
           bannerText: settingsData.bannerText || 'NOUVEAU DROP',
+          bannerSubtext: settingsData.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
           bannerImage: settingsData.bannerImage || '',
+          bannerImageFit: settingsData.bannerImageFit || 'contain',
           orderLink: settingsData.orderLink || ''
         });
       }
@@ -153,6 +157,7 @@ export default function AdminDashboard() {
           bannerText: settings.bannerText || 'NOUVEAU DROP',
           bannerSubtext: settings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
           bannerImage: settings.bannerImage || '',
+          bannerImageFit: settings.bannerImageFit || 'contain',
           orderLink: settings.orderLink || ''
         });
         alert('✅ Paramètres sauvegardés avec succès !');
@@ -630,6 +635,41 @@ export default function AdminDashboard() {
                       onUpload={(url) => setSettings({ ...settings, bannerImage: url })}
                       onRemove={() => setSettings({ ...settings, bannerImage: '' })}
                     />
+                    
+                    {settings.bannerImage && (
+                      <div className="mt-4">
+                        <label className="block text-white font-bold text-sm mb-2">Mode d'affichage de l'image</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setSettings({ ...settings, bannerImageFit: 'contain' })}
+                            className={`p-3 rounded-lg border-2 transition-all ${
+                              settings.bannerImageFit === 'contain'
+                                ? 'bg-white text-black border-white font-bold'
+                                : 'bg-black text-white border-gray-600 hover:border-white'
+                            }`}
+                          >
+                            <div className="text-xs font-bold">IMAGE ENTIÈRE</div>
+                            <div className="text-[10px] opacity-70 mt-1">Affiche toute l'image</div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSettings({ ...settings, bannerImageFit: 'cover' })}
+                            className={`p-3 rounded-lg border-2 transition-all ${
+                              settings.bannerImageFit === 'cover'
+                                ? 'bg-white text-black border-white font-bold'
+                                : 'bg-black text-white border-gray-600 hover:border-white'
+                            }`}
+                          >
+                            <div className="text-xs font-bold">REMPLIR</div>
+                            <div className="text-[10px] opacity-70 mt-1">Remplit tout l'espace</div>
+                          </button>
+                        </div>
+                        <p className="text-gray-400 text-xs mt-2">
+                          💡 "Image entière" = l'image complète est visible | "Remplir" = l'image remplit tout l'espace (peut être coupée)
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Aperçu de la bannière */}

@@ -207,16 +207,20 @@ export default function ModernShop() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-8 rounded-xl overflow-hidden shadow-2xl"
+                className="mb-8 rounded-xl overflow-hidden shadow-2xl bg-black/20"
               >
-                <div className="relative w-full h-[200px] md:h-[300px] lg:h-[350px]">
+                <div className="relative w-full h-[250px] md:h-[400px] lg:h-[450px] flex items-center justify-center">
                   <img 
                     src={themeSettings.bannerImage}
                     alt="Bannière"
-                    className="w-full h-full object-cover object-center"
-                    style={{ objectFit: 'cover' }}
+                    className={`w-full h-full ${
+                      themeSettings.bannerImageFit === 'cover' ? 'object-cover' : 'object-contain'
+                    }`}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                  {/* Overlay optionnel très léger pour le texte si nécessaire */}
+                  {themeSettings.bannerImageFit === 'cover' && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
+                  )}
                 </div>
               </motion.div>
             )}
