@@ -26,7 +26,8 @@ import {
   Youtube,
   Link,
   Menu,
-  ChevronRight
+  ChevronRight,
+  Bot
 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import CloudinaryVideoUpload from '@/components/CloudinaryVideoUpload';
@@ -259,11 +260,18 @@ export default function AdminDashboard() {
                 { id: 'categories', label: 'Catégories', icon: Tag },
                 { id: 'settings', label: 'Paramètres', icon: Settings },
                 { id: 'background', label: 'Fond', icon: ImageIcon },
-                { id: 'socials', label: 'Réseaux', icon: Share2 }
+                { id: 'socials', label: 'Réseaux', icon: Share2 },
+                { id: 'telegram', label: 'Bot Telegram', icon: Bot }
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    if (tab.id === 'telegram') {
+                      router.push('/admin/telegram');
+                    } else {
+                      setActiveTab(tab.id);
+                    }
+                  }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
@@ -296,13 +304,18 @@ export default function AdminDashboard() {
                 { id: 'categories', label: 'Catégories', icon: Tag, emoji: '🏷️' },
                 { id: 'settings', label: 'Paramètres', icon: Settings, emoji: '⚙️' },
                 { id: 'background', label: 'Personnalisation', icon: ImageIcon, emoji: '🎨' },
-                { id: 'socials', label: 'Réseaux sociaux', icon: Share2, emoji: '🌐' }
+                { id: 'socials', label: 'Réseaux sociaux', icon: Share2, emoji: '🌐' },
+                { id: 'telegram', label: 'Bot Telegram', icon: Bot, emoji: '🤖' }
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => {
-                    setActiveTab(tab.id);
-                    setMobileMenuOpen(false);
+                    if (tab.id === 'telegram') {
+                      router.push('/admin/telegram');
+                    } else {
+                      setActiveTab(tab.id);
+                      setMobileMenuOpen(false);
+                    }
                   }}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
                     activeTab === tab.id
