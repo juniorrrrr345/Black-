@@ -74,6 +74,7 @@ export default function ModernShop() {
         const categoriesRes = await fetch('/api/categories');
         if (categoriesRes.ok) {
           const categoriesData = await categoriesRes.json();
+          console.log('Categories loaded:', categoriesData); // Debug
           if (categoriesData && categoriesData.length > 0) {
             setCategories(categoriesData);
           }
@@ -262,7 +263,9 @@ export default function ModernShop() {
                       onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
                       className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm rounded-xl p-3 md:p-4 hover:bg-black/60 transition-all border border-white/20 hover:border-white/40 min-w-[80px] md:min-w-[100px]"
                     >
-                      <span className="text-xl md:text-2xl mb-1">{category.icon}</span>
+                      {category.icon && (
+                        <span className="text-xl md:text-2xl mb-1">{category.icon}</span>
+                      )}
                       <span className="text-[10px] md:text-xs font-bold text-white/90 uppercase tracking-wider">
                         {category.name}
                       </span>
