@@ -2,27 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Category from '@/models/Category';
 
-// Catégories par défaut
-const defaultCategories = [
-  { _id: '1', name: 'WEED', slug: 'weed', icon: '🌿', order: 1 },
-  { _id: '2', name: 'HASH', slug: 'hash', icon: '🍫', order: 2 }
-];
-
 export async function GET() {
   try {
     await dbConnect();
     const categories = await Category.find({}).sort({ order: 1 });
-    
-    // Si pas de catégories dans MongoDB, retourner les catégories par défaut
-    if (categories.length === 0) {
-      return NextResponse.json(defaultCategories);
-    }
-    
     return NextResponse.json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);
-    // En cas d'erreur MongoDB, retourner les catégories par défaut
-    return NextResponse.json(defaultCategories);
+    // En cas d'erreur MongoDB, retourner un tableau vide
+    return NextResponse.json([]);
   }
 }
 

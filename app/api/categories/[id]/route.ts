@@ -55,13 +55,6 @@ export async function DELETE(
   try {
     const { id } = await context.params;
     
-    // Si c'est une catégorie statique (id = 1 ou 2), on ne peut pas la supprimer via MongoDB
-    if (id === '1' || id === '2') {
-      return NextResponse.json({ 
-        message: 'Les catégories par défaut ne peuvent pas être supprimées. Veuillez les modifier depuis le code.' 
-      }, { status: 400 });
-    }
-    
     await dbConnect();
     const category = await Category.findByIdAndDelete(id);
     
