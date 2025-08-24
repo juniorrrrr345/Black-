@@ -17,10 +17,28 @@ import {
   Edit
 } from 'lucide-react';
 
+interface SocialNetwork {
+  name: string;
+  url: string;
+  emoji: string;
+}
+
+interface Config {
+  welcomeMessage: string;
+  welcomeImage: string;
+  infoText: string;
+  miniApp: {
+    url: string;
+    text: string;
+  };
+  socialNetworks: SocialNetwork[];
+  socialButtonsPerRow: number;
+}
+
 export default function TelegramAdmin() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<Config>({
     welcomeMessage: '',
     welcomeImage: '',
     infoText: '',
@@ -101,13 +119,13 @@ export default function TelegramAdmin() {
     });
   };
 
-  const updateSocialNetwork = (index, field, value) => {
+  const updateSocialNetwork = (index: number, field: keyof SocialNetwork, value: string) => {
     const updated = [...config.socialNetworks];
     updated[index] = { ...updated[index], [field]: value };
     setConfig({ ...config, socialNetworks: updated });
   };
 
-  const removeSocialNetwork = (index) => {
+  const removeSocialNetwork = (index: number) => {
     setConfig({
       ...config,
       socialNetworks: config.socialNetworks.filter((_, i) => i !== index)
