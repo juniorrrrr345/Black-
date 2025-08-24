@@ -481,7 +481,7 @@ export default function AdminDashboard() {
                 <div key={category._id} className="bg-gray-900 rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{category.icon || '🌿'}</span>
+                      {category.icon && <span className="text-2xl">{category.icon}</span>}
                       <div>
                         <div className="font-bold">{category.name}</div>
                         <div className="text-sm text-gray-400">{category.slug}</div>
@@ -529,7 +529,7 @@ export default function AdminDashboard() {
                   {categories.map((category) => (
                     <tr key={category._id} className="border-t border-gray-800">
                       <td className="p-4">{category.name}</td>
-                      <td className="p-4 text-2xl">{category.icon || '🌿'}</td>
+                      <td className="p-4 text-2xl">{category.icon}</td>
                       <td className="p-4 text-gray-400">{category.slug}</td>
                       <td className="p-4">
                         <button 
@@ -1591,7 +1591,7 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: category?.name || '',
     slug: category?.slug || generateSlug(category?.name || ''),
-    icon: category?.icon || '🌿'
+    icon: category?.icon || ''
   });
 
   const handleSubmit = async (e: any) => {

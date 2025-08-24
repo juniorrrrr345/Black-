@@ -260,19 +260,15 @@ export default function ModernShop() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setSelectedCategory(category.slug || category.value || category.name.toLowerCase())}
-                      className={`relative overflow-hidden rounded-lg p-3 md:p-4 transition-all backdrop-blur-md ${
-                        selectedCategory === (category.slug || category.value || category.name.toLowerCase())
-                          ? 'bg-gradient-to-br from-green-600/70 to-emerald-600/70 shadow-lg'
-                          : 'bg-white/10 hover:bg-white/20'
-                      }`}
+                      className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm rounded-xl p-3 md:p-4 hover:bg-black/60 transition-all border border-white/20 hover:border-white/40 min-w-[80px] md:min-w-[100px]"
                     >
-                      <div className="relative z-10 flex flex-col items-center">
-                        <span className="text-xl md:text-2xl mb-1">{category.icon || '🌿'}</span>
-                        <span className="font-bold text-[10px] md:text-xs">{category.name.toUpperCase()}</span>
-                        <span className="text-[9px] md:text-[10px] opacity-80">
-                          {categoryProducts.length}
-                        </span>
-                      </div>
+                      <span className="text-xl md:text-2xl mb-1">{category.icon}</span>
+                      <span className="text-[10px] md:text-xs font-bold text-white/90 uppercase tracking-wider">
+                        {category.name}
+                      </span>
+                      <span className="text-[9px] md:text-[10px] opacity-80">
+                        {categoryProducts.length}
+                      </span>
                     </motion.button>
                   );
                 })}
