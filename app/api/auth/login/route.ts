@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Admin from '@/models/Admin';
 import { generateToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
@@ -14,24 +12,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await dbConnect();
+    // Identifiants par défaut ou depuis les variables d'environnement
+    const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'vershash2024';
 
-    // Find admin by username
-    const admin = await Admin.findOne({ username });
-    
-    if (!admin) {
+    // Vérifier les identifiants
+    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
-    }
-
-    // Check password
-    const isPasswordValid = await admin.comparePassword(password);
-    
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Identifiants invalides' },
         { status: 401 }
       );
     }
