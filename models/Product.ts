@@ -1,47 +1,107 @@
 import mongoose from 'mongoose';
 
-const ProductSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
+export interface IPricingOption {
+  weight: string;
+  price: number;
+}
+
+export interface IProduct {
+  _id: string;
+  name: string;
+  origin: string;
+  image: string; // Photo pour la carte produit
+  video?: string; // Vidéo pour la page détail
+  price: number; // Base price for compatibility
+  pricing?: IPricingOption[]; // Multiple pricing options
+  quantity: number;
+  category: 'weed' | 'hash';
+  tag?: string;
+  tagColor?: 'red' | 'green';
+  country: string;
+  countryFlag: string;
+  description?: string;
+  available: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const PricingOptionSchema = new mongoose.Schema({
+  weight: {
     type: String,
     required: true,
   },
   price: {
     type: Number,
     required: true,
+    min: 0,
+  },
+}, { _id: false });
+
+const ProductSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  origin: {
+    type: String,
+    required: false,
+    default: '',
+    trim: true,
   },
   image: {
     type: String,
     default: '',
   },
-  images: [{
+  video: {
     type: String,
-  }],
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
+    default: '',
   },
-  categoryName: {
-    type: String,
-  },
-  stock: {
+  price: {
     type: Number,
+    required: true,
+    min: 0,
+  },
+  pricing: {
+    type: [PricingOptionSchema],
+    default: [],
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 0,
     default: 0,
   },
-  sizes: [{
+  category: {
     type: String,
-  }],
-  colors: [{
-    type: String,
-  }],
-  featured: {
-    type: Boolean,
-    default: false,
+    required: true,
+    enum: ['weed', 'hash'],
+    default: 'weed',
   },
-  active: {
+  tag: {
+    type: String,
+    default: '',
+  },
+  tagColor: {
+    type: String,
+    enum: ['red', 'green'],
+    default: 'green',
+  },
+  country: {
+    type: String,
+    required: false,
+    default: 'FR',
+  },
+  countryFlag: {
+    type: String,
+    required: false,
+    default: '🇫🇷',
+  },
+  description: {
+    type: String,
+    default: '',
+  },
+  available: {
     type: Boolean,
     default: true,
   },
@@ -49,23 +109,8 @@ const ProductSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+// Index for better performance
+ProductSchema.index({ category: 1, available: 1 });
+ProductSchema.index({ name: 'text', description: 'text' });
 
-// Interface pour TypeScript
-export interface IProduct {
-  _id?: string;
-  name: string;
-  description: string;
-  price: number;
-  image?: string;
-  images?: string[];
-  category?: string;
-  categoryName?: string;
-  stock?: number;
-  sizes?: string[];
-  colors?: string[];
-  featured?: boolean;
-  active?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+export default mongoose.models.Product || mongoose.model('Product', ProductSchema);

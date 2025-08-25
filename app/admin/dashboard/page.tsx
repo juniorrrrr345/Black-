@@ -226,6 +226,14 @@ export default function AdminDashboard() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Chargement...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
       {/* Header - Mobile First */}
@@ -629,7 +637,7 @@ export default function AdminDashboard() {
                     <input
                       type="text"
                       value={settings.apuLink || ''}
-                      onChange={(e) => setSettings({ ...settings, apuLink: e.target.value })
+                      onChange={(e) => setSettings({ ...settings, apuLink: e.target.value })}
                       placeholder="Ex: https://t.me/username ou https://wa.me/33612345678"
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />

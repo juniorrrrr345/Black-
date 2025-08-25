@@ -1,16 +1,32 @@
 import mongoose from 'mongoose';
 
+export interface ICategory {
+  _id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  order: number;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const CategorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
     unique: true,
   },
-  description: {
+  slug: {
     type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
   },
-  image: {
+  icon: {
     type: String,
+    default: '',
   },
   order: {
     type: Number,
@@ -24,15 +40,4 @@ const CategorySchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export const Category = mongoose.models.Category || mongoose.model('Category', CategorySchema);
-
-export interface ICategory {
-  _id?: string;
-  name: string;
-  description?: string;
-  image?: string;
-  order?: number;
-  active?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+export default mongoose.models.Category || mongoose.model('Category', CategorySchema);

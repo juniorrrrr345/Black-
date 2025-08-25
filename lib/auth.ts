@@ -1,42 +1,32 @@
-import { SignJWT, jwtVerify } from 'jose';
-import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
+import { NextRequest } from 'next/server';
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'default-secret-key-change-in-production'
-);
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
-export async function createToken(payload: any) {
-  const token = await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(secret);
-  
-  return token;
+export interface TokenPayload {
+  userId: string;
+  username: string;
 }
 
-export async function verifyToken(token: string) {
+export function generateToken(payload: TokenPayload): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+}
+
+export function verifyToken(token: string): TokenPayload | null {
   try {
-    const { payload } = await jwtVerify(token, secret);
-    return payload;
+    return jwt.verify(token, JWT_SECRET) as TokenPayload;
   } catch (error) {
     return null;
   }
 }
 
-export async function getSession() {
-  const token = cookies().get('auth-token')?.value;
+export function getTokenFromRequest(request: NextRequest): string | null {
+  const authHeader = request.headers.get('authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7);
+  }
   
-  if (!token) return null;
-  
-  return await verifyToken(token);
-}
-
-export function hashPassword(password: string): string {
-  // Simple hash pour le développement - utiliser bcrypt en production
-  return Buffer.from(password).toString('base64');
-}
-
-export function verifyPassword(password: string, hash: string): boolean {
-  return Buffer.from(password).toString('base64') === hash;
+  // Also check cookies
+  const cookieToken = request.cookies.get('auth-token');
+  return cookieToken?.value || null;
 }

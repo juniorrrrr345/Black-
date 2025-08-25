@@ -1,58 +1,90 @@
 import mongoose from 'mongoose';
 
-const SettingsSchema = new mongoose.Schema({
-  storeName: String,
-  storeDescription: String,
-  currency: String,
-  logo: String,
-  favicon: String,
-  primaryColor: String,
-  secondaryColor: String,
-  backgroundImage: String,
-  gradientFrom: String,
-  gradientTo: String,
-  orderLink: String,
-  burnsLink: String,
-  apuLink: String,
-  moeLink: String,
+export interface ISettings {
+  _id: string;
+  shopName: string;
+  bannerImage: string;
+  bannerText: string;
+  orderLink: string;
+  burnsLink: string;
+  apouLink: string;
+  moeLink: string;
+  backgroundType: 'color' | 'image' | 'gradient';
+  backgroundColor: string;
+  backgroundImage: string;
+  gradientFrom: string;
+  gradientTo: string;
   socialLinks: {
-    facebook: String,
-    instagram: String,
-    twitter: String,
-    tiktok: String,
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    telegram?: string;
+  };
+  updatedAt: Date;
+}
+
+const SettingsSchema = new mongoose.Schema({
+  shopName: {
+    type: String,
+    default: 'VERSHASH',
   },
-  contactEmail: String,
-  contactPhone: String,
-  address: String,
+  bannerImage: {
+    type: String,
+    default: '',
+  },
+  bannerText: {
+    type: String,
+    default: 'NOUVEAU DROP',
+  },
+  orderLink: {
+    type: String,
+    default: '',
+    description: 'Lien pour envoyer les commandes (Telegram, WhatsApp, etc.)'
+  },
+  burnsLink: {
+    type: String,
+    default: '',
+    description: 'Lien pour commander chez BURNS'
+  },
+  apouLink: {
+    type: String,
+    default: '',
+    description: 'Lien pour commander chez APOU'
+  },
+  moeLink: {
+    type: String,
+    default: '',
+    description: 'Lien pour commander chez MOE'
+  },
+  backgroundType: {
+    type: String,
+    enum: ['color', 'image', 'gradient'],
+    default: 'color'
+  },
+  backgroundColor: {
+    type: String,
+    default: 'black'
+  },
+  backgroundImage: {
+    type: String,
+    default: ''
+  },
+  gradientFrom: {
+    type: String,
+    default: '#000000'
+  },
+  gradientTo: {
+    type: String,
+    default: '#111111'
+  },
+  socialLinks: {
+    instagram: { type: String, default: '' },
+    facebook: { type: String, default: '' },
+    twitter: { type: String, default: '' },
+    telegram: { type: String, default: '' },
+  }
 }, {
   timestamps: true,
 });
 
-export const Settings = mongoose.models.Settings || mongoose.model('Settings', SettingsSchema);
-
-export interface ISettings {
-  _id?: string;
-  storeName?: string;
-  storeDescription?: string;
-  currency?: string;
-  logo?: string;
-  favicon?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
-  backgroundImage?: string;
-  gradientFrom?: string;
-  gradientTo?: string;
-  orderLink?: string;
-  burnsLink?: string;
-  apuLink?: string;
-  moeLink?: string;
-  socialLinks?: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
-    tiktok?: string;
-  };
-  contactEmail?: string;
-  contactPhone?: string;
-  address?: string;
-}
+export default mongoose.models.Settings || mongoose.model('Settings', SettingsSchema);
