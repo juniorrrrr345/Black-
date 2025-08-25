@@ -105,25 +105,27 @@ export default function AdminProductDetail() {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3">
+            <button
+              onClick={() => window.open(`/products/${product.id}`, '_blank')}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-black hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <Eye size={20} />
+              VOIR SUR LA BOUTIQUE
+            </button>
+            <button
+              onClick={() => router.push(`/admin/products/${product.id}/edit`)}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg font-black hover:bg-green-700 transition-colors flex items-center gap-2"
+            >
+              <Edit size={20} />
+              MODIFIER
+            </button>
             <button
               onClick={handleDelete}
               className="bg-red-600 text-white px-6 py-3 rounded-lg font-black hover:bg-red-700 transition-colors flex items-center gap-2"
             >
               <Trash2 size={20} />
               SUPPRIMER
-            </button>
-            <button
-              onClick={() => {
-                // Stocker l'ID du produit à éditer dans localStorage
-                localStorage.setItem('editProductId', product._id || product.id);
-                // Rediriger vers le dashboard
-                router.push('/admin/dashboard?tab=products');
-              }}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg font-black hover:bg-green-700 transition-colors flex items-center gap-2"
-            >
-              <Edit size={20} />
-              MODIFIER
             </button>
           </div>
         </div>

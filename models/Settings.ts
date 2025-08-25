@@ -49,7 +49,7 @@ const SettingsSchema = new mongoose.Schema({
   apouLink: {
     type: String,
     default: '',
-    description: 'Lien pour commander chez APOU'
+    description: 'Lien pour commander chez APU'
   },
   moeLink: {
     type: String,

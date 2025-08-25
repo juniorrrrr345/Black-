@@ -4,7 +4,6 @@ export interface ICategory {
   _id: string;
   name: string;
   slug: string;
-  icon?: string;
   order: number;
   active: boolean;
   createdAt: Date;
@@ -23,10 +22,6 @@ const CategorySchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
-  },
-  icon: {
-    type: String,
-    default: '',
   },
   order: {
     type: Number,

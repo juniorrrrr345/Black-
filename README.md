@@ -1,122 +1,161 @@
-# Bot Telegram Black
+# VERSHASH Store 🌿
 
-Bot Telegram complet avec panel administrateur, gestion des utilisateurs et fonctionnalités avancées.
+Une boutique e-commerce moderne et élégante avec interface d'administration.
 
-## 🚀 Déploiement sur Render
+## 🚀 Démarrage Rapide
 
-### Build Command
+### 1. Configuration de l'environnement
+
+Créez un fichier `.env.local` à la racine du projet :
+
+```bash
+cp .env.local.example .env.local
+```
+
+Puis modifiez le fichier `.env.local` avec vos informations :
+
+```env
+# MongoDB Configuration
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/vershash?retryWrites=true&w=majority
+
+# JWT Secret (générez une clé sécurisée)
+JWT_SECRET=votre-cle-secrete-super-securisee
+
+# Admin Setup Key (pour créer le premier admin)
+ADMIN_SETUP_KEY=une-cle-pour-setup-initial
+
+# Cloudinary Configuration (optionnel pour les images)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=votre-cloud-name
+CLOUDINARY_API_KEY=votre-api-key
+CLOUDINARY_API_SECRET=votre-api-secret
+```
+
+### 2. Installation des dépendances
+
 ```bash
 npm install
 ```
 
-### Start Command
-```bash
-npm start
-```
+### 3. Démarrer le serveur de développement
 
-### Variables d'environnement pour Render
-
-Ajoutez ces variables dans les paramètres de votre service Render :
-
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `BOT_TOKEN` | Token de votre bot Telegram (obtenu via @BotFather) | `123456789:ABCdefGHIjklMNOpqrsTUVwxyz` |
-| `ADMIN_ID` | Votre ID Telegram (obtenu via @userinfobot) | `123456789` |
-| `MONGODB_URI` | URI de connexion MongoDB (optionnel) | `mongodb+srv://...` |
-| `PORT` | Port du serveur | `10000` |
-| `NODE_ENV` | Environnement | `production` |
-| `PUBLIC_URL` | URL publique de votre app Render | `https://votre-app.onrender.com` |
-
-## 📝 Fonctionnalités
-
-### Sans MongoDB
-- ✅ Bot fonctionnel avec messages par défaut
-- ✅ Panel administrateur basique
-- ✅ Gestion des commandes
-- ✅ Réponses automatiques
-- ✅ Statistiques en mémoire
-
-### Avec MongoDB
-- ✅ Sauvegarde persistante des données
-- ✅ Historique des utilisateurs
-- ✅ Configuration personnalisée
-- ✅ Messages personnalisables
-- ✅ Gestion avancée des médias
-
-## 🛠️ Installation locale
-
-1. Clonez le repository
-2. Copiez `.env.example` vers `.env` et configurez vos variables
-3. Installez les dépendances :
-```bash
-npm install
-```
-4. Lancez le bot :
 ```bash
 npm run dev
 ```
 
-## 🎯 Commandes du Bot
+Le site sera accessible sur [http://localhost:3000](http://localhost:3000)
 
-### Utilisateurs
-- `/start` - Démarrer le bot
-- `/help` - Afficher l'aide
-- `/info` - Informations sur le bot
+### 4. Créer le compte administrateur
 
-### Administrateur
-- `/admin` - Panel administrateur
-- `/stats` - Statistiques du bot
-- `/broadcast` - Envoyer un message à tous
-- `/config` - Configuration du bot
+#### Option 1: Via le script (recommandé)
 
-## 🔧 Scripts disponibles
-
-- `npm start` - Lance le bot en production avec webhook
-- `npm run bot` - Lance le bot complet
-- `npm run bot:dev` - Lance le bot en développement
-- `npm run bot:mongodb` - Lance le bot avec MongoDB
-- `npm run bot:webhook` - Lance le bot avec webhook
-
-## 📦 Structure des fichiers
-
-```
-Black/
-├── bot.js                    # Bot principal
-├── bot-complete.js           # Bot avec toutes les fonctionnalités
-├── bot-mongodb.js            # Bot avec MongoDB
-├── bot-mongodb-webhook.js    # Bot MongoDB + Webhook (production)
-├── bot-webhook-production.js # Bot webhook optimisé
-├── config.js                 # Configuration
-├── keyboards.js              # Claviers Telegram
-├── models.js                 # Modèles MongoDB
-├── package.json              # Dépendances
-├── render.yaml               # Configuration Render
-├── Procfile                  # Configuration Heroku/Render
-└── ecosystem.config.js       # Configuration PM2
+```bash
+node scripts/setup-admin.js
 ```
 
-## ⚙️ Configuration Render
+#### Option 2: Via API directement
 
-1. Créez un nouveau Web Service sur Render
-2. Connectez votre repository GitHub
-3. Utilisez la branche `main`
-4. Runtime : Node
-5. Build Command : `npm install`
-6. Start Command : `npm start`
-7. Ajoutez les variables d'environnement
-8. Déployez !
+```bash
+curl -X POST http://localhost:3000/api/auth/setup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "votre-mot-de-passe",
+    "setupKey": "votre-setup-key-depuis-env"
+  }'
+```
+
+### 5. Accéder à l'administration
+
+Rendez-vous sur [http://localhost:3000/admin](http://localhost:3000/admin) et connectez-vous avec vos identifiants.
+
+## 📱 Fonctionnalités
+
+### Côté Client
+- ✅ Page d'accueil avec bannière hero animée
+- ✅ Catégories de produits (Weed 🌲, Hash 🍫)
+- ✅ Cartes produits avec tags et drapeaux pays
+- ✅ Panier d'achat fonctionnel
+- ✅ Navigation mobile optimisée
+- ✅ Design sombre premium avec effets glassmorphism
+
+### Côté Admin
+- ✅ Connexion sécurisée avec JWT
+- ✅ Dashboard avec statistiques
+- ✅ Gestion des produits
+- ✅ Configuration Cloudinary (pour les images)
+- ✅ Connexion MongoDB
+
+## 🛠 Technologies Utilisées
+
+- **Next.js 14** - Framework React avec App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **Zustand** - State management
+- **MongoDB** - Base de données
+- **Mongoose** - ODM MongoDB
+- **JWT** - Authentification
+- **bcryptjs** - Hashage des mots de passe
+- **Cloudinary** - Gestion des images (optionnel)
+
+## 📂 Structure du Projet
+
+```
+vershash-store/
+├── app/
+│   ├── admin/
+│   │   ├── page.tsx          # Page de connexion admin
+│   │   └── dashboard/
+│   │       └── page.tsx       # Dashboard admin
+│   ├── cart/
+│   │   └── page.tsx           # Page panier
+│   ├── api/
+│   │   └── auth/
+│   │       ├── login/         # API login
+│   │       └── setup/         # API setup admin
+│   ├── globals.css            # Styles globaux
+│   ├── layout.tsx             # Layout principal
+│   └── page.tsx               # Page d'accueil
+├── components/
+│   ├── HeroBanner.tsx         # Bannière hero
+│   ├── Categories.tsx         # Sélecteur de catégories
+│   ├── ProductCard.tsx        # Carte produit
+│   └── BottomNav.tsx          # Navigation mobile
+├── lib/
+│   ├── store.ts               # State management Zustand
+│   ├── products.ts            # Données produits
+│   ├── mongodb.ts             # Configuration MongoDB
+│   └── auth.ts                # Utilitaires auth
+├── models/
+│   └── Admin.ts               # Modèle Admin MongoDB
+└── middleware.ts              # Protection des routes
+```
 
 ## 🔒 Sécurité
 
-- Ne partagez jamais votre `BOT_TOKEN`
-- Gardez votre `ADMIN_ID` privé
-- Utilisez des connexions MongoDB sécurisées
-- Activez HTTPS pour les webhooks
+- Les mots de passe sont hashés avec bcrypt
+- Authentification JWT avec cookies httpOnly
+- Protection des routes admin via middleware
+- Validation des données côté serveur
 
-## 📞 Support
+## 🚀 Déploiement sur Vercel
 
-Pour toute question ou problème, consultez la documentation ou contactez l'administrateur du bot.
+1. Poussez votre code sur GitHub
+2. Connectez votre repo à Vercel
+3. Configurez les variables d'environnement dans Vercel
+4. Déployez !
 
-## 📄 Licence
+## 📝 Notes Importantes
 
-Ce projet est sous licence ISC.
+- **IMPORTANT**: Désactivez la route `/api/auth/setup` en production après avoir créé votre admin
+- Changez le `JWT_SECRET` en production
+- Utilisez une vraie base de données MongoDB (MongoDB Atlas recommandé)
+- Configurez Cloudinary pour gérer les images des produits
+
+## 🤝 Support
+
+Pour toute question ou problème, n'hésitez pas à ouvrir une issue.
+
+---
+
+Fait avec 💜 pour VERSHASH

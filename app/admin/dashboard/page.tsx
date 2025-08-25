@@ -24,10 +24,7 @@ import {
   Facebook,
   Twitter,
   Youtube,
-  Link,
-  Menu,
-  ChevronRight,
-  Bot
+  Link
 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import CloudinaryVideoUpload from '@/components/CloudinaryVideoUpload';
@@ -36,18 +33,15 @@ import { useStore } from '@/lib/store';
 export default function AdminDashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('products');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({ 
     shopName: 'VERSHASH', 
-    bannerText: 'NOUVEAU DROP',
-    bannerSubtext: 'Découvrez nos produits premium de qualité exceptionnelle', 
-    bannerImage: '',
-    bannerImageFit: 'contain', // Nouveau champ pour le mode d'affichage
+    bannerText: 'NOUVEAU DROP', 
+    bannerImage: '', 
     orderLink: '',
     burnsLink: '',
-    apuLink: '',
+    apouLink: '',
     moeLink: ''
   });
   const [socials, setSocials] = useState<any[]>([
@@ -67,49 +61,12 @@ export default function AdminDashboard() {
     checkAuth();
     fetchData();
     loadThemeSettings();
-    
     // Charger les réseaux sociaux depuis localStorage
     const savedSocials = localStorage.getItem('shop-socials');
     if (savedSocials) {
-      try {
-        setSocials(JSON.parse(savedSocials));
-      } catch (e) {
-        console.error('Error loading socials:', e);
-      }
-    }
-    
-    // Vérifier si on doit éditer un produit (après un délai pour laisser charger les produits)
-    setTimeout(() => {
-      const editProductId = localStorage.getItem('editProductId');
-      if (editProductId) {
-        // On va attendre que fetchData charge les produits
-        // Le prochain useEffect avec products en dépendance s'en occupera
-        localStorage.setItem('pendingEditProductId', editProductId);
-        localStorage.removeItem('editProductId');
-      }
-    }, 100);
-    
-    // Vérifier l'onglet dans l'URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const tab = urlParams.get('tab');
-    if (tab) {
-      setActiveTab(tab);
+      setSocials(JSON.parse(savedSocials));
     }
   }, []);
-  
-  // UseEffect séparé pour gérer l'édition quand les produits sont chargés
-  useEffect(() => {
-    const pendingEditId = localStorage.getItem('pendingEditProductId');
-    if (pendingEditId && products.length > 0) {
-      const productToEdit = products.find(p => p._id === pendingEditId || p.id === pendingEditId);
-      if (productToEdit) {
-        setEditingProduct(productToEdit);
-        setShowProductModal(true);
-        setActiveTab('products');
-      }
-      localStorage.removeItem('pendingEditProductId');
-    }
-  }, [products]);
 
   const checkAuth = () => {
     const token = localStorage.getItem('auth-token');
@@ -138,20 +95,7 @@ export default function AdminDashboard() {
       const settingsRes = await fetch('/api/settings');
       if (settingsRes.ok) {
         const settingsData = await settingsRes.json();
-        setSettings({
-          ...settingsData,
-          backgroundType: settingsData.backgroundType || 'color',
-          backgroundColor: settingsData.backgroundColor || 'black',
-          backgroundImage: settingsData.backgroundImage || '',
-          gradientFrom: settingsData.gradientFrom || '#000000',
-          gradientTo: settingsData.gradientTo || '#111111',
-          shopName: settingsData.shopName || 'VERSHASH',
-          bannerText: settingsData.bannerText || 'NOUVEAU DROP',
-          bannerSubtext: settingsData.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
-          bannerImage: settingsData.bannerImage || '',
-          bannerImageFit: settingsData.bannerImageFit || 'contain',
-          orderLink: settingsData.orderLink || ''
-        });
+        setSettings(settingsData);
         // Synchroniser avec le store
         updateThemeSettings({
           backgroundType: settingsData.backgroundType || 'color',
@@ -161,9 +105,7 @@ export default function AdminDashboard() {
           gradientTo: settingsData.gradientTo || '#111111',
           shopName: settingsData.shopName || 'VERSHASH',
           bannerText: settingsData.bannerText || 'NOUVEAU DROP',
-          bannerSubtext: settingsData.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
           bannerImage: settingsData.bannerImage || '',
-          bannerImageFit: settingsData.bannerImageFit || 'contain',
           orderLink: settingsData.orderLink || ''
         });
       }
@@ -196,9 +138,7 @@ export default function AdminDashboard() {
           gradientTo: settings.gradientTo || '#111111',
           shopName: settings.shopName || 'VERSHASH',
           bannerText: settings.bannerText || 'NOUVEAU DROP',
-          bannerSubtext: settings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
           bannerImage: settings.bannerImage || '',
-          bannerImageFit: settings.bannerImageFit || 'contain',
           orderLink: settings.orderLink || ''
         });
         alert('✅ Paramètres sauvegardés avec succès !');
@@ -235,235 +175,182 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
-      {/* Header - Mobile First */}
-      <header className="bg-black/50 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            {/* Logo & Menu Toggle */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <Menu size={24} />
-              </button>
-              <h1 className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                ADMIN
-              </h1>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-2">
-              {[
-                { id: 'products', label: 'Produits', icon: Package },
-                { id: 'categories', label: 'Catégories', icon: Tag },
-                { id: 'settings', label: 'Paramètres', icon: Settings },
-                { id: 'background', label: 'Fond', icon: ImageIcon },
-                { id: 'socials', label: 'Réseaux', icon: Share2 },
-                { id: 'telegram', label: 'Bot Telegram', icon: Bot }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    if (tab.id === 'telegram') {
-                      router.push('/admin/telegram');
-                    } else {
-                      setActiveTab(tab.id);
-                    }
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  <tab.icon size={18} />
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
+    <div className="min-h-screen bg-black text-white">
+      {/* Header - Responsive */}
+      <header className="bg-gray-900 border-b border-gray-800">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            VERSHASH ADMIN DASHBOARD
+          </h1>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg transition-colors font-black text-sm md:text-base lg:text-lg"
+          >
+            <LogOut size={16} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            DÉCONNEXION
+          </button>
+        </div>
+      </header>
 
-            {/* Logout Button */}
+      {/* Tabs - Responsive */}
+      <div className="bg-gray-900 border-b border-gray-800 overflow-x-auto">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="flex gap-2 md:gap-4 min-w-max">
             <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 border border-red-600 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
+              onClick={() => setActiveTab('products')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'products'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
             >
-              <LogOut size={18} />
-              <span className="hidden sm:inline">Déconnexion</span>
+              <Package className="inline mr-2" size={16} />
+              PRODUITS
+            </button>
+            <button
+              onClick={() => setActiveTab('categories')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'categories'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Tag className="inline mr-2" size={16} />
+              CATÉGORIES
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'settings'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Settings className="inline mr-2" size={16} />
+              PARAMÈTRES
+            </button>
+            <button
+              onClick={() => setActiveTab('background')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'background'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <ImageIcon className="inline mr-2" size={16} />
+              BACKGROUND
+            </button>
+            <button
+              onClick={() => setActiveTab('socials')}
+              className={`py-3 px-4 md:px-6 lg:px-8 font-black text-sm md:text-base lg:text-lg transition-colors whitespace-nowrap ${
+                activeTab === 'socials'
+                  ? 'text-white border-b-2 border-white bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Share2 className="inline mr-2" size={16} />
+              RÉSEAUX
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-white/10 bg-black/50 backdrop-blur-xl">
-            <div className="container mx-auto px-4 py-2">
-              {[
-                { id: 'products', label: 'Produits', icon: Package, emoji: '📦' },
-                { id: 'categories', label: 'Catégories', icon: Tag, emoji: '🏷️' },
-                { id: 'settings', label: 'Paramètres', icon: Settings, emoji: '⚙️' },
-                { id: 'background', label: 'Personnalisation', icon: ImageIcon, emoji: '🎨' },
-                { id: 'socials', label: 'Réseaux sociaux', icon: Share2, emoji: '🌐' },
-                { id: 'telegram', label: 'Bot Telegram', icon: Bot, emoji: '🤖' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    if (tab.id === 'telegram') {
-                      router.push('/admin/telegram');
-                    } else {
-                      setActiveTab(tab.id);
-                      setMobileMenuOpen(false);
-                    }
-                  }}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-white border-l-4 border-purple-500'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{tab.emoji}</span>
-                    <span className="font-medium">{tab.label}</span>
-                  </div>
-                  {activeTab === tab.id && <ChevronRight size={18} />}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </header>
-
-      {/* Main Content - Responsive Padding */}
-      <main className="container mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
+      {/* Content - Responsive */}
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
         {/* Products Tab */}
         {activeTab === 'products' && (
           <div>
-            {/* Header avec bouton ajouter */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white">Produits</h2>
-                <p className="text-gray-400 text-sm mt-1">Gérez vos produits</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 lg:mb-12 gap-4">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white">📦 GESTION DES PRODUITS</h2>
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
+                <button
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setShowProductModal(true);
+                  }}
+                  className="flex items-center gap-2 bg-white text-black hover:bg-gray-200 px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg transition-colors font-black text-sm md:text-base lg:text-lg border-2 border-white"
+                >
+                  <Plus size={16} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+                  AJOUTER UN PRODUIT
+                </button>
               </div>
-              <button
-                onClick={() => {
-                  setEditingProduct(null);
-                  setShowProductModal(true);
-                }}
-                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2 shadow-lg"
-              >
-                <Plus size={20} />
-                Ajouter un produit
-              </button>
             </div>
 
-            {/* Liste des produits - Version mobile */}
-            <div className="block md:hidden space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {products.map((product) => (
-                <div key={product._id} className="bg-gray-900/50 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
-                  <div className="flex gap-4 p-4">
-                    {/* Image */}
-                    <div className="w-24 h-24 flex-shrink-0">
-                      {product.image ? (
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-800 rounded-lg flex items-center justify-center">
-                          <Package size={32} className="text-gray-600" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-white truncate">{product.name}</h3>
-                      <p className="text-sm text-gray-400 mt-1">
-                        {product.category} • {product.tag || 'Sans tag'}
-                      </p>
-                      <div className="flex gap-2 mt-3">
-                        <button 
-                          onClick={() => {
-                            setEditingProduct(product);
-                            setShowProductModal(true);
-                          }}
-                          className="flex-1 bg-blue-600/20 border border-blue-600 text-blue-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-600/30 transition-colors"
-                        >
-                          Modifier
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteProduct(product._id)}
-                          className="flex-1 bg-red-600/20 border border-red-600 text-red-400 py-2 px-3 rounded-lg text-sm font-medium hover:bg-red-600/30 transition-colors"
-                        >
-                          Supprimer
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Grille des produits - Version desktop */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => (
-                <div key={product._id} className="bg-gray-900/50 backdrop-blur rounded-xl border border-white/10 overflow-hidden hover:border-purple-500/50 transition-all">
-                  {/* Image */}
-                  <div className="aspect-square relative">
+                <div key={product._id} className="bg-black border-4 border-white rounded-2xl p-6">
+                  <div className="aspect-square bg-white rounded-2xl mb-4 overflow-hidden border-2 border-black">
                     {product.image ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                        <Package size={48} className="text-gray-600" />
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                        <ImageIcon size={48} className="text-gray-400" />
                       </div>
-                    )}
-                    {product.tag && (
-                      <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold ${
-                        product.tagColor === 'red' ? 'bg-red-600' :
-                        product.tagColor === 'green' ? 'bg-green-600' :
-                        product.tagColor === 'blue' ? 'bg-blue-600' :
-                        product.tagColor === 'yellow' ? 'bg-yellow-600' :
-                        product.tagColor === 'purple' ? 'bg-purple-600' :
-                        'bg-gray-600'
-                      }`}>
-                        {product.tag}
-                      </span>
                     )}
                   </div>
                   
-                  {/* Content */}
-                  <div className="p-4">
-                    <h3 className="font-bold text-lg text-white mb-2">{product.name}</h3>
-                    <p className="text-sm text-gray-400 mb-4">
-                      Catégorie: {product.category}
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="font-black text-white text-lg">{product.name}</h3>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-black ${
+                        product.tagColor === 'red' ? 'bg-red-500' : 'bg-green-500'
+                      } text-white`}>
+                        {product.tag}
+                      </span>
+                      <span className="text-gray-300 text-sm">{product.category}</span>
+                    </div>
+
+                    {product.pricing && product.pricing.length > 0 ? (
+                      <div className="space-y-2">
+                        <p className="text-white font-bold text-sm">OPTIONS DE PRIX:</p>
+                        {product.pricing.map((pricing: any, index: number) => (
+                          <div key={index} className="flex justify-between text-sm bg-white/10 rounded-lg px-3 py-2">
+                            <span className="text-white font-bold">{pricing.weight}</span>
+                            <span className="text-white font-black">{pricing.price}€</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-white font-black text-xl">{product.price}€</p>
+                    )}
+                    
+                    <p className="text-gray-300 text-sm">
+                      <span className="font-bold">Stock:</span> {product.quantity} unités
                     </p>
                     
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => {
-                          setEditingProduct(product);
-                          setShowProductModal(true);
-                        }}
-                        className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
-                      >
-                        <Edit size={16} />
-                        Modifier
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteProduct(product._id)}
-                        className="flex-1 bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
-                      >
-                        <Trash2 size={16} />
-                        Suppr.
-                      </button>
-                    </div>
+                    {product.description && (
+                      <p className="text-gray-400 text-xs line-clamp-2">{product.description}</p>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 mt-4 pt-4 border-t-2 border-white">
+                    <button
+                      onClick={() => router.push(`/products/${product.id}`)}
+                      className="flex-1 bg-white text-black py-2 rounded-lg font-black hover:bg-gray-200 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <Eye size={16} />
+                      VOIR
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingProduct(product);
+                        setShowProductModal(true);
+                      }}
+                      className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-black hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <Edit size={16} />
+                      EDIT
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteProduct(product._id)}
+                      className="flex-1 bg-red-600 text-white py-2 rounded-lg font-black hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <Trash2 size={16} />
+                      SUP
+                    </button>
                   </div>
                 </div>
               ))}
@@ -474,76 +361,36 @@ export default function AdminDashboard() {
         {/* Categories Tab */}
         {activeTab === 'categories' && (
           <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">Gestion des Catégories</h2>
               <button
                 onClick={() => {
                   setEditingCategory(null);
                   setShowCategoryModal(true);
                 }}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
+                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors"
               >
                 <Plus size={20} />
                 Ajouter une catégorie
               </button>
             </div>
 
-            {/* Version mobile - Cards */}
-            <div className="block md:hidden space-y-4">
-              {categories.map((category) => (
-                <div key={category._id} className="bg-gray-900 rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {category.icon && <span className="text-2xl">{category.icon}</span>}
-                      <div>
-                        <div className="font-bold">{category.name}</div>
-                        <div className="text-sm text-gray-400">{category.slug}</div>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={async () => {
-                        if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`)) {
-                          try {
-                            const res = await fetch(`/api/categories/${category._id || category.id}`, {
-                              method: 'DELETE',
-                            });
-                            if (res.ok) {
-                              fetchData(); // Recharger les données
-                              alert('✅ Catégorie supprimée avec succès');
-                            } else {
-                              alert('❌ Erreur lors de la suppression');
-                            }
-                          } catch (error) {
-                            alert('❌ Erreur lors de la suppression');
-                          }
-                        }
-                      }}
-                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-bold transition-colors text-sm"
-                    >
-                      Supprimer
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Version desktop - Table */}
-            <div className="hidden md:block bg-gray-900 rounded-lg overflow-hidden">
+            <div className="bg-gray-900 rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-800">
                   <tr>
-                    <th className="text-left p-4 font-bold">Nom</th>
-                    <th className="text-left p-4 font-bold">Emoji</th>
-                    <th className="text-left p-4 font-bold">Slug</th>
-                    <th className="text-left p-4 font-bold">Actions</th>
+                    <th className="text-left p-4">Nom</th>
+                    <th className="text-left p-4">Slug</th>
+                    <th className="text-left p-4">Ordre</th>
+                    <th className="text-left p-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {categories.map((category) => (
                     <tr key={category._id} className="border-t border-gray-800">
                       <td className="p-4">{category.name}</td>
-                      <td className="p-4 text-2xl">{category.icon}</td>
                       <td className="p-4 text-gray-400">{category.slug}</td>
+                      <td className="p-4">{category.order}</td>
                       <td className="p-4">
                         <button 
                           onClick={async () => {
@@ -563,9 +410,10 @@ export default function AdminDashboard() {
                               }
                             }
                           }}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-bold transition-colors"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-bold transition-colors flex items-center gap-1"
                         >
-                          Supprimer
+                          <Trash2 size={16} />
+                          SUPPRIMER
                         </button>
                       </td>
                     </tr>
@@ -627,7 +475,7 @@ export default function AdminDashboard() {
                       type="text"
                       value={settings.burnsLink || ''}
                       onChange={(e) => setSettings({ ...settings, burnsLink: e.target.value })}
-                      placeholder="Ex: https://t.me/username ou https://wa.me/33612345678"
+                      placeholder="https://exemple.com/burns"
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />
                   </div>
@@ -636,9 +484,9 @@ export default function AdminDashboard() {
                     <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">🏪 COMMANDER CHEZ APU</label>
                     <input
                       type="text"
-                      value={settings.apuLink || ''}
-                      onChange={(e) => setSettings({ ...settings, apuLink: e.target.value })}
-                      placeholder="Ex: https://t.me/username ou https://wa.me/33612345678"
+                      value={settings.apouLink || ''}
+                      onChange={(e) => setSettings({ ...settings, apouLink: e.target.value })}
+                      placeholder="https://exemple.com/apou"
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />
                   </div>
@@ -649,24 +497,14 @@ export default function AdminDashboard() {
                       type="text"
                       value={settings.moeLink || ''}
                       onChange={(e) => setSettings({ ...settings, moeLink: e.target.value })}
-                      placeholder="Ex: https://t.me/username ou https://wa.me/33612345678"
+                      placeholder="https://exemple.com/moe"
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
                     />
                   </div>
 
-                  <div className="bg-yellow-900/30 rounded-lg p-3 md:p-4 border border-yellow-600/50">
-                    <p className="text-yellow-400 text-xs md:text-sm font-bold mb-2">
-                      📱 FORMATS DE LIENS SUPPORTÉS :
-                    </p>
-                    <ul className="text-gray-300 text-xs md:text-sm space-y-1">
-                      <li>• <span className="text-white font-bold">Telegram :</span> https://t.me/username</li>
-                      <li>• <span className="text-white font-bold">WhatsApp :</span> https://wa.me/33612345678</li>
-                      <li>• <span className="text-white font-bold">Instagram/Facebook :</span> URL du profil (le message sera copié)</li>
-                    </ul>
-                    <p className="text-gray-400 text-xs mt-2">
-                      💡 Le message de commande sera automatiquement ajouté au lien
-                    </p>
-                  </div>
+                  <p className="text-gray-300 text-xs md:text-sm mt-2 bg-white/10 rounded-lg p-2 md:p-3">
+                    💡 Ces liens seront affichés dans le panier pour permettre aux clients de commander chez différents commerçants
+                  </p>
                 </div>
               </div>
 
@@ -750,13 +588,13 @@ export default function AdminDashboard() {
                 
                 <div className="space-y-4 md:space-y-6">
                   <div>
-                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">TEXTE DE PRÉSENTATION</label>
+                    <label className="block text-white font-black text-sm md:text-base mb-2 md:mb-3">TEXTE DE LA BANNIÈRE</label>
                     <input
                       type="text"
-                      value={settings.bannerSubtext}
-                      onChange={(e) => setSettings({ ...settings, bannerSubtext: e.target.value })}
+                      value={settings.bannerText}
+                      onChange={(e) => setSettings({ ...settings, bannerText: e.target.value })}
                       className="w-full bg-white text-black px-3 py-2 md:px-4 md:py-3 lg:px-5 lg:py-4 rounded-lg border-2 border-black font-bold text-sm md:text-base lg:text-lg"
-                      placeholder="Ex: Découvrez nos produits premium de qualité exceptionnelle"
+                      placeholder="Ex: NOUVEAU DROP"
                     />
                   </div>
 
@@ -767,41 +605,6 @@ export default function AdminDashboard() {
                       onUpload={(url) => setSettings({ ...settings, bannerImage: url })}
                       onRemove={() => setSettings({ ...settings, bannerImage: '' })}
                     />
-                    
-                    {settings.bannerImage && (
-                      <div className="mt-4">
-                        <label className="block text-white font-bold text-sm mb-2">Mode d'affichage de l'image</label>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setSettings({ ...settings, bannerImageFit: 'contain' })}
-                            className={`p-3 rounded-lg border-2 transition-all ${
-                              settings.bannerImageFit === 'contain'
-                                ? 'bg-white text-black border-white font-bold'
-                                : 'bg-black text-white border-gray-600 hover:border-white'
-                            }`}
-                          >
-                            <div className="text-xs font-bold">IMAGE ENTIÈRE</div>
-                            <div className="text-[10px] opacity-70 mt-1">Affiche toute l'image</div>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setSettings({ ...settings, bannerImageFit: 'cover' })}
-                            className={`p-3 rounded-lg border-2 transition-all ${
-                              settings.bannerImageFit === 'cover'
-                                ? 'bg-white text-black border-white font-bold'
-                                : 'bg-black text-white border-gray-600 hover:border-white'
-                            }`}
-                          >
-                            <div className="text-xs font-bold">REMPLIR</div>
-                            <div className="text-[10px] opacity-70 mt-1">Remplit tout l'espace</div>
-                          </button>
-                        </div>
-                        <p className="text-gray-400 text-xs mt-2">
-                          💡 "Image entière" = l'image complète est visible | "Remplir" = l'image remplit tout l'espace (peut être coupée)
-                        </p>
-                      </div>
-                    )}
                   </div>
 
                   {/* Aperçu de la bannière */}
@@ -1271,7 +1074,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
-      </main>
+      </div>
 
       {/* Product Modal */}
       {showProductModal && (
@@ -1351,12 +1154,8 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
         pricing: pricingOptions.filter((p: any) => p.weight && p.price > 0)
       };
 
-      // Utiliser le bon ID (soit _id soit id)
-      const productId = product?._id || product?.id;
-      const url = productId ? `/api/products/${productId}` : '/api/products';
+      const url = product ? `/api/products/${product._id}` : '/api/products';
       const method = product ? 'PUT' : 'POST';
-      
-      console.log('Submitting:', { url, method, submitData });
       
       const res = await fetch(url, {
         method,
@@ -1365,18 +1164,14 @@ function ProductFormModal({ product, categories, onClose, onSave }: any) {
       });
       
       if (res.ok) {
-        const updatedProduct = await res.json();
-        console.log('Product saved successfully:', updatedProduct);
-        alert('✅ Produit sauvegardé avec succès !');
         onSave();
       } else {
         const errorData = await res.json();
-        console.error('Error response:', errorData);
-        alert('❌ Erreur: ' + (errorData.error || 'Erreur lors de la sauvegarde'));
+        alert('Erreur: ' + (errorData.error || 'Erreur lors de la sauvegarde'));
       }
     } catch (error) {
       console.error('Erreur:', error);
-      alert('❌ Erreur lors de la sauvegarde: ' + error);
+      alert('Erreur lors de la sauvegarde');
     }
   };
 
@@ -1604,7 +1399,8 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
   const [formData, setFormData] = useState({
     name: category?.name || '',
     slug: category?.slug || generateSlug(category?.name || ''),
-    icon: category?.icon || ''
+    order: category?.order || 1,
+    icon: category?.icon || '🌿'
   });
 
   const handleSubmit = async (e: any) => {
@@ -1613,8 +1409,7 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
       // Toujours générer le slug basé sur le nom actuel
       const dataToSend = {
         ...formData,
-        slug: generateSlug(formData.name), // Toujours générer à partir du nom
-        order: 1 // Valeur par défaut, pas besoin de la demander à l'utilisateur
+        slug: generateSlug(formData.name) // Toujours générer à partir du nom
       };
       
       const url = category ? `/api/categories/${category._id || category.id}` : '/api/categories';
@@ -1659,47 +1454,74 @@ function CategoryFormModal({ category, onClose, onSave }: any) {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-white font-black text-lg mb-3">
+            <label className="block text-white font-black text-sm mb-2">
               NOM DE LA CATÉGORIE
             </label>
             <input
               type="text"
+              placeholder="Ex: Weed Premium"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => {
+                const name = e.target.value;
+                setFormData({ 
+                  ...formData, 
+                  name: name,
+                  slug: generateSlug(name)
+                });
+              }}
               className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
-              placeholder="Ex: WEED, HASH..."
               required
             />
           </div>
 
-          <div>
-            <label className="block text-white font-black text-lg mb-3">
-              EMOJI/ICÔNE
-            </label>
-            <input
-              type="text"
-              value={formData.icon}
-              onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-              className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold text-2xl text-center"
-              placeholder="Ex: 🌿, 🍫, 🔥..."
-              maxLength={2}
-            />
-            <p className="text-gray-400 text-sm mt-2">
-              Collez un emoji qui représente cette catégorie
-            </p>
+
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-white font-black text-sm mb-2">
+                ICÔNE (EMOJI)
+              </label>
+              <input
+                type="text"
+                placeholder="Ex: 🌿"
+                value={formData.icon}
+                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold text-center text-2xl"
+                maxLength={2}
+              />
+              <p className="text-gray-400 text-xs mt-1">Utilisez un emoji</p>
+            </div>
+            <div>
+              <label className="block text-white font-black text-sm mb-2">
+                POSITION D'AFFICHAGE
+              </label>
+              <select
+                value={formData.order}
+                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 1 })}
+                className="w-full bg-white text-black px-4 py-3 rounded-lg border-2 border-black font-bold"
+              >
+                <option value="1">1ère position</option>
+                <option value="2">2ème position</option>
+                <option value="3">3ème position</option>
+                <option value="4">4ème position</option>
+                <option value="5">5ème position</option>
+              </select>
+              <p className="text-gray-400 text-xs mt-1">Ordre d'apparition</p>
+            </div>
           </div>
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 pt-6 border-t-2 border-white">
             <button
               type="submit"
-              className="flex-1 bg-white text-black py-3 rounded-lg font-black text-lg hover:bg-gray-200 transition-colors"
+              className="flex-1 bg-white text-black py-4 rounded-lg font-black text-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
-              {category ? 'MODIFIER' : 'AJOUTER'}
+              <Save size={24} />
+              SAUVEGARDER
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-red-600 text-white py-3 rounded-lg font-black text-lg hover:bg-red-700 transition-colors"
+              className="flex-1 bg-red-600 text-white py-4 rounded-lg font-black text-lg hover:bg-red-700 transition-colors"
             >
               ANNULER
             </button>

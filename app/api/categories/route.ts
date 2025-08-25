@@ -8,9 +8,7 @@ export async function GET() {
     const categories = await Category.find({}).sort({ order: 1 });
     return NextResponse.json(categories);
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    // En cas d'erreur MongoDB, retourner un tableau vide
-    return NextResponse.json([]);
+    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
   }
 }
 
@@ -19,15 +17,14 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     const body = await request.json();
     
-    // S'assurer que l'ordre est défini
-    if (!body.order) {
-      body.order = 1;
+    // Auto-generate slug if not provided
+    if (!body.slug && body.name) {
+      body.slug = body.name.toLowerCase().replace(/\s+/g, '-');
     }
     
     const category = await Category.create(body);
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
-    console.error('Error creating category:', error);
     return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
   }
 }
