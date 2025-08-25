@@ -3,7 +3,8 @@ services:
     name: telegram-bot-lanation
     runtime: node
     branch: main
-    buildCommand: cp package-bot.json package.json && npm install
+    rootDir: bot-telegram
+    buildCommand: npm install
     startCommand: node bot-mongodb-webhook.js
     envVars:
       - key: NODE_ENV
