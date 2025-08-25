@@ -1,0 +1,32 @@
+# Ignorer tous les fichiers de la boutique Vercel
+boutique-vercel/
+app/
+components/
+lib/
+models/
+public/
+scripts/
+
+# Fichiers Next.js/Vercel
+next.config.mjs
+postcss.config.mjs
+tsconfig.json
+vercel.json
+.vercelignore
+tailwind.config.js
+
+# Fichiers de développement
+.git/
+.gitignore
+*.md
+.env.example
+.env.local
+node_modules/
+
+# Garder seulement les fichiers du bot
+# bot*.js
+# config.js
+# keyboards.js
+# models.js
+# package.json
+# ecosystem.config.js
