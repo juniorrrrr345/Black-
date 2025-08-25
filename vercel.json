@@ -3,7 +3,7 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD .",
+
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 10
