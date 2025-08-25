@@ -19,7 +19,7 @@ export async function GET() {
         gradientTo: '#111111',
         orderLink: '',
         burnsLink: '',
-        apouLink: '',
+        apuLink: '',
         moeLink: ''
       });
     }

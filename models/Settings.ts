@@ -7,7 +7,7 @@ export interface ISettings {
   bannerText: string;
   orderLink: string;
   burnsLink: string;
-  apouLink: string;
+  apuLink: string;
   moeLink: string;
   backgroundType: 'color' | 'image' | 'gradient';
   backgroundColor: string;
@@ -46,7 +46,7 @@ const SettingsSchema = new mongoose.Schema({
     default: '',
     description: 'Lien pour commander chez BURNS'
   },
-  apouLink: {
+  apuLink: {
     type: String,
     default: '',
     description: 'Lien pour commander chez APU'

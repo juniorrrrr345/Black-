@@ -32,7 +32,9 @@ export interface ThemeSettings {
   gradientTo: string;
   shopName: string;
   bannerText: string;
+  bannerSubtext: string;
   bannerImage: string;
+  bannerImageFit: 'contain' | 'cover';
   orderLink: string;
 }
 
@@ -62,7 +64,9 @@ export const useStore = create<StoreState>((set, get) => ({
     gradientTo: '#111111',
     shopName: 'VERSHASH',
     bannerText: 'NOUVEAU DROP',
+    bannerSubtext: 'Découvrez nos produits premium de qualité exceptionnelle',
     bannerImage: '',
+    bannerImageFit: 'contain',
     orderLink: ''
   },
   
@@ -165,7 +169,9 @@ export const useStore = create<StoreState>((set, get) => ({
           gradientTo: apiSettings.gradientTo || '#111111',
           shopName: apiSettings.shopName || 'VERSHASH',
           bannerText: apiSettings.bannerText || 'NOUVEAU DROP',
+          bannerSubtext: apiSettings.bannerSubtext || 'Découvrez nos produits premium de qualité exceptionnelle',
           bannerImage: apiSettings.bannerImage || '',
+          bannerImageFit: apiSettings.bannerImageFit || 'contain',
           orderLink: apiSettings.orderLink || ''
         };
         

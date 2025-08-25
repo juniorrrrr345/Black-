@@ -111,6 +111,7 @@ export default function CloudinaryVideoUpload({
           
           {onRemove && (
             <button
+              type="button"
               onClick={onRemove}
               className="absolute -top-3 -right-3 bg-red-600 text-white rounded-full p-2 hover:bg-red-700 transition-colors border-2 border-white"
             >
@@ -119,11 +120,12 @@ export default function CloudinaryVideoUpload({
           )}
           
           <button
+            type="button"
             onClick={openFileDialog}
             disabled={uploading}
             className="absolute bottom-4 right-4 bg-black/80 text-white rounded-full p-3 hover:bg-black transition-colors border-2 border-white"
           >
-            <Camera size={20} />
+            <Video size={20} />
           </button>
         </div>
       ) : (
