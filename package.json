@@ -5,11 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
-    "bot": "node bot-mongodb-webhook.js",
-    "bot:dev": "node bot.js",
-    "bot:mongodb": "node bot-mongodb.js",
-    "bot:webhook": "node bot-webhook-production.js"
+    "start": "next start"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",
