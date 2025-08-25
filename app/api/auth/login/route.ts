@@ -12,9 +12,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Identifiants par défaut ou depuis les variables d'environnement
-    const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'vershash2024';
+    // Identifiants depuis les variables d'environnement Vercel
+    const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+    // Vérifier que les variables sont configurées
+    if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+      console.error('Variables ADMIN_USERNAME et ADMIN_PASSWORD non configurées sur Vercel');
+      return NextResponse.json(
+        { error: 'Configuration manquante' },
+        { status: 500 }
+      );
+    }
 
     // Vérifier les identifiants
     if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
@@ -26,8 +35,8 @@ export async function POST(request: NextRequest) {
 
     // Generate token
     const token = generateToken({
-      userId: admin._id.toString(),
-      username: admin.username,
+      userId: '1',
+      username: ADMIN_USERNAME,
     });
 
     // Create response with token
@@ -36,8 +45,8 @@ export async function POST(request: NextRequest) {
         success: true,
         token,
         user: {
-          id: admin._id,
-          username: admin.username,
+          id: '1',
+          username: ADMIN_USERNAME,
         }
       },
       { status: 200 }
